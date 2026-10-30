@@ -165,6 +165,7 @@ textarea.field{resize:vertical;min-height:80px}
 .paym{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;margin-top:8px;text-align:left}
 .paym.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
 .pm-ic svg{width:16px;height:16px}
+.paym>svg{width:18px;height:18px;flex:none;opacity:.55}.paym .grow{white-space:normal;line-height:1.35}
 .pm-ic{width:40px;height:26px;border-radius:6px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font:600 9px var(--f-mono);flex:none}
 .slide{position:relative;height:60px;border-radius:999px;background:#14110C;color:#ECE6DC;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;margin-top:16px;--x:0px}
 .slide .s-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--x) + 60px);background:#FF5101;border-radius:999px}
@@ -451,16 +452,19 @@ function vHome(){
 function vLogin(){const t=S.ui.authTab;
   return `<div class="auth fade-in"><div class="eyebrow">Welcome</div><h1 class="serif mt8" style="font-size:34px;letter-spacing:-.01em">${t==='signup'?'Create your account':t==='forgot'?'Reset your password':'Sign in'}</h1>
   <p class="muted mt8">One account works across ordering, restaurants, couriers and admin.</p>
-  ${t!=='forgot'?`<button class="gbtn mt20" data-a="google">${GOOGLE_SVG} Continue with Google</button><div class="or">or with email</div>`:'<div class="mt20"></div>'}
+  ${t==='signin'?`<div class="card mt20" style="border-color:var(--accent)"><div class="eyebrow">Quick test accounts</div><p class="muted mt8" style="font-size:12.5px">Tap a role to sign in instantly. No typing needed.</p><div class="stack mt12">${DEMO_LOGINS.map((d,i)=>`<button class="paym" style="margin:0" data-a="demoLogin" data-v="${i}"><span class="pm-ic">${ic(d.icon)}</span><span class="grow"><b style="font-size:13px">${d.label}</b><br><span class="muted" style="font-size:11.5px">${d.desc}</span></span>${ic('arrow')}</button>`).join('')}</div></div>`:''}
+  ${t==='signin'?'<div class="or">or sign in with email</div>':''}
+  ${t!=='forgot'&&GOOGLE_ENABLED?`<button class="gbtn ${t==='signin'?'mt12':'mt20'}" data-a="google">${GOOGLE_SVG} Continue with Google</button><div class="or">or with email</div>`:'<div class="mt12"></div>'}
   <form id="authform" class="stack" data-f="auth">
    ${t==='signup'?`<label class="f"><span>Full name</span><input class="field" name="name" required autocomplete="name"></label>`:''}
-   <label class="f"><span>Email</span><input class="field" name="email" type="email" required autocomplete="email"></label>
-   ${t!=='forgot'?`<label class="f"><span>Password</span><input class="field" name="password" type="password" required minlength="8" autocomplete="${t==='signup'?'new-password':'current-password'}"></label>`:''}
+   <label class="f"><span>Email</span><input class="field" name="email" type="email" required autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email"></label>
+   ${t!=='forgot'?`<label class="f"><span>Password</span><input class="field" name="password" type="password" required minlength="8" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="${t==='signup'?'new-password':'current-password'}"></label>`:''}
    <button class="btn primary lg block" type="submit">${t==='signup'?'Create account':t==='forgot'?'Email me a reset link':'Sign in'}</button>
   </form>
   <div class="row between mt16" style="font-size:13px">${t==='signin'?`<button class="btn sm ghost" data-a="authTab" data-v="signup">New here? Create an account</button><button class="btn sm ghost" data-a="authTab" data-v="forgot">Forgot password</button>`:`<button class="btn sm ghost" data-a="authTab" data-v="signin">Back to sign in</button>`}</div>
   ${t==='signup'?'<p class="faint mt12" style="font-size:12px">We will email you a link to verify your address before you can sign in.</p>':''}
-  ${t==='signin'?`<div class="card mt28"><div class="eyebrow">Quick test accounts</div><p class="muted mt8" style="font-size:12.5px">Skip sign-up and explore each role with a ready-made, verified account.</p><div class="stack mt12">${DEMO_LOGINS.map((d,i)=>`<button class="paym" style="margin:0" data-a="demoLogin" data-v="${i}"><span class="pm-ic">${ic(d.icon)}</span><span class="grow"><b style="font-size:13px">${d.label}</b><br><span class="muted" style="font-size:11.5px">${d.desc}</span></span>${ic('arrow')}</button>`).join('')}</div></div>`:''}</div>`}
+  </div>`}
+const GOOGLE_ENABLED=false; /* switch to true once the Google provider is enabled in Supabase */
 const DEMO_LOGINS=[
   {label:'Customer',desc:'Order food and track deliveries',icon:'bowl',email:'customer@dc13-demo.test',pw:'DC13-gxKKfiX8',next:'#/eat'},
   {label:'Restaurant · Client Test Kitchen',desc:'Accept orders and manage the menu',icon:'store',email:'restaurant@dc13-demo.test',pw:'DC13-wrMPfRTT',next:'#/partner'},
@@ -842,7 +846,7 @@ async function addToCart(id,mid){const c=S.ui.cart;const {data:it}=await sb.from
 /* ============ Forms ============ */
 const F={
   auth:async(fd,form)=>{const t=S.ui.authTab;const email=fd.get('email').trim();
-    if(t==='signin'){const {error}=await sb.auth.signInWithPassword({email,password:fd.get('password')});if(error){if(/confirm/i.test(error.message)){S.ui.verifyEmail=email;location.hash='#/verify';return}throw error}return}
+    if(t==='signin'){const {error}=await sb.auth.signInWithPassword({email:email.toLowerCase(),password:String(fd.get('password')).trim()});if(error){if(/confirm/i.test(error.message)){S.ui.verifyEmail=email;location.hash='#/verify';return}throw error}return}
     if(t==='signup'){const {data,error}=await sb.auth.signUp({email,password:fd.get('password'),options:{data:{full_name:fd.get('name')},emailRedirectTo:redirectUrl()}});if(error)throw error;S.ui.verifyEmail=email;if(data.session)return;location.hash='#/verify';return}
     const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl()});if(error)throw error;toast('Check your email for a reset link');S.ui.authTab='signin';render()},
   newpw:async fd=>{const {error}=await sb.auth.updateUser({password:fd.get('password')});if(error)throw error;S.ui.recovery=false;toast('Password updated');location.hash='#/'},

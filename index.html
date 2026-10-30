@@ -21,7 +21,7 @@
   --f-display:'Fraunces',Georgia,serif;--f-body:'Inter','Segoe UI',Arial,sans-serif;--f-mono:'JetBrains Mono',Consolas,Menlo,monospace;
   --spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.22,1,.36,1);
 }
-.light{--bg:#F7F3EC;--panel:#FFFFFF;--panel2:#EFE8DC;--line:#E4DCCF;--line2:#D3C9B8;--fg:#14110C;--muted:#6B6458;--faint:#9C9486;--accent:#D8420A;--chip:#ECE5D8;--ok:#2F8A57;--warn:#A86F0C;--bad:#C2372C;color-scheme:light}
+.light{--bg:#F7F3EC;--panel:#FFFFFF;--panel2:#EFE8DC;--line:#E4DCCF;--line2:#D3C9B8;--fg:#14110C;--muted:#6B6458;--faint:#9C9486;--accent:#D8420A;--chip:#ECE5D8;--ok:#2F8A57;--warn:#A86F0C;--bad:#C2372C;color-scheme:light;color:var(--fg)}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--f-body);-webkit-font-smoothing:antialiased}
@@ -165,6 +165,7 @@ textarea.field{resize:vertical;min-height:80px}
 .paym{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;margin-top:8px;text-align:left}
 .paym.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
 .pm-ic svg{width:16px;height:16px}
+.row>.btn{flex:none}.row>.field{flex:1;min-width:0}
 .paym>svg{width:18px;height:18px;flex:none;opacity:.55}.paym .grow{white-space:normal;line-height:1.35}
 .pm-ic{width:40px;height:26px;border-radius:6px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font:600 9px var(--f-mono);flex:none}
 .slide{position:relative;height:60px;border-radius:999px;background:#14110C;color:#ECE6DC;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;margin-top:16px;--x:0px}
@@ -293,9 +294,9 @@ textarea.field{resize:vertical;min-height:80px}
 const SUPA_URL='https://ffwtvqbrlceyariotlmm.supabase.co';
 const SUPA_KEY='sb_publishable_0Y5x081-7j-jgdggcE7Zkw_umWHZbEK';
 const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
-const TILE_DARK='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const TILE_LIGHT='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const TILE_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+const TILE_DARK='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+const TILE_LIGHT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
+const TILE_ATTR='Tiles &copy; <a href="https://www.esri.com/">Esri</a> &middot; Esri, HERE, Garmin, OpenStreetMap contributors';
 const CATS=['Restaurant','Bowls','Noodles','Indian','Caribbean','Bakery','Pizza','Grocery','Pharmacy'];
 const ICON_BY_CAT={Bowls:'bowl',Noodles:'noodles',Indian:'flame',Caribbean:'roll',Bakery:'bread',Pizza:'pizza',Grocery:'basket',Pharmacy:'pill',Restaurant:'bowl'};
 const ACTIVE=['placed','preparing','ready','picked_up'];
@@ -413,7 +414,7 @@ function getMap(id,opt){
   const el=$(`[data-map-id="${id}"]`);if(!el||!window.L)return null;
   let m=maps[id];
   if(m&&m.el!==el){try{m.map.remove()}catch(e){}m=null}
-  if(!m){const mk=S.settings.market;const map=L.map(el,{zoomControl:true,scrollWheelZoom:opt&&opt.wheel!==false}).setView([opt?.lat??mk.lat,opt?.lng??mk.lng],opt?.zoom??mk.zoom??13);L.tileLayer(opt?.light?TILE_LIGHT:TILE_DARK,{attribution:TILE_ATTR,subdomains:'abcd',maxZoom:19}).addTo(map);m={el,map,mk:{},fitted:false};maps[id]=m;setTimeout(()=>map.invalidateSize(),50)}
+  if(!m){const mk=S.settings.market;const map=L.map(el,{zoomControl:true,scrollWheelZoom:opt&&opt.wheel!==false}).setView([opt?.lat??mk.lat,opt?.lng??mk.lng],opt?.zoom??mk.zoom??13);L.tileLayer(opt?.light?TILE_LIGHT:TILE_DARK,{attribution:TILE_ATTR,maxZoom:19,maxNativeZoom:opt?.light?19:16}).addTo(map);m={el,map,mk:{},fitted:false};maps[id]=m;setTimeout(()=>map.invalidateSize(),50)}
   else setTimeout(()=>m.map.invalidateSize(),30);
   return m;
 }

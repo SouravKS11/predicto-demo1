@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DC13 Delivery · Test Environment</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0B0A08;--panel:#121110;--panel2:#1A1512;--line:#232120;--line2:#2F2B27;
+  --fg:#ECE6DC;--muted:#8E877B;--faint:#5F5A50;
+  --accent:#FF5101;--accent2:#FF7A3C;--on-accent:#12100E;
+  --ok:#6DBE8C;--warn:#E3A93B;--bad:#E5574B;--chip:#1C1916;
+  --f-display:'Fraunces',Georgia,serif;--f-body:'Inter','Segoe UI',Arial,sans-serif;--f-mono:'JetBrains Mono',Consolas,Menlo,monospace;
+  --spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.22,1,.36,1);
+}
+.light{--bg:#F7F3EC;--panel:#FFFFFF;--panel2:#EFE8DC;--line:#E4DCCF;--line2:#D3C9B8;--fg:#14110C;--muted:#6B6458;--faint:#9C9486;--accent:#D8420A;--chip:#ECE5D8;--ok:#2F8A57;--warn:#A86F0C;--bad:#C2372C;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--f-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:500;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+.serif{font-family:var(--f-display)}.mono{font-family:var(--f-mono)}.muted{color:var(--muted)}.faint{color:var(--faint)}.acc{color:var(--accent)}.num{font-variant-numeric:tabular-nums}
+.eyebrow{font:500 10.5px/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;align-items:center;gap:8px}.between{justify-content:space-between}.wrap{flex-wrap:wrap}.grow{flex:1;min-width:0}.stack{display:flex;flex-direction:column;gap:10px}
+.mt4{margin-top:4px}.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt28{margin-top:28px}
+.diamond{display:inline-block;width:8px;height:8px;background:var(--accent);transform:rotate(45deg);flex:none}
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:500;display:flex;align-items:center;gap:16px;padding:12px max(18px,env(safe-area-inset-right));padding-left:max(18px,env(safe-area-inset-left));background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.wordmark{font:500 19px/1 var(--f-display);white-space:nowrap;display:flex;gap:10px;align-items:center;text-decoration:none}
+.wordmark .t13{color:var(--accent)}
+.wordmark small{font:500 10px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-left:10px;border-left:1px solid var(--line2)}
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.nav a{padding:8px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:500;font-size:13px;white-space:nowrap}
+.nav a:hover{color:var(--fg)}
+.nav a.on{color:var(--fg);background:var(--panel2)}
+.nav a.on::before{content:"";display:inline-block;width:6px;height:6px;background:var(--accent);transform:rotate(45deg);margin-right:8px;vertical-align:1px}
+.who{display:flex;align-items:center;gap:8px;flex:none}
+.av{width:32px;height:32px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);display:grid;place-items:center;font:600 11px var(--f-body);overflow:hidden;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+.testbar{background:var(--accent);color:var(--on-accent);font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:5px 12px}
+@media (max-width:820px){.wordmark small{display:none}.topbar{flex-wrap:wrap}.nav{order:3;flex-basis:100%}}
+
+/* controls */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 15px;border-radius:12px;border:1px solid var(--line2);background:var(--panel2);color:var(--fg);font-weight:500;font-size:13px;cursor:pointer;transition:transform .45s var(--spring),background .2s,border-color .2s,opacity .2s;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--faint)}
+.btn:active{transform:scale(.95);transition-duration:.12s}
+.btn.primary{background:#FF5101;color:#12100E;border-color:transparent;font-weight:600}
+.btn.primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%);transform:translateX(-130%);transition:transform .9s var(--ease);pointer-events:none}
+.btn.primary:hover::after{transform:translateX(130%)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent);background:transparent}
+.btn.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:transparent}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:9px}
+.btn.lg{padding:14px 18px;font-size:15px;border-radius:14px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn.busy{pointer-events:none;opacity:.7}
+.btn.busy::before{content:"";width:13px;height:13px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.22;transform:scale(0);pointer-events:none;animation:ripple .65s var(--ease) forwards}
+@keyframes ripple{to{transform:scale(4.2);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.switch{position:relative;width:46px;height:28px;border-radius:999px;border:1px solid var(--line2);background:var(--panel2);cursor:pointer;flex:none;padding:0;transition:background .3s}
+.switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .5s var(--spring),background .3s}
+.switch[aria-checked="true"]{background:var(--accent);border-color:transparent}
+.switch[aria-checked="true"] i{transform:translateX(18px);background:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s,transform .4s var(--spring)}
+.chip:active{transform:scale(.93)}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.pill{display:inline-flex;align-items:center;gap:5px;font:500 10px/1 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;padding:5px 8px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,var(--muted) 16%,transparent);color:var(--muted)}
+.pill.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.pill.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.pill.acc{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.seg{display:flex;padding:3px;gap:2px;border-radius:12px;background:var(--panel2);border:1px solid var(--line)}
+.seg button{flex:1;border:0;background:transparent;padding:8px 10px;border-radius:9px;font-size:12.5px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--panel);color:var(--fg);box-shadow:0 1px 0 var(--line2)}
+label.f{display:block}
+label.f>span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.field{width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:11px 13px;outline:none;transition:border-color .2s,box-shadow .3s}
+.field:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent)}
+textarea.field{resize:vertical;min-height:80px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;min-width:0}
+.card h3{font:500 17px var(--f-display)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.note{border-radius:14px;padding:12px 14px;font-size:13px;background:var(--panel);border:1px solid var(--line)}
+.note.warn{border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:color-mix(in srgb,var(--warn) 9%,var(--panel))}
+.note.ok{border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:color-mix(in srgb,var(--ok) 8%,var(--panel))}
+.note.bad{border-color:color-mix(in srgb,var(--bad) 45%,transparent);background:color-mix(in srgb,var(--bad) 8%,var(--panel))}
+.empty{padding:28px 10px;text-align:center;color:var(--muted);font-size:13px}
+.loader{display:grid;place-items:center;padding:60px}
+.loader i{width:34px;height:34px;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--accent);animation:spin .8s linear infinite}
+.fresh{animation:freshIn .7s var(--spring) both}
+@keyframes freshIn{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeIn .45s var(--ease)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* layout */
+.page{max-width:1240px;margin:0 auto;padding:28px max(18px,env(safe-area-inset-right)) 80px max(18px,env(safe-area-inset-left))}
+.narrow{max-width:520px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right)) 120px max(16px,env(safe-area-inset-left))}
+.h-display{font:400 clamp(30px,4vw,52px)/1.04 var(--f-display);letter-spacing:-.02em}
+.h-display em{font-style:italic;color:var(--accent)}
+.lede{color:var(--muted);max-width:62ch;margin-top:12px;font-size:15px}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:30px}
+.role{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:20px;border:1px solid var(--line);background:var(--panel);text-decoration:none;transition:transform .5s var(--spring),border-color .3s}
+.role:hover{transform:translateY(-3px);border-color:var(--faint)}
+.role h3{font:400 24px var(--f-display)}
+.role .ic{width:44px;height:44px;border-radius:12px;background:var(--panel2);display:grid;place-items:center;color:var(--accent)}
+.role .ic svg{width:22px;height:22px}
+.auth{max-width:420px;margin:40px auto;padding:0 18px}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:14px;border:1px solid var(--line2);background:#fff;color:#1f1f1f;font-weight:600;cursor:pointer;transition:transform .45s var(--spring)}
+.gbtn:active{transform:scale(.97)}
+.or{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:12px;margin:18px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* customer */
+.cust{background:var(--bg);min-height:calc(100vh - 60px)}
+.search{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px 13px}
+.search:focus-within{border-color:var(--accent)}
+.search input{border:0;outline:0;background:none;flex:1;min-width:0}
+.search svg{width:17px;height:17px;color:var(--muted)}
+.hscroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:14px -16px 0;padding:0 16px}
+.store{display:flex;gap:12px;width:100%;border:0;background:none;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer;text-align:left;align-items:center;transition:transform .45s var(--spring);text-decoration:none;color:inherit}
+.store:active{transform:scale(.98)}
+.store.closed{opacity:.55}
+.cover{position:relative;flex:none;width:76px;height:76px;border-radius:16px;background:#1A1512;color:#ECE6DC;overflow:hidden;display:flex;align-items:flex-end;padding:8px}
+.cover::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 9px,rgba(255,255,255,.04) 9px 10px)}
+.cover .cv{position:absolute;right:-6px;top:-6px;width:50px;height:50px;color:#FF5101}
+.cover .cv svg{width:100%;height:100%;stroke-width:1}
+.cover em{position:relative;font:italic 400 12px/1 var(--f-display)}
+.cover.lg{width:100%;height:150px;border-radius:20px;padding:18px}
+.cover.lg .cv{width:140px;height:140px;right:-16px;top:auto;bottom:-28px}
+.rate{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600}
+.rate svg{width:12px;height:12px;color:var(--accent);fill:currentColor}
+.item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.item.out{opacity:.5}
+.tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.tag{font:500 9.5px/1 var(--f-mono);letter-spacing:.06em;padding:4px 6px;border-radius:5px;border:1px solid var(--line2);color:var(--muted)}
+.tag.sp{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.add{min-width:36px;height:36px;border-radius:18px;border:0;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-weight:600;cursor:pointer;transition:transform .45s var(--spring);flex:none;padding:0 10px}
+.add:active{transform:scale(.85)}
+.add.has{background:#FF5101;color:#12100E}
+.add svg{width:16px;height:16px}
+.cartbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));width:min(488px,calc(100% - 32px));z-index:400;display:flex;align-items:center;gap:12px;padding:14px 16px;border:0;border-radius:18px;background:#14110C;color:#ECE6DC;cursor:pointer;animation:cartIn .6s var(--spring);box-shadow:0 20px 40px -18px rgba(0,0,0,.6);text-decoration:none}
+.cartbar .cnt{min-width:26px;height:26px;border-radius:8px;background:#FF5101;color:#12100E;display:grid;place-items:center;font-weight:700;font-size:12px}
+@keyframes cartIn{from{transform:translate(-50%,120%);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.stepper button{width:34px;height:34px;border:0;background:transparent;cursor:pointer;font-size:16px}
+.stepper span{min-width:30px;text-align:center;font-weight:600}
+.bill div{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;font-variant-numeric:tabular-nums}
+.bill .tot{border-top:1px solid var(--line);margin-top:6px;padding-top:10px;font-weight:600;font-size:15px}
+.paym{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;margin-top:8px;text-align:left}
+.paym.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.pm-ic svg{width:16px;height:16px}
+.pm-ic{width:40px;height:26px;border-radius:6px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font:600 9px var(--f-mono);flex:none}
+.slide{position:relative;height:60px;border-radius:999px;background:#14110C;color:#ECE6DC;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;margin-top:16px;--x:0px}
+.slide .s-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--x) + 60px);background:#FF5101;border-radius:999px}
+.slide .s-lbl{position:absolute;inset:0;display:grid;place-items:center;font-weight:600;background:linear-gradient(90deg,#8E877B 0%,#ECE6DC 45%,#8E877B 90%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 2.6s linear infinite;pointer-events:none}
+@keyframes shine{from{background-position:200% 0}to{background-position:0 0}}
+.slide .s-knob{position:absolute;left:5px;top:5px;width:50px;height:50px;border-radius:50%;background:#FF5101;color:#12100E;display:grid;place-items:center;transform:translateX(var(--x));cursor:grab}
+.slide .s-knob svg{width:20px;height:20px}
+.slide.snap .s-knob,.slide.snap .s-fill{transition:transform .55s var(--spring),width .55s var(--spring)}
+.steps{list-style:none;margin:16px 0 4px;padding:0}
+.steps li{position:relative;padding:0 0 16px 30px;font-size:13px}
+.steps li::before{content:"";position:absolute;left:6px;top:16px;bottom:-2px;width:2px;background:var(--line)}
+.steps li:last-child::before{display:none}
+.steps li::after{content:"";position:absolute;left:0;top:2px;width:14px;height:14px;border-radius:50%;border:2px solid var(--line2);background:var(--bg);box-sizing:border-box;transition:all .5s var(--spring)}
+.steps li.done::after,.steps li.done::before{background:var(--accent);border-color:var(--accent)}
+.steps li.cur::after{border-color:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent)}
+.steps li:not(.done):not(.cur){color:var(--faint)}
+.pin{display:flex;gap:6px}
+.pin span{width:40px;height:48px;border-radius:10px;background:var(--panel);border:1px solid var(--line2);display:grid;place-items:center;font:500 22px var(--f-mono)}
+.eta-v{font:500 40px/1 var(--f-display);color:var(--accent);font-variant-numeric:tabular-nums}
+.stars{display:flex;gap:8px}
+.stars button{background:none;border:0;cursor:pointer;padding:2px;transition:transform .45s var(--spring)}
+.stars svg{width:34px;height:34px;color:var(--line2);fill:currentColor}
+.stars .on svg{color:var(--accent)}
+
+/* maps */
+.mapbox{width:100%;border-radius:18px;overflow:hidden;background:#0E0D0B;border:1px solid var(--line);z-index:1}
+.light .mapbox{background:#EAE3D6}
+.leaflet-container{font-family:var(--f-body)}
+.mk-m{width:14px;height:14px;background:#FF5101;transform:rotate(45deg);border:2px solid #0B0A08}
+.mk-m.off{background:#5F5A50}
+.mk-c{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid #14110C}
+.mk-d{width:16px;height:16px;border-radius:50%;background:#FF5101;border:2px solid #fff;box-shadow:0 0 0 6px rgba(255,81,1,.22)}
+.mk-d.demo{background:#8E877B;box-shadow:none;width:11px;height:11px}
+.mk-d.busy{background:#ECE6DC}
+.mk-o{width:9px;height:9px;border-radius:50%;background:#ECE6DC;border:2px solid #0B0A08}
+.leaflet-marker-icon{transition:transform .9s linear}
+.leaflet-zoom-anim .leaflet-marker-icon,.leaflet-marker-draggable{transition:none}
+@media (max-width:560px){.hide-sm{display:none}}
+
+/* merchant / courier / admin */
+.ord{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:14px;margin-top:10px}
+.ord.new{border-color:color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 18px 40px -24px color-mix(in srgb,var(--accent) 60%,transparent)}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:980px){.board{grid-template-columns:1fr}}
+.prog{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:10px}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .9s linear}
+.mitem{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.console{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 92px)}
+.side{border-right:1px solid var(--line);padding:22px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:92px;height:calc(100vh - 92px);overflow-y:auto}
+.side .eyebrow{padding:0 10px 10px}
+.side button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;border-radius:10px;background:none;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;text-align:left}
+.side button svg{width:16px;height:16px;flex:none}
+.side button:hover{color:var(--fg)}
+.side button.on{background:var(--panel2);color:var(--fg)}
+.side button.on svg{color:var(--accent)}
+.side .cnt{margin-left:auto;font:500 10px var(--f-mono);color:var(--accent)}
+.cmain{padding:24px 28px 80px;min-width:0}
+@media (max-width:900px){.console{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:10px 16px}.side .eyebrow{display:none}.side button{width:auto;white-space:nowrap}.cmain{padding:20px 16px 60px}}
+.c-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.c-head h1{font:400 32px/1.05 var(--f-display);letter-spacing:-.015em;margin-top:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;min-width:0}
+.kpi .v{font:400 30px/1.05 var(--f-display);margin-top:10px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .v.acc{color:var(--accent)}
+.kpi .d{font-size:11.5px;color:var(--muted);margin-top:4px}
+.g2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;margin-bottom:12px}
+.g2e{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+@media (max-width:900px){.g2,.g2e{grid-template-columns:1fr}}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tbl th{font:500 9.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl tr.click{cursor:pointer}
+.tbl tr.click:hover td{background:var(--panel2)}
+.tbl .r{text-align:right}
+.feed{display:flex;flex-direction:column;max-height:440px;overflow-y:auto}
+.ev{padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.ev .tp{font:500 10px var(--f-mono);color:var(--accent);display:flex;justify-content:space-between}
+.ev .tp span{color:var(--faint)}
+.bars{display:flex;align-items:flex-end;gap:3px;height:120px}
+.bars i{flex:1;background:var(--line2);border-radius:3px 3px 1px 1px;min-height:2px;transition:height .8s var(--spring)}
+.bars i.hi{background:var(--accent)}
+.chart-x{display:flex;justify-content:space-between;font:500 9.5px var(--f-mono);color:var(--faint);margin-top:6px}
+.lbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.lbar i{display:block;height:100%;background:var(--accent)}
+.modal-bg{position:fixed;inset:0;background:rgba(5,4,3,.6);z-index:900;display:grid;place-items:center;padding:16px;animation:fadeIn .25s}
+.modal{width:min(560px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:var(--panel);border:1px solid var(--line2);border-radius:22px;padding:22px;animation:fadeIn .4s var(--ease)}
+.toasts{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:1000;display:flex;flex-direction:column;gap:8px;max-width:min(380px,calc(100vw - 32px))}
+.toast{background:#1A1512;color:#ECE6DC;border:1px solid #2F2B27;border-radius:14px;padding:12px 14px;font-size:13px;display:flex;gap:10px;animation:fadeIn .5s var(--spring);box-shadow:0 20px 40px -20px rgba(0,0,0,.8)}
+.toast.bad{border-color:#E5574B}
+.toast .diamond{margin-top:5px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.keypad button{height:50px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font:500 18px var(--f-mono);cursor:pointer;transition:transform .35s var(--spring)}
+.keypad button:active{transform:scale(.9)}
+.pinbox{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.pinbox span{width:48px;height:56px;border-radius:12px;border:1px solid var(--line2);display:grid;place-items:center;font:500 24px var(--f-mono)}
+.pinbox span.f{border-color:var(--accent)}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.check-anim{width:72px;height:72px;margin:0 auto 14px;display:block}
+.check-anim circle{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:220;stroke-dashoffset:220;animation:draw .6s var(--ease) forwards}
+.check-anim path{stroke:var(--accent);stroke-width:3;fill:none;stroke-linecap:round;stroke-dasharray:60;stroke-dashoffset:60;animation:draw .4s .45s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.tabs-b{position:fixed;left:0;right:0;bottom:0;z-index:300;display:flex;justify-content:space-around;padding:8px 8px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--panel)}
+.tabs-b a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:500;color:var(--faint);text-decoration:none;padding:4px 12px}
+.tabs-b a svg{width:21px;height:21px}
+.tabs-b a.on{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="testbar">Test environment · payments are simulated · do not use real card details</div>
+<header class="topbar">
+  <a class="wordmark" href="#/"><span>digital code <span class="t13">13</span></span><small>Delivery OS</small></a>
+  <nav class="nav" id="nav"></nav>
+  <div class="who" id="who"></div>
+</header>
+<main id="main"><div class="loader"><i></i></div></main>
+<div id="modal"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+'use strict';
+/* ============ Config ============ */
+const SUPA_URL='https://ffwtvqbrlceyariotlmm.supabase.co';
+const SUPA_KEY='sb_publishable_0Y5x081-7j-jgdggcE7Zkw_umWHZbEK';
+const sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}});
+const TILE_DARK='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const TILE_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+const CATS=['Restaurant','Bowls','Noodles','Indian','Caribbean','Bakery','Pizza','Grocery','Pharmacy'];
+const ICON_BY_CAT={Bowls:'bowl',Noodles:'noodles',Indian:'flame',Caribbean:'roll',Bakery:'bread',Pizza:'pizza',Grocery:'basket',Pharmacy:'pill',Restaurant:'bowl'};
+const ACTIVE=['placed','preparing','ready','picked_up'];
+
+/* ============ Icons ============ */
+const ICONS={bowl:'<path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7.5c0-1.5 1-2 1-3.5M12 7.5c0-1.5 1-2 1-3.5M16 7.5c0-1.5 1-2 1-3.5"/>',noodles:'<path d="M3.5 12h17a8.5 8.5 0 0 1-17 0Z"/><path d="m14 3-5 9M19 4l-6 8"/>',flame:'<path d="M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-6 1 1 1.5 2 1.5 3 1-2 1.5-4 1.5-7Z"/>',roll:'<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M8 8v8M16 8v8"/>',bread:'<path d="M5 11a4 4 0 0 1 2-7h10a4 4 0 0 1 2 7v8H5Z"/>',pizza:'<path d="M12 21 3 6a15 15 0 0 1 18 0Z"/><circle cx="10" cy="9.5" r="1"/><circle cx="14" cy="13" r="1"/>',basket:'<path d="M3 10h18l-2 10H5Z"/><path d="m8 10 3-6M16 10l-3-6"/>',pill:'<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-35 12 12)"/><path d="m9.7 8.3 4.6 7.4"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',back:'<path d="M15 5 8 12l7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',home:'<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4Z"/>',receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',star:'<path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6L12 16.8 6.6 19.6l1.1-6L3.2 9.4l6.1-.8Z"/>',pin:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',bike:'<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16 10 8h5l3 8M9 8H7M14 8l-2 8"/>',store:'<path d="M4 9 5.5 4h13L20 9M4 9h16v11H4ZM4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/>',grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2Z"/><path d="M9 4v14M15 6v14"/>',list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',wallet:'<path d="M4 7h15a1 1 0 0 1 1 1v11H5a1 1 0 0 1-1-1V6a2 2 0 0 1 2-2h11v3"/>',shield:'<path d="M12 3 5 6v6c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6Z"/><path d="m9 12 2 2 4-4"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>',chart:'<path d="M4 20V4M4 20h16"/><path d="m8 15 4-5 3 3 5-6"/>',doc:'<path d="M6 3h8l4 4v14H6Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>',tag:'<path d="M3 12V4h8l10 10-8 8Z"/><circle cx="7.5" cy="8" r="1.2"/>',target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/>',refund:'<path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/>',spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',check:'<path d="m5 12 5 5 9-10"/>',locate:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/>',phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',logout:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'};
+const ic=(n,c)=>`<svg ${c?`class="${c}"`:''} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]||''}</svg>`;
+const GOOGLE_SVG='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+
+/* ============ Utils ============ */
+const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function money(v){const m=S.settings.market||{};return (m.symbol||'$')+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function moneyK(v){const m=S.settings.market||{};v=Number(v||0);return v>=10000?(m.symbol||'$')+(v/1000).toFixed(1)+'k':money(v)}
+const tm=t=>t?new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'';
+const tms=t=>t?new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'}):'';
+const dt=t=>t?new Date(t).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+function km(a,b,c,d){if([a,b,c,d].some(x=>x==null))return 0;const R=6371,dl=(c-a)*Math.PI/180,dg=(d-b)*Math.PI/180;const h=Math.sin(dl/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const initials=n=>String(n||'?').split(/[\s@]+/).filter(Boolean).map(s=>s[0]).join('').slice(0,2).toUpperCase();
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function toast(msg,bad){const t=document.createElement('div');t.className='toast'+(bad?' bad':'');t.innerHTML=`<span class="diamond"${bad?' style="background:#E5574B"':''}></span><div>${esc(msg)}</div>`;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),5200)}
+function errMsg(e){return (e&&(e.message||e.error_description))||String(e)}
+async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)throw new Error(error.message);return data}
+let actx=null;addEventListener('pointerdown',()=>{if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}},{once:true});
+function beep(f){if(!actx)return;try{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f||880;g.gain.setValueAtTime(.0001,actx.currentTime);g.gain.exponentialRampToValueAtTime(.09,actx.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.35);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+.4)}catch(e){}}
+function statusPill(o){const late=ACTIVE.includes(o.status)&&o.promised_at&&new Date(o.promised_at)<new Date();if(late)return '<span class="pill warn">Late</span>';const m={placed:['acc','New'],preparing:['','Preparing'],ready:['ok','Ready'],picked_up:['acc','On the way'],delivered:['ok','Delivered'],cancelled:['bad','Cancelled'],rejected:['bad','Rejected']}[o.status]||['',o.status];return `<span class="pill ${m[0]}">${m[1]}</span>`}
+function itemsLine(o){return (o.items||[]).map(i=>i.qty+'× '+i.name).join(', ')}
+
+/* ============ App state ============ */
+const S={session:null,user:null,profile:null,settings:{market:{symbol:'TT$',lat:10.6596,lng:-61.5089,zoom:13},pricing:{},demo:{traffic:true}},route:['home'],data:{},ui:{}};
+S.ui={cat:'All',q:'',cart:lsGet('dc13-cart',{mid:null,items:[]}),mode:'delivery',pay:'card',tip:0,promo:'',addr:null,adminTab:'overview',adminSel:null,orderFilter:'active',mTab:'orders',prep:{},pin:'',authTab:'signin',showDemo:true,pending:false};
+const seenNew=new Set();
+
+/* ============ Auth ============ */
+async function loadProfile(){
+  if(!S.user){S.profile=null;return}
+  const {data}=await sb.from('profiles').select('*').eq('id',S.user.id).maybeSingle();
+  S.profile=data||{id:S.user.id,email:S.user.email,full_name:S.user.user_metadata?.full_name||'',is_admin:false};
+}
+async function loadSettings(){const {data}=await sb.from('settings').select('*');(data||[]).forEach(r=>S.settings[r.key]=r.value)}
+function needAuth(){if(S.user)return false;lsSet('dc13-next',location.hash||'#/');location.hash='#/login';return true}
+function redirectUrl(){return location.origin+location.pathname}
+
+/* ============ Router ============ */
+function parseRoute(){const h=(location.hash||'#/').replace(/^#\/?/,'');S.route=h?h.split('/'):['home'];if(!S.route[0])S.route=['home']}
+function nav(){
+  const r=S.route[0];const items=[['home','Overview'],['eat','Order food'],['partner','Restaurant'],['drive','Courier']];if(S.profile?.is_admin)items.push(['admin','Admin console']);
+  $('#nav').innerHTML=items.map(i=>`<a href="#/${i[0]==='home'?'':i[0]}" class="${r===i[0]||(r===''&&i[0]==='home')?'on':''}">${i[1]}</a>`).join('');
+  $('#who').innerHTML=S.user?`<a class="btn sm ghost" href="#/eat/account" title="${esc(S.user.email)}"><span class="av">${S.profile?.avatar_url?`<img src="${esc(S.profile.avatar_url)}" alt="">`:initials(S.profile?.full_name||S.user.email)}</span><span class="hide-sm">${esc((S.profile?.full_name||S.user.email).split(' ')[0])}</span></a>`:`<a class="btn sm primary" href="#/login">Sign in</a>`;
+}
+let renderSeq=0;
+async function render(opts){
+  opts=opts||{};parseRoute();nav();
+  const r=S.route[0];const main=$('#main');const seq=++renderSeq;
+  if(!opts.soft){main.innerHTML='<div class="loader"><i></i></div>';window.scrollTo(0,0)}
+  let html='';
+  try{
+    if(r==='home')html=vHome();
+    else if(r==='login')html=S.user&&S.ui.recovery!==true?(location.hash='#/',''):vLogin();
+    else if(r==='verify')html=vVerify();
+    else if(r==='reset')html=vReset();
+    else if(r==='eat'){if(needAuth())return;html=await vEat()}
+    else if(r==='partner'){if(needAuth())return;html=await vPartner()}
+    else if(r==='drive'){if(needAuth())return;html=await vDrive()}
+    else if(r==='admin'){if(needAuth())return;html=S.profile?.is_admin?await vAdmin():`<div class="page"><div class="note warn">This area is for administrators. Ask an admin to grant your account access.</div></div>`}
+    else html=vHome();
+  }catch(e){console.error(e);html=`<div class="page"><div class="note bad">Something went wrong loading this page: ${esc(errMsg(e))}</div><button class="btn mt12" data-a="reload">Try again</button></div>`}
+  if(seq!==renderSeq)return;
+  patchMain(html);afterRender();
+}
+function patchMain(html){
+  const main=$('#main');const keep={};$$('[data-map-id]',main).forEach(el=>keep[el.dataset.mapId]=el);
+  const sc=window.scrollY;const inner={};$$('[data-sc]',main).forEach(n=>inner[n.dataset.sc]=n.scrollTop);
+  main.innerHTML=html;
+  $$('[data-map-id]',main).forEach(ph=>{const old=keep[ph.dataset.mapId];if(old&&maps[ph.dataset.mapId]){old.style.height=ph.style.height;ph.replaceWith(old)}});
+  $$('[data-sc]',main).forEach(n=>{if(inner[n.dataset.sc]!=null)n.scrollTop=inner[n.dataset.sc]});
+  window.scrollTo(0,sc);
+}
+let softTimer=null;
+function softRender(){clearTimeout(softTimer);softTimer=setTimeout(()=>{
+  const ae=document.activeElement;
+  if($('.modal-bg')||(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)&&$('#main').contains(ae))||$('.slide.dragging')||S.ui.noLive){S.ui.pending=true;return}
+  render({soft:true});
+},700)}
+document.addEventListener('focusout',()=>{if(S.ui.pending){S.ui.pending=false;setTimeout(()=>{const ae=document.activeElement;if(!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)))softRender()},300)}});
+
+/* ============ Realtime ============ */
+let channel=null;
+function subscribe(){
+  if(channel){sb.removeChannel(channel);channel=null}
+  channel=sb.channel('live-'+Math.random().toString(36).slice(2));
+  ['orders','order_events','merchants','menu_items','couriers','refunds','settings'].forEach(t=>channel.on('postgres_changes',{event:'*',schema:'public',table:t},p=>onDb(t,p)));
+  channel.subscribe();
+}
+function onDb(t,p){
+  const n=p.new||{};const o=p.old||{};
+  if(t==='settings'){S.settings[n.key]=n.value}
+  if(t==='orders'&&S.user){
+    if(n.customer_id===S.user.id&&o.status!==n.status&&p.eventType==='UPDATE'){const msg={preparing:'The kitchen accepted your order',ready:n.mode==='pickup'?'Your order is ready for pickup':'Your order is packed and ready',picked_up:'Your courier picked up your order',delivered:'Delivered. Enjoy your meal',rejected:'The store could not take your order. A refund is on its way.',cancelled:'Your order was cancelled'}[n.status];if(msg)toast(msg)}
+    if(S.route[0]==='partner'&&p.eventType==='INSERT'&&S.data.merchant&&n.merchant_id===S.data.merchant.id){beep(880);toast('New order FD-'+n.id)}
+    if(S.route[0]==='drive'&&p.eventType==='UPDATE'&&n.status==='preparing'&&!n.courier_id&&o.status==='placed'){beep(660)}
+  }
+  if(t==='refunds'&&S.route[0]==='admin'&&p.eventType==='INSERT'&&n.status==='pending')toast('Refund awaiting approval')
+  if(t==='merchants'&&S.route[0]==='partner'&&S.data.merchant&&n.id===S.data.merchant.id&&o.status!==n.status&&n.status==='approved')toast('Your restaurant has been approved')
+  if(t==='couriers'&&S.route[0]==='drive'&&S.user&&n.user_id===S.user.id&&o.status!==n.status&&n.status==='approved')toast('Your courier profile has been approved')
+  if(['eat','partner','drive','admin'].includes(S.route[0]))softRender();
+}
+
+/* ============ Maps ============ */
+const maps={};
+function mapBox(id,h){return `<div class="mapbox" data-map-id="${id}" style="height:${h}px"></div>`}
+function getMap(id,opt){
+  const el=$(`[data-map-id="${id}"]`);if(!el||!window.L)return null;
+  let m=maps[id];
+  if(m&&m.el!==el){try{m.map.remove()}catch(e){}m=null}
+  if(!m){const mk=S.settings.market;const map=L.map(el,{zoomControl:true,scrollWheelZoom:opt&&opt.wheel!==false}).setView([opt?.lat??mk.lat,opt?.lng??mk.lng],opt?.zoom??mk.zoom??13);L.tileLayer(opt?.light?TILE_LIGHT:TILE_DARK,{attribution:TILE_ATTR,subdomains:'abcd',maxZoom:19}).addTo(map);m={el,map,mk:{},fitted:false};maps[id]=m;setTimeout(()=>map.invalidateSize(),50)}
+  else setTimeout(()=>m.map.invalidateSize(),30);
+  return m;
+}
+function setMarkers(m,list){
+  if(!m)return;const keep=new Set();
+  for(const x of list){if(x.lat==null||x.lng==null)continue;keep.add(x.key);let mk=m.mk[x.key];const html=`<div class="${x.cls}"></div>`;
+    if(!mk){mk=L.marker([x.lat,x.lng],{icon:L.divIcon({className:'',html,iconSize:[18,18],iconAnchor:[9,9]}),draggable:!!x.drag,keyboard:false});if(x.label)mk.bindTooltip(x.label,{direction:'top',offset:[0,-8]});if(x.onDrag)mk.on('dragend',e=>x.onDrag(e.target.getLatLng()));if(x.onClick)mk.on('click',x.onClick);mk.addTo(m.map);mk._cls=x.cls;m.mk[x.key]=mk}
+    else{mk.setLatLng([x.lat,x.lng]);if(mk._cls!==x.cls){mk.setIcon(L.divIcon({className:'',html,iconSize:[18,18],iconAnchor:[9,9]}));mk._cls=x.cls}if(x.label)mk.setTooltipContent(x.label)}}
+  for(const k of Object.keys(m.mk))if(!keep.has(k)){m.map.removeLayer(m.mk[k]);delete m.mk[k]}
+}
+function fit(m,pts,force){if(!m||(m.fitted&&!force))return;const p=pts.filter(x=>x&&x[0]!=null);if(p.length>1){m.map.fitBounds(L.latLngBounds(p),{padding:[40,40],maxZoom:16})}else if(p.length===1)m.map.setView(p[0],15);m.fitted=true}
+async function reverseGeocode(lat,lng){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&lat=${lat}&lon=${lng}`,{headers:{'Accept-Language':'en'}});const j=await r.json();const a=j.address||{};return [a.house_number,a.road,a.suburb||a.neighbourhood,a.city||a.town||a.village].filter(Boolean).join(', ')||j.display_name||''}catch(e){return ''}}
+async function geocode(q){const mk=S.settings.market;try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(q)}&viewbox=${mk.lng-0.3},${mk.lat+0.3},${mk.lng+0.3},${mk.lat-0.3}`,{headers:{'Accept-Language':'en'}});return await r.json()}catch(e){return []}}
+function locate(){return new Promise(res=>{if(!navigator.geolocation)return res(null);navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res(null),{enableHighAccuracy:true,timeout:8000,maximumAge:30000})})}
+
+/* ============ Home ============ */
+function vHome(){
+  const signed=!!S.user;
+  return `<div class="page fade-in"><div class="eyebrow">Client test environment · ${esc(S.settings.market.city||'')}</div>
+  <h1 class="h-display mt8">One platform. <em>Every side</em> of delivery.</h1>
+  <p class="lede">Sign in with Google or a verified email, then test the platform the way each user would. Restaurants and couriers register here and are approved in the admin console. Orders flow between all of them in real time, across any device.</p>
+  ${signed?'':`<div class="row mt20 wrap"><a class="btn primary lg" href="#/login">Create an account</a><a class="btn lg ghost" href="#/login">Sign in</a></div>`}
+  <div class="roles">
+   <a class="role" href="#/eat"><span class="ic">${ic('bowl')}</span><h3>Order food</h3><p class="muted">Browse restaurants, pay (simulated), and track your courier live with a delivery PIN.</p><span class="acc" style="font-weight:600">Open customer app →</span></a>
+   <a class="role" href="#/partner"><span class="ic">${ic('store')}</span><h3>Register a restaurant</h3><p class="muted">Create a restaurant profile, build a menu, and accept orders once an admin approves you.</p><span class="acc" style="font-weight:600">Open restaurant app →</span></a>
+   <a class="role" href="#/drive"><span class="ic">${ic('bike')}</span><h3>Drive with us</h3><p class="muted">Create a courier profile, upload your licence, go online and deliver real test orders.</p><span class="acc" style="font-weight:600">Open courier app →</span></a>
+   <a class="role" href="#/admin"><span class="ic">${ic('shield')}</span><h3>Admin console</h3><p class="muted">Approve partners, dispatch, refunds, promotions, zones, pricing and the audit trail.</p><span class="acc" style="font-weight:600">${S.profile?.is_admin?'Open console →':'Admins only'}</span></a>
+  </div>
+  <div class="card mt28"><div class="card-h"><h3>Suggested test script</h3><span class="eyebrow">Use two devices for the full effect</span></div>
+  <div class="grid2"><ol class="muted" style="margin:0;padding-left:18px;line-height:1.9"><li>Sign up as a customer and verify your email (or use Google).</li><li>On a second account, register a restaurant and add menu items.</li><li>As admin, approve the restaurant. It appears in the customer app instantly.</li><li>Register a courier on a third account and upload a licence photo.</li></ol>
+  <ol start="5" class="muted" style="margin:0;padding-left:18px;line-height:1.9"><li>Admin approves the courier, who goes online.</li><li>Place an order, accept it as the restaurant and mark it ready.</li><li>The courier accepts, picks up and enters the customer's PIN.</li><li>Request a refund as the customer and approve it as admin.</li></ol></div>
+  <p class="faint mt12" style="font-size:12px">Labelled demo restaurants and couriers keep the city busy. Admins can switch demo traffic off in Settings.</p></div></div>`;
+}
+
+/* ============ Auth views ============ */
+function vLogin(){const t=S.ui.authTab;
+  return `<div class="auth fade-in"><div class="eyebrow">Welcome</div><h1 class="serif mt8" style="font-size:34px;letter-spacing:-.01em">${t==='signup'?'Create your account':t==='forgot'?'Reset your password':'Sign in'}</h1>
+  <p class="muted mt8">One account works across ordering, restaurants, couriers and admin.</p>
+  ${t!=='forgot'?`<button class="gbtn mt20" data-a="google">${GOOGLE_SVG} Continue with Google</button><div class="or">or with email</div>`:'<div class="mt20"></div>'}
+  <form id="authform" class="stack" data-f="auth">
+   ${t==='signup'?`<label class="f"><span>Full name</span><input class="field" name="name" required autocomplete="name"></label>`:''}
+   <label class="f"><span>Email</span><input class="field" name="email" type="email" required autocomplete="email"></label>
+   ${t!=='forgot'?`<label class="f"><span>Password</span><input class="field" name="password" type="password" required minlength="8" autocomplete="${t==='signup'?'new-password':'current-password'}"></label>`:''}
+   <button class="btn primary lg block" type="submit">${t==='signup'?'Create account':t==='forgot'?'Email me a reset link':'Sign in'}</button>
+  </form>
+  <div class="row between mt16" style="font-size:13px">${t==='signin'?`<button class="btn sm ghost" data-a="authTab" data-v="signup">New here? Create an account</button><button class="btn sm ghost" data-a="authTab" data-v="forgot">Forgot password</button>`:`<button class="btn sm ghost" data-a="authTab" data-v="signin">Back to sign in</button>`}</div>
+  ${t==='signup'?'<p class="faint mt12" style="font-size:12px">We will email you a link to verify your address before you can sign in.</p>':''}
+  ${t==='signin'?`<div class="card mt28"><div class="eyebrow">Quick test accounts</div><p class="muted mt8" style="font-size:12.5px">Skip sign-up and explore each role with a ready-made, verified account.</p><div class="stack mt12">${DEMO_LOGINS.map((d,i)=>`<button class="paym" style="margin:0" data-a="demoLogin" data-v="${i}"><span class="pm-ic">${ic(d.icon)}</span><span class="grow"><b style="font-size:13px">${d.label}</b><br><span class="muted" style="font-size:11.5px">${d.desc}</span></span>${ic('arrow')}</button>`).join('')}</div></div>`:''}</div>`}
+const DEMO_LOGINS=[
+  {label:'Customer',desc:'Order food and track deliveries',icon:'bowl',email:'customer@dc13-demo.test',pw:'DC13-gxKKfiX8',next:'#/eat'},
+  {label:'Restaurant · Client Test Kitchen',desc:'Accept orders and manage the menu',icon:'store',email:'restaurant@dc13-demo.test',pw:'DC13-wrMPfRTT',next:'#/partner'},
+  {label:'Courier · Client Courier',desc:'Go online and deliver orders',icon:'bike',email:'courier@dc13-demo.test',pw:'DC13-oB5SHz5P',next:'#/drive'}];
+function vVerify(){const e=S.ui.verifyEmail||'your inbox';return `<div class="auth fade-in" style="text-align:center"><svg class="check-anim" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34"/><path d="m22 37 9 9 19-20"/></svg><h1 class="serif" style="font-size:30px">Check your email</h1><p class="muted mt12">We sent a verification link to <b style="color:var(--fg)">${esc(e)}</b>. Open it on this device to finish creating your account.</p><div class="note mt20" style="text-align:left;font-size:12.5px">No email after a few minutes? Check spam. Test environments send a limited number of emails per hour.</div><button class="btn mt20" data-a="resend">Resend link</button> <a class="btn ghost mt20" href="#/login">Back to sign in</a></div>`}
+function vReset(){return `<div class="auth fade-in"><h1 class="serif" style="font-size:30px">Choose a new password</h1><form class="stack mt20" data-f="newpw"><label class="f"><span>New password</span><input class="field" name="password" type="password" minlength="8" required autocomplete="new-password"></label><button class="btn primary lg block">Save password</button></form></div>`}
+
+/* ============ Customer ============ */
+function cartCount(){return S.ui.cart.items.reduce((a,i)=>a+i.qty,0)}
+function cartSub(){return S.ui.cart.items.reduce((a,i)=>a+i.qty*i.price,0)}
+function saveCart(){lsSet('dc13-cart',S.ui.cart)}
+function cover(m,lg){return `<div class="cover${lg?' lg':''}"><div class="cv">${ic(m.icon||ICON_BY_CAT[m.category]||'bowl')}</div><em>${esc(m.category||'')}</em></div>`}
+function custTabs(){const r=S.route[1]||'home';return `<nav class="tabs-b light">${[['','home','Home'],['orders','receipt','Orders'],['account','user','Account']].map(t=>`<a href="#/eat${t[0]?'/'+t[0]:''}" class="${(r===t[0]||(r==='home'&&!t[0]))?'on':''}">${ic(t[1])}${t[2]}</a>`).join('')}</nav>`}
+async function vEat(){
+  const sub=S.route[1]||'home';let body='';
+  if(sub==='home')body=await cHome();else if(sub==='store')body=await cStore(S.route[2]);else if(sub==='cart')body=await cCart();else if(sub==='order')body=await cOrder(S.route[2]);else if(sub==='orders')body=await cOrders();else if(sub==='account')body=await cAccount();
+  const bar=cartCount()&&['home','store'].includes(sub)?`<a class="cartbar" href="#/eat/cart"><span class="cnt">${cartCount()}</span><span class="grow">View cart · ${esc(S.ui.cart.mname||'')}</span><b>${money(cartSub())}</b></a>`:'';
+  return `<div class="light cust"><div class="narrow fade-in">${body}</div>${bar}${['home','orders','account'].includes(sub)?custTabs():''}</div>`;
+}
+async function cHome(){
+  const [{data:ms},{data:mine}]=await Promise.all([sb.from('merchants').select('id,name,cuisine,category,icon,lat,lng,prep_min,delivery_fee,is_open,rating,is_demo').eq('status','approved').order('is_demo').order('name'),sb.from('orders').select('id,status,merchant_id,created_at,total').eq('customer_id',S.user.id).in('status',ACTIVE).order('created_at',{ascending:false}).limit(3)]);
+  S.data.merchants=ms||[];
+  const cats=['All',...new Set((ms||[]).map(m=>m.category))];const q=S.ui.q.toLowerCase();
+  const list=(ms||[]).filter(m=>(S.ui.cat==='All'||m.category===S.ui.cat)&&(!q||(m.name+' '+(m.cuisine||'')+' '+m.category).toLowerCase().includes(q)));
+  const nm=S.profile?.full_name?S.profile.full_name.split(' ')[0]:'there';const h=new Date().getHours();
+  return `<div class="row between"><div><div class="eyebrow">Deliver to</div><b>${esc(S.ui.addr?.line||'Choose at checkout')}</b></div><a class="av" href="#/eat/account">${initials(S.profile?.full_name||S.user.email)}</a></div>
+  <h2 class="serif mt16" style="font-size:28px;letter-spacing:-.015em">Good ${h<12?'morning':h<17?'afternoon':'evening'}, <em class="acc">${esc(nm)}</em></h2>
+  <label class="search mt16">${ic('search')}<input id="cq" placeholder="Search restaurants and cuisines" value="${esc(S.ui.q)}" data-in="cq" autocomplete="off"></label>
+  ${(mine||[]).map(o=>`<a class="note mt12 row" href="#/eat/order/${o.id}" style="text-decoration:none"><span class="diamond"></span><span class="grow"><b>FD-${o.id}</b> · ${statusPill(o)}</span><span class="acc">Track →</span></a>`).join('')}
+  <div class="hscroll">${cats.map(c=>`<button class="chip${S.ui.cat===c?' on':''}" data-a="cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+  <div class="row between mt20"><h3 class="serif" style="font-size:19px">${S.ui.cat==='All'?'Restaurants near you':esc(S.ui.cat)}</h3><span class="eyebrow">${list.length} open</span></div>
+  <div id="slist">${list.length?list.map(m=>`<a class="store${m.is_open?'':' closed'}" href="#/eat/store/${m.id}">${cover(m)}<div class="grow"><div class="row between"><b style="font-size:14.5px">${esc(m.name)}</b><span class="rate">${ic('star')}${m.rating}</span></div><div class="muted" style="font-size:12px">${esc(m.cuisine||'')}${m.is_demo?' · demo':''}</div><div class="muted" style="font-size:12px">${m.prep_min+10}–${m.prep_min+25} min${m.is_open?'':' · paused'}</div></div></a>`).join(''):'<div class="empty">No restaurants match yet.</div>'}</div><div style="height:90px"></div>`;
+}
+async function cStore(id){
+  const [{data:m,error},{data:items}]=await Promise.all([sb.from('merchants').select('*').eq('id',id).maybeSingle(),sb.from('menu_items').select('*').eq('merchant_id',id).order('sort').order('name')]);
+  if(!m)return `<div class="note bad">This restaurant is not available.</div>`;
+  const cats=[...new Set((items||[]).map(i=>i.category))];const qty=iid=>S.ui.cart.mid===id?(S.ui.cart.items.find(x=>x.id===iid)?.qty||0):0;
+  return `<a class="btn sm ghost" href="#/eat">${ic('back')} All restaurants</a><div class="mt12">${cover(m,true)}</div>
+  <h1 class="serif mt16" style="font-size:30px;letter-spacing:-.015em">${esc(m.name)}</h1><p class="muted mt4">${esc(m.cuisine||'')} · ${esc(m.hours||'')} · prep about ${m.prep_min} min${m.is_demo?' · demo restaurant':''}</p>
+  ${m.is_open?'':'<div class="note warn mt12">This restaurant has paused new orders.</div>'}
+  ${cats.map(c=>`<h3 class="serif mt20" style="font-size:18px">${esc(c)}</h3>${(items||[]).filter(i=>i.category===c).map(i=>{const q=qty(i.id);return `<div class="item${i.available?'':' out'}"><div class="grow"><b>${esc(i.name)}</b>${i.description?`<p class="muted" style="font-size:12.5px;margin-top:3px">${esc(i.description)}</p>`:''}${i.tags?.length?`<div class="tags">${i.tags.map(t=>`<span class="tag${t==='SPICY'?' sp':''}">${esc(t)}</span>`).join('')}</div>`:''}${i.allergens?.length?`<div class="faint" style="font-size:11px;margin-top:5px">Contains ${esc(i.allergens.join(', ').toLowerCase())}</div>`:''}<div style="font-weight:600;margin-top:6px">${money(i.price)}</div></div>${i.available&&m.is_open?`<div class="row">${q?`<button class="add" data-a="cartDec" data-v="${i.id}" aria-label="Remove one">−</button>`:''}<button class="add${q?' has':''}" data-a="cartAdd" data-v="${i.id}" data-m="${m.id}" aria-label="Add ${esc(i.name)}">${q||ic('plus')}</button></div>`:'<span class="pill">Sold out</span>'}</div>`}).join('')}`).join('')||'<div class="empty">This menu is empty.</div>'}<div style="height:90px"></div>`;
+}
+async function cCart(){
+  const c=S.ui.cart;if(!c.items.length)return `<a class="btn sm ghost" href="#/eat">${ic('back')} Back</a><div class="empty">Your cart is empty.</div>`;
+  const [{data:m},{data:addrs}]=await Promise.all([sb.from('merchants').select('*').eq('id',c.mid).maybeSingle(),sb.from('addresses').select('*').order('created_at',{ascending:false})]);
+  if(!m){S.ui.cart={mid:null,items:[]};saveCart();return '<div class="note bad">That restaurant is no longer available.</div>'}
+  S.data.cartMerchant=m;S.data.addrs=addrs||[];
+  if(!S.ui.addr&&addrs&&addrs[0])S.ui.addr={line:addrs[0].line,lat:addrs[0].lat,lng:addrs[0].lng,label:addrs[0].label};
+  const pr=S.settings.pricing;const sub=cartSub();const a=S.ui.addr;const dkm=a?km(m.lat,m.lng,a.lat,a.lng):0;
+  let fee=S.ui.mode==='delivery'?((m.delivery_fee??pr.base_fee)+pr.per_km*Math.max(0,dkm-2))*pr.surge:0;
+  let disc=0;const pc=S.ui.promo;if(pc&&S.data.promo&&S.data.promo.code===pc){const p=S.data.promo;disc=p.kind==='percent'?Math.min(sub*p.value/100,p.max_discount??sub):p.kind==='flat'?Math.min(p.value,sub):fee}
+  const tax=(sub-(S.data.promo?.kind==='free_delivery'?0:disc))*pr.tax_pct/100;const tip=S.ui.mode==='delivery'?S.ui.tip:0;const tot=sub+fee-disc+tax+tip;
+  return `<a class="btn sm ghost" href="#/eat/store/${m.id}">${ic('back')} ${esc(m.name)}</a><h1 class="serif mt12" style="font-size:30px">Checkout</h1>
+  <div class="card mt16">${c.items.map(i=>`<div class="mitem"><div class="grow"><b style="font-size:13.5px">${esc(i.name)}</b><div class="muted" style="font-size:12.5px">${money(i.price*i.qty)}</div></div><div class="stepper"><button data-a="cartDec" data-v="${i.id}" aria-label="Fewer">−</button><span>${i.qty}</span><button data-a="cartAdd" data-v="${i.id}" data-m="${m.id}" aria-label="More">+</button></div></div>`).join('')}<input class="field mt12" id="onote" placeholder="Note for the kitchen (optional)" value="${esc(S.ui.note||'')}" data-in="note"></div>
+  <div class="seg mt16"><button class="${S.ui.mode==='delivery'?'on':''}" data-a="mode" data-v="delivery">Delivery</button><button class="${S.ui.mode==='pickup'?'on':''}" data-a="mode" data-v="pickup">Pickup</button></div>
+  ${S.ui.mode==='delivery'?`<div class="card mt12"><div class="row between"><b>Delivery address</b><button class="btn sm" data-a="addrOpen">${a?'Change':'Add address'}</button></div>${a?`<p class="mt8">${esc(a.label?a.label+' · ':'')}${esc(a.line)}</p><p class="faint" style="font-size:12px">${dkm.toFixed(1)} km from ${esc(m.name)}</p>`:'<p class="muted mt8">Drop a pin so your courier finds you first time.</p>'}${(addrs||[]).length>1?`<div class="row wrap mt12">${addrs.slice(0,4).map(x=>`<button class="chip${a&&a.line===x.line?' on':''}" data-a="addrPick" data-v="${x.id}">${esc(x.label)}</button>`).join('')}</div>`:''}</div>
+  <div class="card mt12"><b>Tip your courier</b><div class="row wrap mt12">${[0,5,10,15,20].map(t=>`<button class="chip${S.ui.tip===t?' on':''}" data-a="tip" data-v="${t}">${t?money(t):'No tip'}</button>`).join('')}</div></div>`:`<div class="note mt12">Collect from ${esc(m.name)} · ${esc(m.address_line||'')}</div>`}
+  <div class="card mt12"><div class="row"><input class="field" id="promo" placeholder="Promo code" value="${esc(S.ui.promo)}" style="text-transform:uppercase"><button class="btn" data-a="promo">Apply</button></div>${S.ui.promoMsg?`<p class="mt8" style="font-size:12.5px">${esc(S.ui.promoMsg)}</p>`:''}</div>
+  <div class="mt16"><div class="eyebrow">Payment · simulated</div>${[['card','CARD','Test card','No real charge is made'],['wallet','WLT','Wallet','Simulated balance'],['cash','CASH','Cash on delivery','Pay the courier']].map(p=>`<button class="paym${S.ui.pay===p[0]?' on':''}" data-a="pay" data-v="${p[0]}" ${p[0]==='cash'&&S.ui.mode==='pickup'?'disabled':''}><span class="pm-ic">${p[1]}</span><span class="grow"><b style="font-size:13px">${p[2]}</b><br><span class="muted" style="font-size:11.5px">${p[3]}</span></span></button>`).join('')}</div>
+  <div class="card mt16 bill"><div><span class="muted">Subtotal</span><span>${money(sub)}</span></div>${S.ui.mode==='delivery'?`<div><span class="muted">Delivery fee${pr.surge>1?' · busy '+pr.surge+'×':''}</span><span>${money(fee)}</span></div>`:''}${disc?`<div><span class="acc">Promo ${esc(pc)}</span><span class="acc">−${money(disc)}</span></div>`:''}<div><span class="muted">Tax ${pr.tax_pct}%</span><span>${money(tax)}</span></div>${tip?`<div><span class="muted">Tip</span><span>${money(tip)}</span></div>`:''}<div class="tot"><span>Estimated total</span><span>${money(tot)}</span></div><p class="faint" style="font-size:11.5px">Final price is confirmed by the server when you place the order. Zone fees may apply.</p></div>
+  ${m.is_open?`<div class="slide" id="slide"><div class="s-fill"></div><div class="s-lbl">${S.ui.pay==='cash'?'Slide to place order':'Slide to pay '+money(tot)}</div><div class="s-knob">${ic('arrow')}</div></div>`:'<div class="note warn mt16">This restaurant has paused orders.</div>'}<div style="height:40px"></div>`;
+}
+async function cOrder(id){
+  const [{data:o},{data:sec},{data:evs},{data:refs}]=await Promise.all([sb.from('orders').select('*').eq('id',id).maybeSingle(),sb.from('order_secrets').select('pin').eq('order_id',id).maybeSingle(),sb.from('order_events').select('*').eq('order_id',id).order('created_at'),sb.from('refunds').select('*').eq('order_id',id)]);
+  if(!o)return `<a class="btn sm ghost" href="#/eat/orders">${ic('back')} Orders</a><div class="note bad mt12">Order not found.</div>`;
+  const {data:m}=await sb.from('merchants').select('id,name,lat,lng,address_line').eq('id',o.merchant_id).maybeSingle();
+  S.data.order=o;S.data.orderMerchant=m;
+  const act=ACTIVE.includes(o.status);const st=o.mode==='pickup'?[['Order placed',o.created_at],['Accepted by kitchen',o.accepted_at],['Ready for pickup',o.ready_at],['Collected',o.delivered_at]]:[['Order placed',o.created_at],['Accepted by kitchen',o.accepted_at],['Courier assigned',o.assigned_at],['Picked up',o.picked_at],['Delivered',o.delivered_at]];
+  const cur=st.findIndex(s=>!s[1]);const eta=o.promised_at?Math.max(0,Math.round((new Date(o.promised_at)-Date.now())/60000)):null;
+  const head={placed:'Waiting for the kitchen to accept',preparing:'Your order is being prepared',ready:o.mode==='pickup'?'Ready for pickup':(o.courier_id?'Ready · courier collecting':'Ready · finding a courier'),picked_up:'On the way to you',delivered:o.mode==='pickup'?'Collected. Enjoy!':'Delivered. Enjoy!',cancelled:'Order cancelled',rejected:'The restaurant could not take this order'}[o.status];
+  const refunded=(refs||[]).filter(r=>r.status==='approved').reduce((a,r)=>a+Number(r.amount),0);
+  return `<a class="btn sm ghost" href="#/eat/orders">${ic('back')} Orders</a>
+  ${o.mode==='delivery'&&act?`<div class="mt12">${mapBox('track',260)}</div>`:''}
+  <div class="eyebrow mt16">FD-${o.id} · ${esc(m?.name||'')}</div><h1 class="serif mt8" style="font-size:26px">${head}</h1>
+  ${act&&eta!=null?`<div class="row mt8" style="align-items:baseline"><span class="eta-v">${eta} min</span><span class="muted">arriving around ${tm(o.promised_at)}</span></div>`:''}
+  ${o.status==='rejected'?`<div class="note warn mt12">${esc(o.reject_reason||'The kitchen is unavailable')}. ${o.pay!=='cash'?'Your refund has been issued automatically.':''}</div>`:''}
+  ${!['cancelled','rejected'].includes(o.status)?`<ol class="steps">${st.map((s,i)=>`<li class="${s[1]?'done':i===cur?'cur':''}"><div class="row between"><b style="font-weight:500">${s[0]}</b><span class="mono muted" style="font-size:11px">${tm(s[1])}</span></div></li>`).join('')}</ol>`:''}
+  ${o.courier_name&&act?`<div class="card mt12 row"><span class="av" style="width:42px;height:42px">${initials(o.courier_name)}</span><div class="grow"><b>${esc(o.courier_name)}</b><div class="muted" style="font-size:12px">${esc(o.courier_vehicle||'')} · your courier</div></div></div>`:''}
+  ${sec&&act?`<div class="card mt12 row between"><div><div class="eyebrow">${o.mode==='pickup'?'Pickup code':'Delivery PIN'}</div><div class="muted" style="font-size:12px;margin-top:3px">Share only at handover</div></div><div class="pin">${sec.pin.split('').map(x=>`<span>${x}</span>`).join('')}</div></div>`:''}
+  <div class="card mt12 bill">${(o.items||[]).map(i=>`<div><span>${i.qty}× ${esc(i.name)}</span><span>${money(i.qty*i.price)}</span></div>`).join('')}<div><span class="muted">Delivery fee</span><span>${money(o.fee)}</span></div>${Number(o.discount)?`<div><span class="acc">Promo ${esc(o.promo||'')}</span><span class="acc">−${money(o.discount)}</span></div>`:''}<div><span class="muted">Tax</span><span>${money(o.tax)}</span></div>${Number(o.tip)?`<div><span class="muted">Tip</span><span>${money(o.tip)}</span></div>`:''}<div class="tot"><span>Total · ${o.pay}</span><span>${money(o.total)}</span></div>${refunded?`<div><span class="acc">Refunded</span><span class="acc">−${money(refunded)}</span></div>`:''}</div>
+  ${(refs||[]).filter(r=>r.status==='pending').map(r=>`<div class="note warn mt12">Refund of ${money(r.amount)} is waiting for a specialist's approval.</div>`).join('')}
+  <div class="row wrap mt16">${o.status==='placed'?`<button class="btn danger" data-a="custCancel" data-v="${o.id}">Cancel order</button>`:''}${o.status==='delivered'?`<button class="btn" data-a="refundOpen" data-v="${o.id}">${ic('refund')} Report a problem</button>`:''}</div>
+  ${o.status==='delivered'&&!o.rating?`<div class="card mt16"><b>Rate your order</b><div class="stars mt12">${[1,2,3,4,5].map(i=>`<button class="${(S.ui.stars||0)>=i?'on':''}" data-a="star" data-v="${i}" aria-label="${i} stars">${ic('star')}</button>`).join('')}</div><textarea class="field mt12" id="fb" rows="2" placeholder="Anything to share? (optional)"></textarea><button class="btn primary mt12" data-a="rate" data-v="${o.id}" ${S.ui.stars?'':'disabled'}>Submit</button></div>`:o.rating?`<p class="muted mt16">You rated this ${o.rating}/5. Thank you.</p>`:''}
+  <details class="card mt16"><summary style="cursor:pointer"><span class="eyebrow">Order timeline</span></summary>${(evs||[]).map(e=>`<div class="ev"><div class="tp">${esc(e.topic)}<span>${tms(e.created_at)}</span></div><p>${esc(e.text)}</p></div>`).join('')}</details><div style="height:40px"></div>`;
+}
+async function cOrders(){
+  const {data}=await sb.from('orders').select('id,status,total,created_at,items,merchant_id,mode').eq('customer_id',S.user.id).order('created_at',{ascending:false}).limit(50);
+  return `<h1 class="serif" style="font-size:30px">Your orders</h1>${(data||[]).length?(data||[]).map(o=>`<a class="card mt12" style="display:block;text-decoration:none" href="#/eat/order/${o.id}"><div class="row between"><b class="mono">FD-${o.id}</b>${statusPill(o)}</div><div class="muted mt4" style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(itemsLine(o))}</div><div class="row between mt8" style="font-size:12.5px"><span class="faint">${dt(o.created_at)}</span><b>${money(o.total)}</b></div></a>`).join(''):'<div class="empty">No orders yet. <a href="#/eat">Find something to eat</a>.</div>'}<div style="height:90px"></div>`;
+}
+async function cAccount(){
+  const {data:addrs}=await sb.from('addresses').select('*').order('created_at',{ascending:false});const p=S.profile||{};
+  return `<div class="row"><span class="av" style="width:56px;height:56px;font-size:18px">${p.avatar_url?`<img src="${esc(p.avatar_url)}" alt="">`:initials(p.full_name||S.user.email)}</span><div><h1 class="serif" style="font-size:24px">${esc(p.full_name||'Your account')}</h1><div class="muted" style="font-size:12.5px">${esc(S.user.email)} · ${S.user.email_confirmed_at?'<span style="color:var(--ok)">verified</span>':'not verified'} · ${esc(S.user.app_metadata?.provider||'email')}</div></div></div>
+  ${p.status==='suspended'?'<div class="note bad mt16">This account is suspended. Contact support.</div>':''}
+  <form class="card mt16 stack" data-f="profile"><b>Profile</b><label class="f"><span>Full name</span><input class="field" name="full_name" value="${esc(p.full_name||'')}" required></label><label class="f"><span>Phone</span><input class="field" name="phone" value="${esc(p.phone||'')}" placeholder="+1 868 ..."></label><button class="btn primary">Save profile</button></form>
+  <div class="card mt12"><div class="row between"><b>Saved addresses</b><button class="btn sm" data-a="addrOpen">Add</button></div>${(addrs||[]).map(a=>`<div class="mitem"><span class="grow"><b style="font-size:13px">${esc(a.label)}</b><br><span class="muted" style="font-size:12px">${esc(a.line)}</span></span><button class="btn sm ghost" data-a="addrDel" data-v="${a.id}" aria-label="Delete">${ic('x')}</button></div>`).join('')||'<p class="muted mt8" style="font-size:13px">No saved addresses yet.</p>'}</div>
+  <div class="card mt12"><b>Your other roles</b><div class="row wrap mt12"><a class="btn sm" href="#/partner">${ic('store')} Restaurant</a><a class="btn sm" href="#/drive">${ic('bike')} Courier</a>${p.is_admin?`<a class="btn sm" href="#/admin">${ic('shield')} Admin</a>`:''}</div></div>
+  <button class="btn danger block mt16" data-a="signout">${ic('logout')} Sign out</button><div style="height:90px"></div>`;
+}
+function addrModal(){
+  const mk=S.settings.market;const a=S.ui.addrDraft||{lat:mk.lat,lng:mk.lng,line:'',label:'Home'};S.ui.addrDraft=a;
+  openModal(`<h2 class="serif" style="font-size:24px">Delivery address</h2><p class="muted mt8" style="font-size:13px">Search, use your location, or drag the pin to your door.</p>
+  <div class="row mt12"><input class="field" id="geoq" placeholder="Search street or place"><button class="btn" data-a="geoSearch">${ic('search')}</button><button class="btn" data-a="geoMe" title="Use my location">${ic('locate')}</button></div><div id="georesults"></div>
+  <div class="mt12 light">${mapBox('addrmap',260)}</div>
+  <label class="f mt12"><span>Address line</span><input class="field" id="aline" value="${esc(a.line)}" placeholder="House, street, area"></label>
+  <div class="row mt12"><select class="field" id="alabel" style="width:140px">${['Home','Work','Other'].map(l=>`<option ${a.label===l?'selected':''}>${l}</option>`).join('')}</select><label class="row" style="font-size:13px"><input type="checkbox" id="asave" checked> Save to my account</label></div>
+  <div class="row mt16"><button class="btn ghost grow" data-a="closeModal">Cancel</button><button class="btn primary grow" data-a="addrSave">Use this address</button></div>`);
+  setTimeout(()=>{const m=getMap('addrmap',{light:true,lat:a.lat,lng:a.lng,zoom:16});setMarkers(m,[{key:'pin',lat:a.lat,lng:a.lng,cls:'mk-c',drag:true,onDrag:async ll=>{a.lat=ll.lat;a.lng=ll.lng;const line=await reverseGeocode(ll.lat,ll.lng);if(line&&$('#aline'))$('#aline').value=line}}]);m.map.on('click',async e=>{a.lat=e.latlng.lat;a.lng=e.latlng.lng;setMarkers(m,[{key:'pin',lat:a.lat,lng:a.lng,cls:'mk-c',drag:true}]);const line=await reverseGeocode(a.lat,a.lng);if(line&&$('#aline'))$('#aline').value=line})},60);
+}
+
+/* ============ Restaurant (partner) ============ */
+async function vPartner(){
+  const {data:m}=await sb.from('merchants').select('*').eq('owner_id',S.user.id).order('created_at').limit(1).maybeSingle();
+  S.data.merchant=m;
+  if(!m||S.ui.editMerchant)return pOnboard(m);
+  if(m.status!=='approved')return `<div class="page fade-in" style="max-width:640px"><div class="eyebrow">Restaurant application</div><h1 class="h-display mt8" style="font-size:40px">${m.status==='pending'?'Thanks. We are <em>reviewing</em> your restaurant.':m.status==='rejected'?'Your application needs changes.':'Your restaurant is suspended.'}</h1>
+    <div class="card mt20"><div class="row between"><b>${esc(m.name)}</b><span class="pill ${m.status==='pending'?'warn':'bad'}">${m.status}</span></div><p class="muted mt8">${esc(m.cuisine||'')} · ${esc(m.address_line||'')}</p>${m.review_note?`<div class="note warn mt12">Reviewer note: ${esc(m.review_note)}</div>`:''}<p class="muted mt12" style="font-size:13px">You can build your menu now. It goes live when an admin approves the restaurant, and this page updates automatically.</p><div class="row mt16 wrap"><button class="btn" data-a="editMerchant">Edit details</button><button class="btn primary" data-a="mTab" data-v="menu">Build menu</button></div></div>
+    ${S.ui.mTab==='menu'?await pMenu(m):''}</div>`;
+  const {data:orders}=await sb.from('orders').select('*').eq('merchant_id',m.id).gte('created_at',new Date(Date.now()-864e5).toISOString()).order('created_at',{ascending:false}).limit(200);
+  const os=orders||[];const t=S.ui.mTab;const nNew=os.filter(o=>o.status==='placed').length;
+  const today=os.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()&&!['cancelled','rejected'].includes(o.status));
+  let body='';if(t==='orders')body=pOrders(os);else if(t==='menu')body=await pMenu(m);else if(t==='insights')body=pInsights(m,os);else body=pOnboard(m,true);
+  return `<div class="page fade-in"><div class="c-head"><div><div class="eyebrow">Restaurant hub · ${esc(m.address_line||'')}</div><h1>${esc(m.name)}</h1></div><div class="row"><span class="muted" style="font-size:13px">${m.is_open?'Accepting orders':'Paused'}</span><button class="switch" role="switch" aria-checked="${m.is_open}" data-a="mOpen" aria-label="Accepting orders"><i></i></button></div></div>
+  <div class="kpis"><div class="kpi"><div class="eyebrow">Sales today</div><div class="v">${moneyK(today.reduce((a,o)=>a+Number(o.subtotal),0))}</div></div><div class="kpi"><div class="eyebrow">Orders today</div><div class="v">${today.length}</div></div><div class="kpi"><div class="eyebrow">New</div><div class="v acc">${nNew}</div></div><div class="kpi"><div class="eyebrow">Rating</div><div class="v">${m.rating}</div></div></div>
+  <div class="seg" style="max-width:520px">${[['orders','Orders'+(nNew?' ('+nNew+')':'')],['menu','Menu'],['insights','Insights'],['profile','Profile']].map(x=>`<button class="${t===x[0]?'on':''}" data-a="mTab" data-v="${x[0]}">${x[1]}</button>`).join('')}</div><div class="mt16">${body}</div></div>`;
+}
+function pOnboard(m,inline){
+  const mk=S.settings.market;const d=m||{};S.ui.mPin=S.ui.mPin||{lat:d.lat??mk.lat,lng:d.lng??mk.lng};S.ui.noLive=true;
+  setTimeout(()=>{const mm=getMap('mpin',{lat:S.ui.mPin.lat,lng:S.ui.mPin.lng,zoom:15});setMarkers(mm,[{key:'p',lat:S.ui.mPin.lat,lng:S.ui.mPin.lng,cls:'mk-m',drag:true,onDrag:ll=>{S.ui.mPin={lat:ll.lat,lng:ll.lng}}}]);if(mm)mm.map.on('click',e=>{S.ui.mPin={lat:e.latlng.lat,lng:e.latlng.lng};setMarkers(mm,[{key:'p',lat:e.latlng.lat,lng:e.latlng.lng,cls:'mk-m',drag:true,onDrag:ll=>{S.ui.mPin={lat:ll.lat,lng:ll.lng}}}])})},80);
+  return `<div class="${inline?'':'page fade-in'}" style="max-width:760px">${inline?'':`<div class="eyebrow">Partner with us</div><h1 class="h-display mt8" style="font-size:40px">Register your <em>restaurant</em></h1><p class="lede">Tell us about your kitchen. An admin reviews every application before it goes live.</p>`}
+  <form class="card mt20 stack" data-f="merchant" style="gap:14px">
+   <div class="grid2"><label class="f"><span>Restaurant name</span><input class="field" name="name" required value="${esc(d.name||'')}"></label><label class="f"><span>Cuisine</span><input class="field" name="cuisine" placeholder="e.g. Caribbean street food" value="${esc(d.cuisine||'')}"></label></div>
+   <div class="grid2"><label class="f"><span>Category</span><select class="field" name="category">${CATS.map(c=>`<option ${d.category===c?'selected':''}>${c}</option>`).join('')}</select></label><label class="f"><span>Business phone</span><input class="field" name="phone" required value="${esc(d.phone||'')}"></label></div>
+   <div class="grid2"><label class="f"><span>Contact email</span><input class="field" name="email" type="email" value="${esc(d.email||S.user.email)}"></label><label class="f"><span>Registration / licence number</span><input class="field" name="reg_number" value="${esc(d.reg_number||'')}"></label></div>
+   <label class="f"><span>Street address</span><input class="field" name="address_line" required value="${esc(d.address_line||'')}"></label>
+   <div><span class="muted" style="font-size:12.5px">Drag the pin to your entrance</span><div class="mt8">${mapBox('mpin',240)}</div></div>
+   <div class="grid2"><label class="f"><span>Opening hours</span><input class="field" name="hours" value="${esc(d.hours||'10:00 - 23:00')}"></label><label class="f"><span>Average prep time (minutes)</span><input class="field" name="prep_min" type="number" min="1" max="120" value="${d.prep_min||15}"></label></div>
+   <div class="grid2"><label class="f"><span>Delivery fee override (optional)</span><input class="field" name="delivery_fee" type="number" step="0.01" min="0" value="${d.delivery_fee??''}" placeholder="Uses platform pricing"></label><label class="f"><span>Payout account (last 4 digits only)</span><input class="field" name="payout_last4" maxlength="4" pattern="[0-9]{4}" value="${esc(d.payout_last4||'')}"></label></div>
+   <div class="row"><button class="btn primary lg" type="submit">${m?'Save changes':'Submit for approval'}</button>${m&&!inline?'<button class="btn ghost" type="button" data-a="cancelEdit">Cancel</button>':''}</div>
+  </form></div>`;
+}
+function pOrders(os){
+  const col=(title,list,fn)=>`<div><div class="row between"><span class="eyebrow">${title}</span><span class="mono faint" style="font-size:11px">${list.length}</span></div>${list.map(fn).join('')||'<div class="empty" style="padding:16px">Nothing here.</div>'}</div>`;
+  const items=o=>`<div style="font-size:13px;margin-top:8px">${(o.items||[]).map(i=>`<div>${i.qty}× ${esc(i.name)}${i.note?`<span class="muted"> · ${esc(i.note)}</span>`:''}</div>`).join('')}</div>${o.note?`<div class="note mt8" style="font-size:12px">${esc(o.note)}</div>`:''}`;
+  const head=o=>`<div class="row"><b class="mono">FD-${o.id}</b>${statusPill(o)}<span class="muted grow" style="text-align:right;font-size:12px">${tm(o.created_at)}</span></div><div class="muted" style="font-size:12px;margin-top:4px">${esc(o.cust_name||'Customer')} · ${o.mode} · ${money(o.subtotal)}${o.is_demo?' · demo':''}</div>`;
+  return `<div class="board">${col('New',os.filter(o=>o.status==='placed'),o=>{const p=S.ui.prep[o.id]||S.data.merchant.prep_min;const fr=seenNew.has(o.id)?'':' fresh';seenNew.add(o.id);return `<div class="ord new${fr}">${head(o)}${items(o)}<div class="row mt12"><div class="stepper"><button data-a="prep" data-v="${o.id}:-1" aria-label="Less">−</button><span style="min-width:52px">${p} min</span><button data-a="prep" data-v="${o.id}:1" aria-label="More">+</button></div><button class="btn primary grow" data-a="mAccept" data-v="${o.id}">Accept</button></div><button class="btn sm ghost mt8" data-a="mRejectOpen" data-v="${o.id}">Reject</button></div>`})}
+  ${col('Preparing',os.filter(o=>o.status==='preparing'),o=>{const p=o.accepted_at?clamp((Date.now()-new Date(o.accepted_at))/(o.prep_min*60000),0,1):0;return `<div class="ord">${head(o)}${items(o)}<div class="prog"><i style="width:${p*100}%"></i></div><div class="row between mt12"><span class="muted" style="font-size:12px">${o.mode==='pickup'?'Customer pickup':o.courier_name?esc(o.courier_name)+' assigned':'Courier not yet assigned'}</span><button class="btn sm primary" data-a="mReady" data-v="${o.id}">Mark ready</button></div></div>`})}
+  ${col('Ready for handover',os.filter(o=>o.status==='ready'),o=>`<div class="ord">${head(o)}${items(o)}<div class="row between mt12"><span class="muted" style="font-size:12px">${o.mode==='pickup'?'Waiting for customer':o.courier_name?esc(o.courier_name)+' on the way':'Waiting for a courier'}</span>${o.mode==='pickup'?`<button class="btn sm" data-a="mCollected" data-v="${o.id}">Mark collected</button>`:''}</div></div>`)}</div>
+  <div class="card mt16"><div class="card-h"><h3>Recent</h3></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Time</th><th>Items</th><th>Status</th><th class="r">Food total</th></tr></thead><tbody>${os.filter(o=>!['placed','preparing','ready'].includes(o.status)).slice(0,20).map(o=>`<tr><td class="mono">FD-${o.id}</td><td class="muted">${tm(o.created_at)}</td><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis">${esc(itemsLine(o))}</td><td>${statusPill(o)}</td><td class="r">${money(o.subtotal)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No completed orders yet.</td></tr>'}</tbody></table></div></div>`;
+}
+async function pMenu(m){
+  const {data:items}=await sb.from('menu_items').select('*').eq('merchant_id',m.id).order('category').order('sort').order('name');
+  const cats=[...new Set((items||[]).map(i=>i.category))];
+  return `<div class="card mt16"><div class="card-h"><h3>Menu</h3><button class="btn primary sm" data-a="itemOpen" data-v="">${ic('plus')} Add item</button></div>${cats.map(c=>`<div class="eyebrow mt16">${esc(c)}</div>${(items||[]).filter(i=>i.category===c).map(i=>`<div class="mitem"><div class="grow"><b style="font-size:13.5px">${esc(i.name)}</b><div class="muted" style="font-size:12px">${money(i.price)}${i.tags?.length?' · '+esc(i.tags.join(' ')):''}${i.available?'':' · sold out'}</div></div><button class="switch" role="switch" aria-checked="${i.available}" data-a="itemAvail" data-v="${i.id}" aria-label="Available"><i></i></button><button class="btn sm ghost" data-a="itemOpen" data-v="${i.id}">Edit</button></div>`).join('')}`).join('')||'<div class="empty">No items yet. Add your first dish.</div>'}</div>`;
+}
+function itemModal(it){const d=it||{};const tags=['V','VG','GF','SPICY','HALAL'];
+  openModal(`<h2 class="serif" style="font-size:24px">${it?'Edit item':'Add item'}</h2><form class="stack mt16" data-f="item" data-id="${d.id||''}">
+  <div class="grid2"><label class="f"><span>Name</span><input class="field" name="name" required value="${esc(d.name||'')}"></label><label class="f"><span>Price (${esc(S.settings.market.symbol)})</span><input class="field" name="price" type="number" step="0.01" min="0" required value="${d.price??''}"></label></div>
+  <label class="f"><span>Category</span><input class="field" name="category" value="${esc(d.category||'Mains')}" list="catlist"></label>
+  <label class="f"><span>Description</span><textarea class="field" name="description" rows="2">${esc(d.description||'')}</textarea></label>
+  <div><span class="muted" style="font-size:12.5px">Dietary tags</span><div class="row wrap mt8">${tags.map(t=>`<label class="chip"><input type="checkbox" name="tags" value="${t}" ${d.tags?.includes(t)?'checked':''}> ${t}</label>`).join('')}</div></div>
+  <label class="f"><span>Allergens (comma separated)</span><input class="field" name="allergens" value="${esc((d.allergens||[]).join(', '))}" placeholder="Gluten, Dairy, Nuts"></label>
+  <div class="row mt8">${it?`<button class="btn danger" type="button" data-a="itemDel" data-v="${it.id}">Delete</button>`:''}<span class="grow"></span><button class="btn ghost" type="button" data-a="closeModal">Cancel</button><button class="btn primary">Save</button></div></form>`)}
+function pInsights(m,os){const del=os.filter(o=>o.status==='delivered');const gross=del.reduce((a,o)=>a+Number(o.subtotal),0);const comm=del.reduce((a,o)=>a+Number(o.commission),0);const hrs=Array.from({length:24},(_,h)=>os.filter(o=>new Date(o.created_at).getHours()===h).length);const mx=Math.max(1,...hrs);const rated=os.filter(o=>o.rating);const prepAcc=os.filter(o=>o.ready_at&&o.accepted_at);const onTimePrep=prepAcc.filter(o=>(new Date(o.ready_at)-new Date(o.accepted_at))/60000<=o.prep_min+1).length;
+  return `<div class="g2e"><div class="card"><div class="card-h"><h3>Orders by hour</h3><span class="eyebrow">Last 24 hours</span></div><div class="bars">${hrs.map((v,h)=>`<i class="${h===new Date().getHours()?'hi':''}" style="height:${v/mx*100}%"></i>`).join('')}</div><div class="chart-x"><span>0:00</span><span>6:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div></div>
+  <div class="card"><div class="card-h"><h3>Payout statement</h3><span class="eyebrow">Last 24 hours</span></div><div class="bill"><div><span class="muted">Gross food sales</span><span>${money(gross)}</span></div><div><span class="muted">Commission ${S.settings.pricing.commission}%</span><span>−${money(comm)}</span></div><div class="tot"><span>Net payable</span><span>${money(gross-comm)}</span></div></div><p class="faint mt8" style="font-size:12px">Paid to account ending ${esc(m.payout_last4||'····')}</p></div></div>
+  <div class="g2e"><div class="card"><h3>Prep accuracy</h3><div class="kpi" style="border:0;padding:0"><div class="v acc">${prepAcc.length?Math.round(onTimePrep/prepAcc.length*100)+'%':'—'}</div><div class="d">of orders ready within your quoted prep time</div></div></div><div class="card"><h3>Feedback</h3>${rated.slice(0,5).map(o=>`<div class="mitem"><span class="mono acc">${o.rating}/5</span><span class="grow muted" style="font-size:12.5px">${esc(o.feedback||'No comment')}</span></div>`).join('')||'<p class="muted mt8">No ratings yet.</p>'}</div></div>`}
+
+/* ============ Courier ============ */
+let watchId=null,simTimer=null,lastPing=0;
+async function vDrive(){
+  const {data:c}=await sb.from('couriers').select('*').eq('user_id',S.user.id).maybeSingle();S.data.courier=c;
+  if(!c||S.ui.editCourier)return dOnboard(c);
+  if(c.status!=='approved')return `<div class="page fade-in" style="max-width:640px"><div class="eyebrow">Courier application</div><h1 class="h-display mt8" style="font-size:40px">${c.status==='pending'?'Your application is <em>in review</em>.':c.status==='rejected'?'Your application needs changes.':'Your courier account is suspended.'}</h1><div class="card mt20"><div class="row between"><b>${esc(c.full_name)}</b><span class="pill ${c.status==='pending'?'warn':'bad'}">${c.status}</span></div><p class="muted mt8">${esc(c.vehicle)} · ${esc(c.plate||'')} · licence ${c.licence_path?'uploaded':'not uploaded'}</p>${c.review_note?`<div class="note warn mt12">Reviewer note: ${esc(c.review_note)}</div>`:''}<p class="muted mt12" style="font-size:13px">This page updates automatically when an admin reviews your profile.</p><button class="btn mt16" data-a="editCourier">Edit application</button></div></div>`;
+  const {data:mine}=await sb.from('orders').select('*').eq('courier_id',c.id).order('created_at',{ascending:false}).limit(100);
+  const active=(mine||[]).find(o=>ACTIVE.includes(o.status));
+  let offers=[];if(c.online&&!active){const {data}=await sb.from('orders').select('id,merchant_id,lat,lng,courier_pay,items,status,created_at,mode,pay,total,addr_line').is('courier_id',null).in('status',['preparing','ready']).eq('mode','delivery').order('created_at').limit(30);offers=data||[]}
+  const mids=[...new Set([...offers.map(o=>o.merchant_id),active?.merchant_id].filter(Boolean))];let mm={};if(mids.length){const {data}=await sb.from('merchants').select('id,name,lat,lng,address_line,phone').in('id',mids);(data||[]).forEach(x=>mm[x.id]=x)}
+  S.data.dActive=active;S.data.dMerchants=mm;S.data.offers=offers;
+  const done=(mine||[]).filter(o=>o.status==='delivered');const todayDone=done.filter(o=>new Date(o.delivered_at).toDateString()===new Date().toDateString());
+  const earnToday=todayDone.reduce((a,o)=>a+Number(o.courier_pay),0);
+  let main='';
+  if(!c.online)main=`<div class="card" style="text-align:center;padding:32px 20px"><div class="eyebrow">You're offline</div><h2 class="serif mt8" style="font-size:28px">Ready to ride?</h2><p class="muted mt8">Going online shares your location with dispatch while you work.</p><button class="btn primary lg mt20" data-a="goOnline">Go online</button></div>`;
+  else if(active){const m=mm[active.merchant_id]||{};const st=active.status;
+    main=`<div class="card"><div class="row between"><div><div class="eyebrow">Active delivery · FD-${active.id}</div><h2 class="serif mt8" style="font-size:24px">${st==='picked_up'?'Deliver to '+esc(active.cust_name||'customer'):'Pick up at '+esc(m.name||'restaurant')}</h2></div><b class="acc serif" style="font-size:26px">${money(active.courier_pay)}</b></div>
+    <div class="mt12">${mapBox('dmap',300)}</div>
+    <p class="muted mt12" style="font-size:13px">${st==='picked_up'?esc(active.addr_line||''):esc(m.address_line||'')} ${st!=='picked_up'&&m.phone?' · '+esc(m.phone):''}</p>
+    ${active.pay==='cash'?`<div class="note warn mt12">Collect ${money(active.total)} in cash at handover.</div>`:''}
+    <div style="font-size:13px" class="mt12">${(active.items||[]).map(i=>`<div>${i.qty}× ${esc(i.name)}</div>`).join('')}</div>
+    ${st==='preparing'?'<div class="note mt12">The kitchen is still preparing this order. Head over; you can confirm pickup once it is marked ready.</div>':''}
+    ${st==='ready'?`<button class="btn primary lg block mt16" data-a="dPickup" data-v="${active.id}">Confirm pickup</button>`:''}
+    ${st==='picked_up'?`<div class="mt16"><b>Enter the customer's PIN</b><div class="pinbox${S.ui.pinErr?' shake':''}">${[0,1,2,3].map(i=>`<span class="${S.ui.pin[i]?'f':''}">${S.ui.pin[i]||''}</span>`).join('')}</div>${S.ui.pinErr?`<p style="color:var(--bad);font-size:12.5px;text-align:center;margin-top:6px">${esc(S.ui.pinErr)}</p>`:''}<div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-a="key" data-v="${n}">${n}</button>`).join('')}<button data-a="photoProof" style="font:500 11px var(--f-body)">Photo proof</button><button data-a="key" data-v="0">0</button><button data-a="key" data-v="del" aria-label="Delete">⌫</button></div></div>`:''}
+    <div class="row mt16"><button class="btn sm ghost" data-a="simToggle">${simTimer?'Stop simulated driving':'Simulate driving (desk testing)'}</button></div></div>`}
+  else main=`<div class="card"><div class="card-h"><h3>Available deliveries</h3><span class="pill ok">Online</span></div>${mapBox('omap',240)}${offers.length?offers.map(o=>{const m=mm[o.merchant_id]||{};const d=km(c.lat,c.lng,m.lat,m.lng),d2=km(m.lat,m.lng,o.lat,o.lng);return `<div class="ord"><div class="row between"><div><b>${esc(m.name||'')}</b><div class="muted" style="font-size:12px">${d.toFixed(1)} km to pickup · ${d2.toFixed(1)} km to drop-off · ${(o.items||[]).length} items${o.pay==='cash'?' · cash':''}</div></div><b class="acc serif" style="font-size:22px">${money(o.courier_pay)}</b></div><button class="btn primary block mt12" data-a="claim" data-v="${o.id}">Accept delivery</button></div>`}).join(''):'<div class="empty">No deliveries waiting right now. New ones appear here automatically.</div>'}</div>`;
+  return `<div class="page fade-in" style="max-width:720px"><div class="c-head"><div><div class="eyebrow">Courier · ${esc(c.vehicle)} · ${esc(c.plate||'')}</div><h1>${esc(c.full_name)}</h1></div><div class="row"><span class="muted" style="font-size:13px">${c.online?'Online':'Offline'}</span><button class="switch" role="switch" aria-checked="${c.online}" data-a="${c.online?'goOffline':'goOnline'}" aria-label="Online"><i></i></button></div></div>
+  <div class="kpis"><div class="kpi"><div class="eyebrow">Earned today</div><div class="v acc">${money(earnToday)}</div></div><div class="kpi"><div class="eyebrow">Trips today</div><div class="v">${todayDone.length}</div></div><div class="kpi"><div class="eyebrow">All time</div><div class="v">${done.length}</div></div><div class="kpi"><div class="eyebrow">Rating</div><div class="v">${c.rating}</div></div></div>
+  ${main}
+  <div class="card mt12"><div class="card-h"><h3>Recent trips</h3></div>${done.slice(0,8).map(o=>`<div class="mitem"><b class="mono" style="font-size:12.5px">FD-${o.id}</b><span class="grow muted" style="font-size:12.5px">${dt(o.delivered_at)} · ${o.proof||''}</span><b>${money(o.courier_pay)}</b></div>`).join('')||'<p class="muted">No trips yet.</p>'}</div></div>`;
+}
+function dOnboard(c){const d=c||{};S.ui.noLive=true;const zones=['Downtown','Uptown','East','West','Harbour'];
+  return `<div class="page fade-in" style="max-width:720px"><div class="eyebrow">Drive with us</div><h1 class="h-display mt8" style="font-size:40px">Create your <em>courier</em> profile</h1><p class="lede">An admin verifies your documents before you can go online.</p>
+  <form class="card mt20 stack" data-f="courier" style="gap:14px">
+   <div class="grid2"><label class="f"><span>Full name</span><input class="field" name="full_name" required value="${esc(d.full_name||S.profile?.full_name||'')}"></label><label class="f"><span>Mobile number</span><input class="field" name="phone" required value="${esc(d.phone||S.profile?.phone||'')}"></label></div>
+   <div class="grid2"><label class="f"><span>Vehicle</span><select class="field" name="vehicle">${['Scooter','E-bike','Motorbike','Car','Bicycle'].map(v=>`<option ${d.vehicle===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="f"><span>Plate number</span><input class="field" name="plate" value="${esc(d.plate||'')}"></label></div>
+   <label class="f"><span>Driving licence number</span><input class="field" name="licence_no" required value="${esc(d.licence_no||'')}"></label>
+   <label class="f"><span>Licence photo or PDF (max 5 MB)${d.licence_path?' · already uploaded':''}</span><input class="field" name="licence" type="file" accept="image/*,.pdf" ${d.licence_path?'':'required'}></label>
+   <div><span class="muted" style="font-size:12.5px">Preferred zones</span><div class="row wrap mt8">${zones.map(z=>`<label class="chip"><input type="checkbox" name="zones" value="${z}" ${(d.zones||[]).includes(z)?'checked':''}> ${z}</label>`).join('')}</div></div>
+   <div class="row"><button class="btn primary lg">${c?'Save application':'Submit application'}</button>${c?'<button class="btn ghost" type="button" data-a="cancelEdit">Cancel</button>':''}</div></form></div>`}
+async function sendPing(lat,lng){if(Date.now()-lastPing<4000)return;lastPing=Date.now();try{await rpc('courier_ping',{p_lat:lat,p_lng:lng})}catch(e){}}
+function startWatch(){if(watchId!=null||!navigator.geolocation)return;watchId=navigator.geolocation.watchPosition(p=>{if(!simTimer)sendPing(p.coords.latitude,p.coords.longitude)},()=>{},{enableHighAccuracy:true,maximumAge:5000})}
+function stopWatch(){if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}}
+function toggleSim(){if(simTimer){clearInterval(simTimer);simTimer=null;render({soft:true});return}
+  simTimer=setInterval(()=>{const c=S.data.courier,a=S.data.dActive;if(!c||!a){clearInterval(simTimer);simTimer=null;return}const m=S.data.dMerchants[a.merchant_id];const tgt=a.status==='picked_up'?{lat:a.lat,lng:a.lng}:{lat:m.lat,lng:m.lng};let lat=c.lat??m.lat,lng=c.lng??m.lng;const f=0.25;lat+=(tgt.lat-lat)*f;lng+=(tgt.lng-lng)*f;c.lat=lat;c.lng=lng;lastPing=0;sendPing(lat,lng);const dm=maps.dmap;if(dm&&dm.mk.me)dm.mk.me.setLatLng([lat,lng])},3000);render({soft:true})}
+
+/* ============ Admin ============ */
+const ATABS=[['overview','grid','Overview'],['map','map','Live map'],['orders','list','Orders'],['restaurants','store','Restaurants'],['couriers','bike','Couriers'],['customers','users','Customers'],['refunds','refund','Refunds'],['promos','tag','Promotions'],['zones','target','Zones'],['settings','gear','Settings'],['audit','shield','Audit log'],['insights','spark','Insights']];
+async function vAdmin(){
+  const since=new Date();since.setHours(0,0,0,0);
+  const [o1,o2,ms,cs,ps,rf,pm,zs,au,ev]=await Promise.all([
+    sb.from('orders').select('*').gte('created_at',since.toISOString()).order('created_at',{ascending:false}).limit(1000),
+    sb.from('orders').select('*').in('status',ACTIVE).lt('created_at',since.toISOString()).limit(200),
+    sb.from('merchants').select('*').order('created_at',{ascending:false}),
+    sb.from('couriers').select('*').order('created_at',{ascending:false}),
+    sb.from('profiles').select('*').order('created_at',{ascending:false}).limit(500),
+    sb.from('refunds').select('*').order('created_at',{ascending:false}).limit(200),
+    sb.from('promos').select('*').order('created_at',{ascending:false}),
+    sb.from('zones').select('*').order('created_at'),
+    sb.from('audit_log').select('*').order('created_at',{ascending:false}).limit(150),
+    sb.from('order_events').select('*').order('created_at',{ascending:false}).limit(60)]);
+  const A={orders:[...(o1.data||[]),...(o2.data||[])],merchants:ms.data||[],couriers:cs.data||[],profiles:ps.data||[],refunds:rf.data||[],promos:pm.data||[],zones:zs.data||[],audit:au.data||[],events:ev.data||[]};
+  A.m=Object.fromEntries(A.merchants.map(x=>[x.id,x]));A.c=Object.fromEntries(A.couriers.map(x=>[x.id,x]));S.data.A=A;
+  const t=S.ui.adminTab;const pendM=A.merchants.filter(m=>m.status==='pending').length,pendC=A.couriers.filter(c=>c.status==='pending').length,pendR=A.refunds.filter(r=>r.status==='pending').length;
+  const badge={restaurants:pendM,couriers:pendC,refunds:pendR,orders:A.orders.filter(o=>ACTIVE.includes(o.status)).length};
+  const fn={overview:aOverview,map:aMap,orders:aOrders,restaurants:aRestaurants,couriers:aCouriers,customers:aCustomers,refunds:aRefunds,promos:aPromos,zones:aZones,settings:aSettings,audit:aAudit,insights:aInsights}[t]||aOverview;
+  S.ui.noLive=['settings','zones','promos'].includes(t);
+  return `<div class="console"><nav class="side"><div class="eyebrow">Admin console</div>${ATABS.map(x=>`<button class="${t===x[0]?'on':''}" data-a="aTab" data-v="${x[0]}">${ic(x[1])}${x[2]}${badge[x[0]]?`<span class="cnt">${badge[x[0]]}</span>`:''}</button>`).join('')}</nav><div class="cmain fade-in">${await fn(A)}</div></div>`;
+}
+function aHead(eb,title,right){return `<div class="c-head"><div><div class="eyebrow">${eb}</div><h1>${title}</h1></div><div class="row wrap">${right||''}</div></div>`}
+function realFilter(list){return S.ui.showDemo?list:list.filter(o=>!o.is_demo)}
+function demoToggle(){return `<button class="chip${S.ui.showDemo?' on':''}" data-a="demoView">${S.ui.showDemo?'Showing demo traffic':'Real orders only'}</button>`}
+function kpi(l,v,d,cls){return `<div class="kpi"><div class="eyebrow">${l}</div><div class="v ${cls||''}">${v}</div><div class="d">${d||''}</div></div>`}
+function stats(A){const os=realFilter(A.orders).filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString());const live=os.filter(o=>!['cancelled','rejected'].includes(o.status));const del=os.filter(o=>o.status==='delivered');const ontime=del.filter(o=>!o.promised_at||new Date(o.delivered_at)<=new Date(o.promised_at)).length;const gov=live.reduce((a,o)=>a+Number(o.subtotal),0);const comm=del.reduce((a,o)=>a+Number(o.commission),0);const fees=del.reduce((a,o)=>a+Number(o.fee),0);const cpay=del.reduce((a,o)=>a+Number(o.courier_pay)-Number(o.tip),0);const refunds=A.refunds.filter(r=>r.status==='approved'&&new Date(r.created_at).toDateString()===new Date().toDateString()).reduce((a,r)=>a+Number(r.amount),0);
+  return {os,live,del,gov,onTime:del.length?ontime/del.length:null,active:realFilter(A.orders).filter(o=>ACTIVE.includes(o.status)),online:A.couriers.filter(c=>c.online&&c.status==='approved'),revenue:comm+fees,contrib:comm+fees-cpay-refunds,refunds,late:realFilter(A.orders).filter(o=>ACTIVE.includes(o.status)&&o.promised_at&&new Date(o.promised_at)<new Date())}}
+function aOverview(A){const s=stats(A);const hrs=Array.from({length:24},(_,h)=>s.os.filter(o=>new Date(o.created_at).getHours()===h).length);const mx=Math.max(1,...hrs);
+  setTimeout(()=>drawOpsMap('ovmap',A),60);
+  const pend=A.merchants.filter(m=>m.status==='pending').length+A.couriers.filter(c=>c.status==='pending').length+A.refunds.filter(r=>r.status==='pending').length;
+  return aHead(`Operations · ${esc(S.settings.market.city||'')}`,'Live operations',demoToggle())+`<div class="kpis">${kpi('Orders today',s.live.length,`${s.active.length} active now`)}${kpi('Gross order value',moneyK(s.gov),'food and goods')}${kpi('On-time delivery',s.onTime==null?'—':Math.round(s.onTime*100)+'%',`${s.late.length} running late`,s.onTime!=null&&s.onTime>=.95?'acc':'')}${kpi('Couriers online',s.online.length,`${A.couriers.filter(c=>!c.is_demo&&c.online).length} real · ${A.couriers.filter(c=>c.is_demo&&c.online).length} demo`)}${kpi('Contribution',moneyK(s.contrib),'commission + fees − courier pay − refunds','acc')}${kpi('Needs approval',pend,'partners and refunds',pend?'acc':'')}</div>
+  <div class="g2"><div class="card"><div class="card-h"><h3>Orders by hour</h3><span class="eyebrow">Today</span></div><div class="bars">${hrs.map((v,h)=>`<i class="${h===new Date().getHours()?'hi':''}" style="height:${v/mx*100}%" title="${h}:00 · ${v}"></i>`).join('')}</div><div class="chart-x"><span>0:00</span><span>6:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div></div><div class="card" style="padding:0;overflow:hidden">${mapBox('ovmap',300)}</div></div>
+  <div class="g2e"><div class="card"><div class="card-h"><h3>Late or at risk</h3><span class="pill ${s.late.length?'warn':'ok'}">${s.late.length}</span></div>${s.late.slice(0,6).map(o=>`<div class="mitem"><b class="mono" style="font-size:12.5px">FD-${o.id}</b><span class="grow muted" style="font-size:12px">${esc(A.m[o.merchant_id]?.name||'')} · ${o.status}</span><button class="btn sm" data-a="aOpenOrder" data-v="${o.id}">Open</button></div>`).join('')||'<p class="muted">Nothing late right now.</p>'}</div>
+  <div class="card"><div class="card-h"><h3>Event stream</h3><span class="eyebrow">Realtime</span></div><div class="feed" data-sc="ovfeed">${A.events.filter(e=>S.ui.showDemo||!e.is_demo).slice(0,30).map(e=>`<div class="ev"><div class="tp">${esc(e.topic)}<span>${tms(e.created_at)}</span></div><p>${esc(e.text)}</p></div>`).join('')}</div></div></div>`}
+function drawOpsMap(id,A){const m=getMap(id,{wheel:true});if(!m)return;const list=[];
+  A.merchants.filter(x=>x.status==='approved').forEach(x=>list.push({key:'m'+x.id,lat:x.lat,lng:x.lng,cls:'mk-m'+(x.is_open?'':' off'),label:x.name}));
+  A.couriers.filter(c=>c.online&&c.status==='approved').forEach(c=>{const busy=A.orders.some(o=>o.courier_id===c.id&&ACTIVE.includes(o.status));list.push({key:'c'+c.id,lat:c.lat,lng:c.lng,cls:'mk-d'+(c.is_demo?' demo':'')+(busy?' busy':''),label:c.full_name+(c.is_demo?' (demo)':'')})});
+  realFilter(A.orders).filter(o=>ACTIVE.includes(o.status)&&o.mode==='delivery').forEach(o=>list.push({key:'o'+o.id,lat:o.lat,lng:o.lng,cls:'mk-o',label:'FD-'+o.id,onClick:()=>aOpenOrder(o.id)}));
+  setMarkers(m,list)}
+function aMap(A){setTimeout(()=>drawOpsMap('bigmap',A),60);return aHead('Dispatch','Live map',demoToggle())+`<div class="card" style="padding:0;overflow:hidden">${mapBox('bigmap',600)}</div><div class="row wrap mt12 muted" style="font-size:12px;gap:16px"><span class="row"><span class="mk-m" style="width:10px;height:10px"></span> Restaurant</span><span class="row"><span class="mk-d" style="width:10px;height:10px;box-shadow:none"></span> Real courier</span><span class="row"><span class="mk-d demo"></span> Demo courier</span><span class="row"><span class="mk-o"></span> Active order (click to open)</span></div>`}
+function aOrders(A){const f=S.ui.orderFilter;let list=realFilter(A.orders);if(f==='active')list=list.filter(o=>ACTIVE.includes(o.status));if(f==='late')list=list.filter(o=>ACTIVE.includes(o.status)&&o.promised_at&&new Date(o.promised_at)<new Date());if(f==='unassigned')list=list.filter(o=>o.mode==='delivery'&&!o.courier_id&&['preparing','ready'].includes(o.status));if(f==='done')list=list.filter(o=>o.status==='delivered');if(f==='issues')list=list.filter(o=>['cancelled','rejected'].includes(o.status));
+  return aHead('Order management','Orders',demoToggle())+`<div class="row wrap" style="margin-bottom:12px">${[['active','Active'],['unassigned','Needs courier'],['late','Late'],['done','Delivered'],['issues','Cancelled / rejected'],['all','All today']].map(x=>`<button class="chip${f===x[0]?' on':''}" data-a="oFilter" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+  <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Placed</th><th>Restaurant</th><th>Customer</th><th>Courier</th><th>Status</th><th class="r">Total</th></tr></thead><tbody>${list.slice(0,150).map(o=>`<tr class="click" data-a="aOpenOrder" data-v="${o.id}"><td class="mono">FD-${o.id}${o.is_demo?' <span class="pill">demo</span>':' <span class="pill ok">real</span>'}</td><td class="muted">${tm(o.created_at)}</td><td>${esc(A.m[o.merchant_id]?.name||'')}</td><td>${esc(o.cust_name||'')}</td><td>${esc(o.courier_name||(o.mode==='pickup'?'Pickup':'—'))}</td><td>${statusPill(o)}</td><td class="r">${money(o.total)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No orders in this view.</td></tr>'}</tbody></table></div></div>`}
+async function aOpenOrder(id){const A=S.data.A;let o=A&&A.orders.find(x=>x.id==id);if(!o){const {data}=await sb.from('orders').select('*').eq('id',id).maybeSingle();o=data}if(!o)return;
+  const [{data:evs},{data:sec}]=await Promise.all([sb.from('order_events').select('*').eq('order_id',id).order('created_at'),sb.from('order_secrets').select('pin').eq('order_id',id).maybeSingle()]);
+  const avail=(A?A.couriers:[]).filter(c=>c.status==='approved'&&c.online);
+  openModal(`<div class="row between"><div><div class="eyebrow">Order detail ${o.is_demo?'· demo':'· real'}</div><h2 class="serif mt8" style="font-size:26px">FD-${o.id} ${statusPill(o)}</h2></div><button class="btn sm ghost" data-a="closeModal" aria-label="Close">${ic('x')}</button></div>
+  <div class="grid2 mt16"><div><div class="eyebrow">Customer</div><p class="mt8">${esc(o.cust_name||'')}<br><span class="muted">${esc(o.cust_phone||'')}</span><br><span class="muted">${esc(o.addr_line||o.mode)}</span></p></div><div><div class="eyebrow">Restaurant · courier</div><p class="mt8">${esc(A?.m[o.merchant_id]?.name||'')}<br><span class="muted">${esc(o.courier_name||'No courier yet')}</span><br><span class="muted">PIN ${esc(sec?.pin||'—')} · proof ${esc(o.proof||'—')}</span></p></div></div>
+  <div class="bill mt16">${(o.items||[]).map(i=>`<div><span>${i.qty}× ${esc(i.name)}</span><span>${money(i.qty*i.price)}</span></div>`).join('')}<div><span class="muted">Fee · tax · tip</span><span>${money(o.fee)} · ${money(o.tax)} · ${money(o.tip)}</span></div>${Number(o.discount)?`<div><span class="muted">Promo ${esc(o.promo||'')}</span><span>−${money(o.discount)}</span></div>`:''}<div class="tot"><span>Total · ${o.pay}</span><span>${money(o.total)}</span></div><div><span class="muted">Commission · courier pay</span><span>${money(o.commission)} · ${money(o.courier_pay)}</span></div></div>
+  ${ACTIVE.includes(o.status)?`<div class="card mt16" style="background:var(--panel2)"><b>Interventions</b>${o.mode==='delivery'&&['preparing','ready'].includes(o.status)?`<div class="row mt12"><select class="field" id="assignSel">${avail.map(c=>`<option value="${c.id}">${esc(c.full_name)}${c.is_demo?' (demo, auto-completes)':''}</option>`).join('')}</select><button class="btn primary" data-a="aAssign" data-v="${o.id}">${o.courier_id?'Reassign':'Assign'}</button></div>`:''}<div class="row mt12"><input class="field" id="cancelReason" placeholder="Reason for cancellation"><button class="btn danger" data-a="aCancel" data-v="${o.id}">Cancel & refund</button></div>${o.status==='placed'?`<button class="btn sm mt12" data-a="aAccept" data-v="${o.id}">Accept on behalf of restaurant</button>`:''}${o.status==='preparing'?`<button class="btn sm mt12" data-a="aReady" data-v="${o.id}">Mark ready on behalf of restaurant</button>`:''}</div>`:''}
+  <div class="eyebrow mt16">Event trail</div><div class="feed mt8" style="max-height:220px">${(evs||[]).map(e=>`<div class="ev"><div class="tp">${esc(e.topic)} · ${esc(e.actor||'')}<span>${tms(e.created_at)}</span></div><p>${esc(e.text)}</p></div>`).join('')}</div>`)}
+function aRestaurants(A){const pend=A.merchants.filter(m=>m.status==='pending');
+  return aHead('Partner network','Restaurants','')+`<div class="card"><div class="card-h"><h3>Applications</h3><span class="pill ${pend.length?'acc':'ok'}">${pend.length} pending</span></div>${pend.map(m=>`<div class="ord"><div class="row between wrap"><div><b>${esc(m.name)}</b> <span class="muted">· ${esc(m.cuisine||'')} · ${esc(m.category)}</span><div class="muted" style="font-size:12.5px;margin-top:4px">${esc(m.address_line||'')} · ${esc(m.phone||'')} · ${esc(m.email||'')}<br>Reg ${esc(m.reg_number||'not provided')} · prep ${m.prep_min} min · payout ····${esc(m.payout_last4||'')} · applied ${dt(m.created_at)}</div></div><div class="row"><button class="btn sm ok" data-a="mStatus" data-v="${m.id}|approved">Approve</button><button class="btn sm danger" data-a="mStatus" data-v="${m.id}|rejected">Reject</button></div></div></div>`).join('')||'<p class="muted">No applications waiting.</p>'}</div>
+  <div class="card mt12"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Restaurant</th><th>Type</th><th>Status</th><th>Open</th><th class="r">Orders today</th><th class="r">Prep</th><th></th></tr></thead><tbody>${A.merchants.filter(m=>m.status!=='pending').map(m=>{const n=A.orders.filter(o=>o.merchant_id===m.id).length;return `<tr><td><b>${esc(m.name)}</b></td><td>${m.is_demo?'<span class="pill">demo</span>':'<span class="pill ok">real</span>'}</td><td>${{approved:'<span class="pill ok">approved</span>',rejected:'<span class="pill bad">rejected</span>',suspended:'<span class="pill bad">suspended</span>'}[m.status]||m.status}</td><td>${m.is_open?'Yes':'Paused'}</td><td class="r">${n}</td><td class="r">${m.prep_min}m</td><td>${m.status==='approved'?`<button class="btn sm danger" data-a="mStatus" data-v="${m.id}|suspended">Suspend</button>`:`<button class="btn sm ok" data-a="mStatus" data-v="${m.id}|approved">${m.status==='rejected'?'Approve':'Reinstate'}</button>`}</td></tr>`}).join('')}</tbody></table></div></div>`}
+function aCouriers(A){const pend=A.couriers.filter(c=>c.status==='pending');
+  return aHead('Courier workforce','Couriers','')+`<div class="card"><div class="card-h"><h3>Applications</h3><span class="pill ${pend.length?'acc':'ok'}">${pend.length} pending</span></div>${pend.map(c=>`<div class="ord"><div class="row between wrap"><div><b>${esc(c.full_name)}</b> <span class="muted">· ${esc(c.vehicle)} · ${esc(c.plate||'')}</span><div class="muted" style="font-size:12.5px;margin-top:4px">${esc(c.phone||'')} · licence ${esc(c.licence_no||'')} · zones ${esc((c.zones||[]).join(', ')||'any')} · applied ${dt(c.created_at)}</div></div><div class="row wrap">${c.licence_path?`<button class="btn sm" data-a="viewDoc" data-v="${esc(c.licence_path)}">${ic('doc')} View licence</button>`:'<span class="pill warn">No document</span>'}<button class="btn sm ok" data-a="cStatus" data-v="${c.id}|approved">Approve</button><button class="btn sm danger" data-a="cStatus" data-v="${c.id}|rejected">Reject</button></div></div></div>`).join('')||'<p class="muted">No applications waiting.</p>'}</div>
+  <div class="card mt12"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Courier</th><th>Type</th><th>Status</th><th>Online</th><th>Vehicle</th><th class="r">Trips today</th><th>Last seen</th><th></th></tr></thead><tbody>${A.couriers.filter(c=>c.status!=='pending').map(c=>`<tr><td><b>${esc(c.full_name)}</b></td><td>${c.is_demo?'<span class="pill">demo</span>':'<span class="pill ok">real</span>'}</td><td>${c.status}</td><td>${c.online?'<span class="pill ok">online</span>':'<span class="pill">offline</span>'}</td><td>${esc(c.vehicle)}</td><td class="r">${A.orders.filter(o=>o.courier_id===c.id&&o.status==='delivered').length}</td><td class="muted">${tm(c.last_ping)}</td><td>${c.status==='approved'?`<button class="btn sm danger" data-a="cStatus" data-v="${c.id}|suspended">Suspend</button>`:`<button class="btn sm ok" data-a="cStatus" data-v="${c.id}|approved">Reinstate</button>`}${c.licence_path?` <button class="btn sm ghost" data-a="viewDoc" data-v="${esc(c.licence_path)}">Licence</button>`:''}</td></tr>`).join('')}</tbody></table></div></div>`}
+function aCustomers(A){return aHead('Accounts','Customers & users',`<span class="muted" style="font-size:13px">${A.profiles.length} accounts</span>`)+`<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th class="r">Orders today</th><th>Roles</th><th>Status</th><th></th></tr></thead><tbody>${A.profiles.map(p=>{const mer=A.merchants.find(m=>m.owner_id===p.id);const cou=A.couriers.find(c=>c.user_id===p.id);return `<tr><td><b>${esc(p.full_name||'')}</b></td><td class="muted">${esc(p.email||'')}</td><td class="muted">${dt(p.created_at)}</td><td class="r">${A.orders.filter(o=>o.customer_id===p.id).length}</td><td>${p.is_admin?'<span class="pill acc">admin</span> ':''}${mer?'<span class="pill">restaurant</span> ':''}${cou?'<span class="pill">courier</span>':''}</td><td>${p.status==='active'?'<span class="pill ok">active</span>':'<span class="pill bad">suspended</span>'}</td><td>${p.id===S.user.id?'<span class="faint">you</span>':`<button class="btn sm ${p.status==='active'?'danger':'ok'}" data-a="uStatus" data-v="${p.id}|${p.status==='active'?'suspended':'active'}">${p.status==='active'?'Suspend':'Reactivate'}</button> <button class="btn sm ghost" data-a="uAdmin" data-v="${p.id}|${p.is_admin?0:1}">${p.is_admin?'Remove admin':'Make admin'}</button>`}</td></tr>`}).join('')}</tbody></table></div></div>`}
+function aRefunds(A){const pend=A.refunds.filter(r=>r.status==='pending');
+  return aHead('Customer care',`Refunds`,`<span class="muted" style="font-size:13px">Auto-approval limit ${money(S.settings.pricing.refund_limit)}</span>`)+`<div class="card"><div class="card-h"><h3>Awaiting approval</h3><span class="pill ${pend.length?'acc':'ok'}">${pend.length}</span></div>${pend.map(r=>`<div class="mitem"><div class="grow"><b>FD-${r.order_id} · ${money(r.amount)}</b><div class="muted" style="font-size:12.5px">${esc(r.reason||'')} · ${dt(r.created_at)}</div></div><button class="btn sm" data-a="aOpenOrder" data-v="${r.order_id}">Order</button><button class="btn sm ok" data-a="refund" data-v="${r.id}|1">Approve</button><button class="btn sm danger" data-a="refund" data-v="${r.id}|0">Reject</button></div>`).join('')||'<p class="muted">Nothing waiting.</p>'}</div>
+  <div class="card mt12"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th class="r">Amount</th><th>Reason</th><th>Decision</th><th>When</th></tr></thead><tbody>${A.refunds.filter(r=>r.status!=='pending').slice(0,60).map(r=>`<tr><td class="mono">FD-${r.order_id}</td><td class="r">${money(r.amount)}</td><td>${esc(r.reason||'')}</td><td>${r.status==='approved'?'<span class="pill ok">approved</span>':'<span class="pill bad">rejected</span>'} ${r.auto?'<span class="pill">auto</span>':''}</td><td class="muted">${dt(r.decided_at||r.created_at)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No refunds yet.</td></tr>'}</tbody></table></div></div>`}
+function aPromos(A){return aHead('Growth','Promotions','')+`<form class="card row wrap" data-f="promo" style="gap:10px;align-items:flex-end"><label class="f"><span>Code</span><input class="field" name="code" required style="text-transform:uppercase;width:140px"></label><label class="f"><span>Type</span><select class="field" name="kind"><option value="percent">Percent off</option><option value="flat">Flat amount off</option><option value="free_delivery">Free delivery</option></select></label><label class="f"><span>Value</span><input class="field" name="value" type="number" step="0.01" min="0" value="10" style="width:110px"></label><label class="f"><span>Max discount</span><input class="field" name="max_discount" type="number" step="0.01" min="0" style="width:120px"></label><button class="btn primary">Create code</button></form>
+  <div class="card mt12"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Code</th><th>Type</th><th class="r">Value</th><th class="r">Max</th><th class="r">Uses</th><th>Active</th><th></th></tr></thead><tbody>${A.promos.map(p=>`<tr><td class="mono"><b>${esc(p.code)}</b></td><td>${p.kind.replace('_',' ')}</td><td class="r">${p.kind==='percent'?p.value+'%':p.kind==='flat'?money(p.value):'—'}</td><td class="r">${p.max_discount!=null?money(p.max_discount):'—'}</td><td class="r">${p.uses}</td><td><button class="switch" role="switch" aria-checked="${p.active}" data-a="promoToggle" data-v="${esc(p.code)}" aria-label="Active"><i></i></button></td><td><button class="btn sm ghost" data-a="promoDel" data-v="${esc(p.code)}">Delete</button></td></tr>`).join('')}</tbody></table></div></div>`}
+function aZones(A){setTimeout(()=>{const m=getMap('zmap',{});if(!m)return;if(m.circles)m.circles.forEach(c=>m.map.removeLayer(c));m.circles=A.zones.map(z=>L.circle([z.lat,z.lng],{radius:z.radius_km*1000,color:z.active?'#FF5101':'#5F5A50',weight:1.5,fillOpacity:.08}).bindTooltip(z.name).addTo(m.map));m.map.off('click');m.map.on('click',e=>{S.ui.zDraft={lat:e.latlng.lat,lng:e.latlng.lng};const f=$('[data-f="zone"]');if(f){f.lat.value=e.latlng.lat.toFixed(5);f.lng.value=e.latlng.lng.toFixed(5)}});},60);
+  return aHead('Service area','Zones & geofencing','')+`<div class="note" style="font-size:13px">${A.zones.some(z=>z.active)?'Delivery addresses must fall inside an active zone. Each zone can carry a delivery-fee multiplier.':'No active zones yet, so every address within 25 km of a restaurant is accepted. Add a zone to restrict the service area.'}</div>
+  <div class="g2 mt12"><div class="card" style="padding:0;overflow:hidden">${mapBox('zmap',420)}</div><form class="card stack" data-f="zone"><b>New zone</b><p class="muted" style="font-size:12.5px">Click the map to set the centre.</p><label class="f"><span>Name</span><input class="field" name="name" required></label><div class="grid2"><label class="f"><span>Latitude</span><input class="field" name="lat" required></label><label class="f"><span>Longitude</span><input class="field" name="lng" required></label></div><div class="grid2"><label class="f"><span>Radius (km)</span><input class="field" name="radius_km" type="number" step="0.1" value="3"></label><label class="f"><span>Fee multiplier</span><input class="field" name="fee_multiplier" type="number" step="0.05" value="1"></label></div><button class="btn primary">Add zone</button></form></div>
+  <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zone</th><th class="r">Radius</th><th class="r">Fee ×</th><th>Active</th><th></th></tr></thead><tbody>${A.zones.map(z=>`<tr><td><b>${esc(z.name)}</b></td><td class="r">${z.radius_km} km</td><td class="r">${z.fee_multiplier}</td><td><button class="switch" role="switch" aria-checked="${z.active}" data-a="zoneToggle" data-v="${z.id}" aria-label="Active"><i></i></button></td><td><button class="btn sm ghost" data-a="zoneDel" data-v="${z.id}">Delete</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">No zones defined.</td></tr>'}</tbody></table></div></div>`}
+function aSettings(){const mk=S.settings.market,pr=S.settings.pricing,dm=S.settings.demo;
+  return aHead('Configuration','Market, pricing & demo','')+`<div class="g2e"><form class="card stack" data-f="market"><h3>Market</h3><div class="grid2"><label class="f"><span>City</span><input class="field" name="city" value="${esc(mk.city||'')}"></label><label class="f"><span>Currency code</span><input class="field" name="currency" value="${esc(mk.currency||'')}"></label></div><div class="grid2"><label class="f"><span>Currency symbol</span><input class="field" name="symbol" value="${esc(mk.symbol||'')}"></label><label class="f"><span>Map zoom</span><input class="field" name="zoom" type="number" value="${mk.zoom||13}"></label></div><div class="grid2"><label class="f"><span>Centre latitude</span><input class="field" name="lat" value="${mk.lat}"></label><label class="f"><span>Centre longitude</span><input class="field" name="lng" value="${mk.lng}"></label></div><p class="faint" style="font-size:12px">Prices are stored in this currency. Changing it does not convert existing menus.</p><button class="btn primary">Save market</button></form>
+  <form class="card stack" data-f="pricing"><h3>Pricing & policy</h3><div class="grid2"><label class="f"><span>Commission %</span><input class="field" name="commission" type="number" step="0.5" value="${pr.commission}"></label><label class="f"><span>Tax %</span><input class="field" name="tax_pct" type="number" step="0.1" value="${pr.tax_pct}"></label></div><div class="grid2"><label class="f"><span>Base delivery fee</span><input class="field" name="base_fee" type="number" step="0.5" value="${pr.base_fee}"></label><label class="f"><span>Per km after 2 km</span><input class="field" name="per_km" type="number" step="0.1" value="${pr.per_km}"></label></div><div class="grid2"><label class="f"><span>Surge multiplier</span><input class="field" name="surge" type="number" step="0.05" min="1" value="${pr.surge}"></label><label class="f"><span>Courier share of fee %</span><input class="field" name="courier_share" type="number" step="1" value="${pr.courier_share}"></label></div><label class="f"><span>Refund auto-approval limit</span><input class="field" name="refund_limit" type="number" step="1" value="${pr.refund_limit}"></label><button class="btn primary">Save pricing</button></form></div>
+  <div class="card row between wrap"><div><h3>Demo traffic</h3><p class="muted mt8" style="font-size:13px">Labelled demo restaurants and couriers generate background orders every 20 seconds. Demo kitchens also auto-accept real orders placed with them.</p></div><button class="switch" role="switch" aria-checked="${!!dm.traffic}" data-a="demoTraffic" aria-label="Demo traffic"><i></i></button></div>`}
+function aAudit(A){return aHead('Governance','Audit log','')+`<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th></tr></thead><tbody>${A.audit.map(a=>`<tr><td class="muted">${dt(a.created_at)}</td><td>${esc(a.actor_email||'system')}</td><td class="mono acc">${esc(a.action)}</td><td style="white-space:normal;max-width:480px">${esc(String(a.detail||'').slice(0,240))}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No admin actions recorded yet.</td></tr>'}</tbody></table></div></div>`}
+function aInsights(A){const s=stats(A);const byM={};s.del.forEach(o=>{const k=o.merchant_id;byM[k]=byM[k]||{n:0,late:0,gov:0};byM[k].n++;byM[k].gov+=Number(o.subtotal);if(o.promised_at&&new Date(o.delivered_at)>new Date(o.promised_at))byM[k].late++});const ranked=Object.entries(byM).sort((a,b)=>b[1].late/b[1].n-a[1].late/a[1].n);
+  const brief=`Today ${S.ui.showDemo?'(including demo traffic)':'(real orders only)'}: ${s.live.length} orders worth ${moneyK(s.gov)}, ${s.onTime==null?'no deliveries completed yet':Math.round(s.onTime*100)+'% delivered on time'}. Contribution is ${moneyK(s.contrib)} after courier pay and ${moneyK(s.refunds)} of refunds. ${s.late.length?s.late.length+' active orders are running late.':'No active orders are late.'} ${A.refunds.filter(r=>r.status==='pending').length} refunds and ${A.merchants.filter(m=>m.status==='pending').length+A.couriers.filter(c=>c.status==='pending').length} partner applications are waiting for a decision.`;
+  return aHead('Executive','Business briefing','')+`<div class="card"><p class="serif" style="font-size:20px;line-height:1.5;max-width:70ch">${esc(brief)}</p></div>
+  <div class="g2e mt12"><div class="card"><div class="card-h"><h3>Late deliveries by restaurant</h3></div>${ranked.slice(0,6).map(([id,v])=>`<div class="mitem"><span class="grow">${esc(A.m[id]?.name||'')}</span><div class="lbar" style="width:120px"><i style="width:${v.late/v.n*100}%;background:var(--warn)"></i></div><span class="mono muted" style="width:70px;text-align:right">${v.late}/${v.n}</span></div>`).join('')||'<p class="muted">No deliveries yet today.</p>'}</div>
+  <div class="card"><div class="card-h"><h3>Unit economics today</h3></div><div class="bill"><div><span class="muted">Gross order value</span><span>${money(s.gov)}</span></div><div><span class="muted">Platform revenue</span><span>${money(s.revenue)}</span></div><div><span class="muted">Refunds</span><span>−${money(s.refunds)}</span></div><div class="tot"><span>Contribution</span><span>${money(s.contrib)}</span></div><div><span class="muted">Per delivered order</span><span>${money(s.del.length?s.contrib/s.del.length:0)}</span></div></div></div></div>
+  <p class="faint mt12" style="font-size:12px">Figures are computed from the order ledger in real time. Connecting an LLM for natural-language questions needs a server-side API key and is the next step.</p>`}
+
+/* ============ Modal ============ */
+function openModal(html){$('#modal').innerHTML=`<div class="modal-bg" data-a="bgClose"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
+function closeModal(){$('#modal').innerHTML='';Object.keys(maps).forEach(k=>{if(['addrmap'].includes(k)){try{maps[k].map.remove()}catch(e){}delete maps[k]}});if(S.ui.pending){S.ui.pending=false;softRender()}}
+
+/* ============ Actions ============ */
+async function withBusy(btn,fn){if(btn)btn.classList.add('busy');try{await fn()}catch(e){toast(errMsg(e),true)}finally{if(btn&&btn.isConnected)btn.classList.remove('busy')}}
+const H={
+  reload:()=>render(),
+  closeModal:()=>closeModal(),
+  bgClose:(v,el,e)=>{if(e.target===el)closeModal()},
+  authTab:v=>{S.ui.authTab=v;render()},
+  demoLogin:(v,b)=>withBusy(b,async()=>{const d=DEMO_LOGINS[+v];lsSet('dc13-next',d.next);const {error}=await sb.auth.signInWithPassword({email:d.email,password:d.pw});if(error)throw error}),
+  google:(v,b)=>withBusy(b,async()=>{const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:redirectUrl()}});if(error)throw error}),
+  resend:(v,b)=>withBusy(b,async()=>{const {error}=await sb.auth.resend({type:'signup',email:S.ui.verifyEmail,options:{emailRedirectTo:redirectUrl()}});if(error)throw error;toast('Verification email sent again')}),
+  signout:async()=>{stopWatch();await sb.auth.signOut();S.ui.cart={mid:null,items:[]};saveCart();location.hash='#/'},
+  cat:v=>{S.ui.cat=v;render({soft:true})},
+  cartAdd:(v,b)=>{const c=S.ui.cart;const mid=b.dataset.m;if(c.mid&&c.mid!==mid&&c.items.length){openModal(`<h2 class="serif" style="font-size:24px">Start a new cart?</h2><p class="muted mt8">Your cart has items from ${esc(c.mname||'another restaurant')}.</p><div class="row mt20"><button class="btn ghost grow" data-a="closeModal">Keep cart</button><button class="btn primary grow" data-a="newCart" data-v="${v}" data-m="${mid}">New cart</button></div>`);return}addToCart(v,mid)},
+  newCart:(v,b)=>{S.ui.cart={mid:null,items:[]};closeModal();addToCart(v,b.dataset.m)},
+  cartDec:v=>{const c=S.ui.cart;const it=c.items.find(x=>x.id===v);if(!it)return;it.qty--;if(it.qty<=0)c.items=c.items.filter(x=>x!==it);if(!c.items.length){c.mid=null}saveCart();render({soft:true})},
+  mode:v=>{S.ui.mode=v;if(v==='pickup'&&S.ui.pay==='cash')S.ui.pay='card';render({soft:true})},
+  tip:v=>{S.ui.tip=+v;render({soft:true})},
+  pay:v=>{S.ui.pay=v;render({soft:true})},
+  promo:async(v,b)=>{const code=($('#promo')?.value||'').trim().toUpperCase();if(!code){S.ui.promo='';S.data.promo=null;S.ui.promoMsg='';return render({soft:true})}const {data}=await sb.from('promos').select('*').eq('code',code).eq('active',true).maybeSingle();if(data){S.ui.promo=code;S.data.promo=data;S.ui.promoMsg=`${code} applied`}else{S.ui.promo='';S.data.promo=null;S.ui.promoMsg=`${code} is not a valid code`}render({soft:true})},
+  addrOpen:()=>{S.ui.addrDraft=null;addrModal()},
+  addrPick:v=>{const a=(S.data.addrs||[]).find(x=>x.id===v);if(a){S.ui.addr={line:a.line,lat:a.lat,lng:a.lng,label:a.label};render({soft:true})}},
+  addrDel:async v=>{await sb.from('addresses').delete().eq('id',v);render({soft:true})},
+  geoMe:async(v,b)=>withBusy(b,async()=>{const p=await locate();if(!p)throw new Error('Location is unavailable. Allow location access or drop the pin.');const a=S.ui.addrDraft;a.lat=p.lat;a.lng=p.lng;const m=maps.addrmap;if(m){m.map.setView([p.lat,p.lng],17);setMarkers(m,[{key:'pin',lat:p.lat,lng:p.lng,cls:'mk-c',drag:true,onDrag:ll=>{a.lat=ll.lat;a.lng=ll.lng}}])}const line=await reverseGeocode(p.lat,p.lng);if(line)$('#aline').value=line}),
+  geoSearch:async(v,b)=>withBusy(b,async()=>{const q=$('#geoq').value.trim();if(!q)return;const r=await geocode(q);$('#georesults').innerHTML=r.length?r.map((x,i)=>`<button class="mitem" style="width:100%;background:none;border-left:0;border-right:0;border-top:0;cursor:pointer;text-align:left" data-a="geoPick" data-v="${x.lat},${x.lon}" data-l="${esc(x.display_name)}"><span class="grow" style="font-size:12.5px">${esc(x.display_name)}</span></button>`).join(''):'<p class="muted mt8" style="font-size:12.5px">No matches. Try a nearby landmark or drop the pin.</p>'}),
+  geoPick:(v,b)=>{const [lat,lng]=v.split(',').map(Number);const a=S.ui.addrDraft;a.lat=lat;a.lng=lng;$('#aline').value=b.dataset.l.split(',').slice(0,3).join(',');$('#georesults').innerHTML='';const m=maps.addrmap;if(m){m.map.setView([lat,lng],17);setMarkers(m,[{key:'pin',lat,lng,cls:'mk-c',drag:true,onDrag:ll=>{a.lat=ll.lat;a.lng=ll.lng}}])}},
+  addrSave:async(v,b)=>withBusy(b,async()=>{const a=S.ui.addrDraft;const line=$('#aline').value.trim();if(!line)throw new Error('Add an address line so the courier can find you');a.line=line;a.label=$('#alabel').value;if($('#asave').checked){const {error}=await sb.from('addresses').insert({label:a.label,line,lat:a.lat,lng:a.lng});if(error)throw error}S.ui.addr={...a};closeModal();render({soft:true})}),
+  custCancel:(v,b)=>{openModal(`<h2 class="serif" style="font-size:24px">Cancel this order?</h2><p class="muted mt8">The kitchen hasn't accepted it yet, so card and wallet payments are refunded in full.</p><div class="row mt20"><button class="btn ghost grow" data-a="closeModal">Keep order</button><button class="btn danger grow" data-a="custCancelGo" data-v="${v}">Cancel order</button></div>`)},
+  custCancelGo:(v,b)=>withBusy(b,async()=>{await rpc('customer_cancel',{p_order:+v});closeModal();toast('Order cancelled');render({soft:true})}),
+  star:v=>{S.ui.stars=+v;render({soft:true})},
+  rate:(v,b)=>withBusy(b,async()=>{await rpc('customer_rate',{p_order:+v,p_rating:S.ui.stars,p_feedback:$('#fb')?.value||''});S.ui.stars=0;toast('Thanks for the feedback');render({soft:true})}),
+  refundOpen:v=>{const o=S.data.order;openModal(`<h2 class="serif" style="font-size:24px">Report a problem</h2><p class="muted mt8">Choose what went wrong. Refunds up to ${money(S.settings.pricing.refund_limit)} are approved instantly; larger ones go to a specialist.</p><form class="stack mt16" data-f="refund" data-id="${o.id}">${(o.items||[]).map((i,k)=>`<label class="paym" style="margin:0"><input type="checkbox" name="it" value="${k}"> <span class="grow">${i.qty}× ${esc(i.name)}</span><span>${money(i.qty*i.price)}</span></label>`).join('')}<select class="field" name="reason"><option>Item missing</option><option>Wrong item</option><option>Arrived cold or damaged</option><option>Order never arrived</option></select><button class="btn primary">Request refund</button></form>`)},
+  // restaurant
+  mTab:v=>{S.ui.mTab=v;S.ui.noLive=false;render({soft:true})},
+  editMerchant:()=>{S.ui.editMerchant=true;render()},
+  cancelEdit:()=>{S.ui.editMerchant=false;S.ui.editCourier=false;S.ui.noLive=false;render()},
+  mOpen:(v,b)=>withBusy(b,async()=>{const m=S.data.merchant;const {error}=await sb.from('merchants').update({is_open:!m.is_open}).eq('id',m.id);if(error)throw error;render({soft:true})}),
+  prep:v=>{const [id,d]=v.split(':');S.ui.prep[id]=clamp((S.ui.prep[id]||S.data.merchant.prep_min)+(+d),1,120);render({soft:true})},
+  mAccept:(v,b)=>withBusy(b,async()=>{await rpc('merchant_accept',{p_order:+v,p_prep:S.ui.prep[v]||S.data.merchant.prep_min});render({soft:true})}),
+  mRejectOpen:v=>openModal(`<h2 class="serif" style="font-size:24px">Reject FD-${v}?</h2><p class="muted mt8">The customer is refunded automatically.</p><div class="stack mt16">${['Item unavailable','Kitchen too busy','Closing soon'].map(r=>`<button class="paym" data-a="mReject" data-v="${v}|${r}"><span class="grow">${r}</span></button>`).join('')}</div>`),
+  mReject:(v,b)=>withBusy(b,async()=>{const [id,r]=v.split('|');await rpc('merchant_reject',{p_order:+id,p_reason:r});closeModal();render({soft:true})}),
+  mReady:(v,b)=>withBusy(b,async()=>{await rpc('merchant_ready',{p_order:+v});render({soft:true})}),
+  mCollected:(v,b)=>withBusy(b,async()=>{await rpc('merchant_collected',{p_order:+v});render({soft:true})}),
+  itemOpen:async v=>{if(!v)return itemModal(null);const {data}=await sb.from('menu_items').select('*').eq('id',v).maybeSingle();itemModal(data)},
+  itemAvail:(v,b)=>withBusy(b,async()=>{const on=b.getAttribute('aria-checked')==='true';const {error}=await sb.from('menu_items').update({available:!on}).eq('id',v);if(error)throw error;render({soft:true})}),
+  itemDel:(v,b)=>withBusy(b,async()=>{const {error}=await sb.from('menu_items').delete().eq('id',v);if(error)throw error;closeModal();render({soft:true})}),
+  // courier
+  editCourier:()=>{S.ui.editCourier=true;render()},
+  goOnline:(v,b)=>withBusy(b,async()=>{const p=await locate();const mk=S.settings.market;await rpc('courier_set_online',{p_on:true,p_lat:p?.lat??mk.lat,p_lng:p?.lng??mk.lng});if(!p)toast('Location unavailable. Using the city centre; use simulated driving to test.');startWatch();render({soft:true})}),
+  goOffline:(v,b)=>withBusy(b,async()=>{await rpc('courier_set_online',{p_on:false,p_lat:null,p_lng:null});stopWatch();render({soft:true})}),
+  claim:(v,b)=>withBusy(b,async()=>{await rpc('courier_claim',{p_order:+v});S.ui.pin='';toast('Delivery accepted');if(maps.dmap)maps.dmap.fitted=false;render({soft:true})}),
+  dPickup:(v,b)=>withBusy(b,async()=>{await rpc('courier_pickup',{p_order:+v});if(maps.dmap)maps.dmap.fitted=false;render({soft:true})}),
+  key:v=>{if(v==='del'){S.ui.pin=S.ui.pin.slice(0,-1);S.ui.pinErr='';return render({soft:true})}if(S.ui.pin.length>=4)return;S.ui.pin+=v;S.ui.pinErr='';if(S.ui.pin.length===4){const pin=S.ui.pin;rpc('courier_deliver',{p_order:S.data.dActive.id,p_pin:pin,p_method:'pin'}).then(()=>{S.ui.pin='';toast('Delivered. Nice work.');if(simTimer){clearInterval(simTimer);simTimer=null}render({soft:true})}).catch(e=>{S.ui.pinErr=errMsg(e);S.ui.pin='';render({soft:true})})}render({soft:true})},
+  photoProof:()=>{openModal(`<h2 class="serif" style="font-size:24px">Photo proof of delivery</h2><p class="muted mt8">Use this only when the customer cannot share the PIN. Operations can audit photo deliveries.</p><input type="file" accept="image/*" capture="environment" class="field mt16" id="proofFile"><div class="row mt16"><button class="btn ghost grow" data-a="closeModal">Cancel</button><button class="btn primary grow" data-a="photoGo">Complete delivery</button></div>`)},
+  photoGo:(v,b)=>withBusy(b,async()=>{if(!$('#proofFile').files[0])throw new Error('Take or choose a photo first');await rpc('courier_deliver',{p_order:S.data.dActive.id,p_pin:null,p_method:'photo'});closeModal();toast('Delivered with photo proof');render({soft:true})}),
+  simToggle:()=>toggleSim(),
+  // admin
+  aTab:v=>{S.ui.adminTab=v;render()},
+  demoView:()=>{S.ui.showDemo=!S.ui.showDemo;render({soft:true})},
+  oFilter:v=>{S.ui.orderFilter=v;render({soft:true})},
+  aOpenOrder:v=>aOpenOrder(+v),
+  aAssign:(v,b)=>withBusy(b,async()=>{await rpc('admin_assign',{p_order:+v,p_courier:$('#assignSel').value});closeModal();toast('Courier assigned');render({soft:true})}),
+  aCancel:(v,b)=>withBusy(b,async()=>{const r=$('#cancelReason').value.trim();if(!r)throw new Error('Add a reason for the audit log');await rpc('admin_cancel',{p_order:+v,p_reason:r});closeModal();toast('Order cancelled and refunded');render({soft:true})}),
+  aAccept:(v,b)=>withBusy(b,async()=>{await rpc('merchant_accept',{p_order:+v,p_prep:null});closeModal();render({soft:true})}),
+  aReady:(v,b)=>withBusy(b,async()=>{await rpc('merchant_ready',{p_order:+v});closeModal();render({soft:true})}),
+  mStatus:(v,b)=>{const [id,st]=v.split('|');if(st==='approved'){return withBusy(b,async()=>{const {error}=await sb.from('merchants').update({status:st,review_note:null}).eq('id',id);if(error)throw error;toast('Restaurant '+st);render({soft:true})})}openModal(`<h2 class="serif" style="font-size:24px">${st==='rejected'?'Reject application':'Suspend restaurant'}</h2><label class="f mt16"><span>Note shown to the restaurant</span><textarea class="field" id="rnote" rows="3"></textarea></label><div class="row mt16"><button class="btn ghost grow" data-a="closeModal">Cancel</button><button class="btn danger grow" data-a="mStatusGo" data-v="${v}">Confirm</button></div>`)},
+  mStatusGo:(v,b)=>withBusy(b,async()=>{const [id,st]=v.split('|');const {error}=await sb.from('merchants').update({status:st,review_note:$('#rnote').value||null,is_open:st==='approved'}).eq('id',id);if(error)throw error;closeModal();toast('Restaurant '+st);render({soft:true})}),
+  cStatus:(v,b)=>{const [id,st]=v.split('|');if(st==='approved'){return withBusy(b,async()=>{const {error}=await sb.from('couriers').update({status:st,review_note:null}).eq('id',id);if(error)throw error;toast('Courier '+st);render({soft:true})})}openModal(`<h2 class="serif" style="font-size:24px">${st==='rejected'?'Reject application':'Suspend courier'}</h2><label class="f mt16"><span>Note shown to the courier</span><textarea class="field" id="rnote" rows="3"></textarea></label><div class="row mt16"><button class="btn ghost grow" data-a="closeModal">Cancel</button><button class="btn danger grow" data-a="cStatusGo" data-v="${v}">Confirm</button></div>`)},
+  cStatusGo:(v,b)=>withBusy(b,async()=>{const [id,st]=v.split('|');const {error}=await sb.from('couriers').update({status:st,review_note:$('#rnote').value||null}).eq('id',id);if(error)throw error;closeModal();toast('Courier '+st);render({soft:true})}),
+  viewDoc:(v,b)=>withBusy(b,async()=>{const {data,error}=await sb.storage.from('courier-docs').createSignedUrl(v,300);if(error)throw error;openModal(`<div class="row between"><h2 class="serif" style="font-size:22px">Licence document</h2><button class="btn sm ghost" data-a="closeModal">${ic('x')}</button></div>${/\.pdf$/i.test(v)?`<p class="mt16"><a class="btn" href="${esc(data.signedUrl)}" target="_blank" rel="noopener">Open PDF</a></p>`:`<img src="${esc(data.signedUrl)}" alt="Licence" style="width:100%;border-radius:12px;margin-top:16px">`}<p class="faint mt8" style="font-size:12px">Link expires in 5 minutes.</p>`)}),
+  uStatus:(v,b)=>withBusy(b,async()=>{const [id,st]=v.split('|');const {error}=await sb.from('profiles').update({status:st}).eq('id',id);if(error)throw error;toast('Account '+st);render({soft:true})}),
+  uAdmin:(v,b)=>withBusy(b,async()=>{const [id,on]=v.split('|');const {error}=await sb.from('profiles').update({is_admin:on==='1'}).eq('id',id);if(error)throw error;toast(on==='1'?'Admin access granted':'Admin access removed');render({soft:true})}),
+  refund:(v,b)=>withBusy(b,async()=>{const [id,ok]=v.split('|');await rpc('admin_decide_refund',{p_id:+id,p_approve:ok==='1'});toast(ok==='1'?'Refund approved':'Refund rejected');render({soft:true})}),
+  promoToggle:(v,b)=>withBusy(b,async()=>{const p=S.data.A.promos.find(x=>x.code===v);const {error}=await sb.from('promos').update({active:!p.active}).eq('code',v);if(error)throw error;render({soft:true})}),
+  promoDel:(v,b)=>withBusy(b,async()=>{const {error}=await sb.from('promos').delete().eq('code',v);if(error)throw error;render({soft:true})}),
+  zoneToggle:(v,b)=>withBusy(b,async()=>{const z=S.data.A.zones.find(x=>x.id===v);const {error}=await sb.from('zones').update({active:!z.active}).eq('id',v);if(error)throw error;render({soft:true})}),
+  zoneDel:(v,b)=>withBusy(b,async()=>{const {error}=await sb.from('zones').delete().eq('id',v);if(error)throw error;render({soft:true})}),
+  demoTraffic:(v,b)=>withBusy(b,async()=>{const val={...S.settings.demo,traffic:!S.settings.demo.traffic};const {error}=await sb.from('settings').update({value:val}).eq('key','demo');if(error)throw error;S.settings.demo=val;toast(val.traffic?'Demo traffic on':'Demo traffic off');render({soft:true})}),
+};
+async function addToCart(id,mid){const c=S.ui.cart;const {data:it}=await sb.from('menu_items').select('id,name,price,merchant_id').eq('id',id).maybeSingle();if(!it)return toast('That item is no longer available',true);if(!c.mid){c.mid=mid;const m=(S.data.merchants||[]).find(x=>x.id===mid);if(m)c.mname=m.name;else{const {data}=await sb.from('merchants').select('name').eq('id',mid).maybeSingle();c.mname=data?.name||''}}const ex=c.items.find(x=>x.id===id);if(ex)ex.qty++;else c.items.push({id,name:it.name,price:Number(it.price),qty:1});saveCart();render({soft:true})}
+
+/* ============ Forms ============ */
+const F={
+  auth:async(fd,form)=>{const t=S.ui.authTab;const email=fd.get('email').trim();
+    if(t==='signin'){const {error}=await sb.auth.signInWithPassword({email,password:fd.get('password')});if(error){if(/confirm/i.test(error.message)){S.ui.verifyEmail=email;location.hash='#/verify';return}throw error}return}
+    if(t==='signup'){const {data,error}=await sb.auth.signUp({email,password:fd.get('password'),options:{data:{full_name:fd.get('name')},emailRedirectTo:redirectUrl()}});if(error)throw error;S.ui.verifyEmail=email;if(data.session)return;location.hash='#/verify';return}
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl()});if(error)throw error;toast('Check your email for a reset link');S.ui.authTab='signin';render()},
+  newpw:async fd=>{const {error}=await sb.auth.updateUser({password:fd.get('password')});if(error)throw error;S.ui.recovery=false;toast('Password updated');location.hash='#/'},
+  profile:async fd=>{const {error}=await sb.from('profiles').update({full_name:fd.get('full_name'),phone:fd.get('phone')}).eq('id',S.user.id);if(error)throw error;await loadProfile();toast('Profile saved');render({soft:true})},
+  merchant:async fd=>{const m=S.data.merchant;const p=S.ui.mPin;const row={name:fd.get('name'),cuisine:fd.get('cuisine'),category:fd.get('category'),icon:ICON_BY_CAT[fd.get('category')]||'bowl',phone:fd.get('phone'),email:fd.get('email'),reg_number:fd.get('reg_number'),address_line:fd.get('address_line'),lat:p.lat,lng:p.lng,hours:fd.get('hours'),prep_min:+fd.get('prep_min')||15,delivery_fee:fd.get('delivery_fee')===''?null:+fd.get('delivery_fee'),payout_last4:fd.get('payout_last4')||null};
+    const {error}=m?await sb.from('merchants').update(row).eq('id',m.id):await sb.from('merchants').insert(row);if(error)throw error;S.ui.editMerchant=false;S.ui.noLive=false;S.ui.mPin=null;toast(m?'Restaurant updated':'Application submitted for review');render()},
+  item:async(fd,form)=>{const id=form.dataset.id;const row={name:fd.get('name'),price:+fd.get('price'),category:fd.get('category')||'Menu',description:fd.get('description')||null,tags:fd.getAll('tags'),allergens:String(fd.get('allergens')||'').split(',').map(s=>s.trim()).filter(Boolean)};
+    const {error}=id?await sb.from('menu_items').update(row).eq('id',id):await sb.from('menu_items').insert({...row,merchant_id:S.data.merchant.id});if(error)throw error;closeModal();toast('Menu saved');render({soft:true})},
+  courier:async fd=>{const c=S.data.courier;let path=c?.licence_path||null;const file=fd.get('licence');
+    if(file&&file.size){if(file.size>5*1024*1024)throw new Error('Licence file must be under 5 MB');const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');path=`${S.user.id}/licence-${Date.now()}.${ext}`;const {error:ue}=await sb.storage.from('courier-docs').upload(path,file,{upsert:false,contentType:file.type||undefined});if(ue)throw ue}
+    const row={full_name:fd.get('full_name'),phone:fd.get('phone'),vehicle:fd.get('vehicle'),plate:fd.get('plate'),licence_no:fd.get('licence_no'),licence_path:path,zones:fd.getAll('zones')};
+    const {error}=c?await sb.from('couriers').update(row).eq('id',c.id):await sb.from('couriers').insert(row);if(error)throw error;S.ui.editCourier=false;S.ui.noLive=false;toast(c?'Application updated':'Application submitted for review');render()},
+  refund:async(fd,form)=>{const o=S.data.order;const idx=fd.getAll('it').map(Number);if(!idx.length)throw new Error('Select at least one item');const amt=idx.reduce((a,k)=>a+o.items[k].qty*o.items[k].price,0);const names=idx.map(k=>o.items[k].name).join(', ');const st=await rpc('request_refund',{p_order:o.id,p_amount:+amt.toFixed(2),p_reason:fd.get('reason')+': '+names});closeModal();toast(st==='approved'?`Refund of ${money(amt)} approved`:`Refund sent to a specialist for approval`);render({soft:true})},
+  promo:async fd=>{const {error}=await sb.from('promos').insert({code:fd.get('code').trim().toUpperCase(),kind:fd.get('kind'),value:+fd.get('value')||0,max_discount:fd.get('max_discount')===''?null:+fd.get('max_discount')});if(error)throw error;toast('Promo created');render({soft:true})},
+  zone:async fd=>{const {error}=await sb.from('zones').insert({name:fd.get('name'),lat:+fd.get('lat'),lng:+fd.get('lng'),radius_km:+fd.get('radius_km')||3,fee_multiplier:+fd.get('fee_multiplier')||1});if(error)throw error;toast('Zone added');render({soft:true})},
+  market:async fd=>{const val={city:fd.get('city'),currency:fd.get('currency'),symbol:fd.get('symbol'),lat:+fd.get('lat'),lng:+fd.get('lng'),zoom:+fd.get('zoom')||13};const {error}=await sb.from('settings').update({value:val}).eq('key','market');if(error)throw error;S.settings.market=val;toast('Market saved');render({soft:true})},
+  pricing:async fd=>{const val={};['commission','tax_pct','base_fee','per_km','surge','courier_share','refund_limit'].forEach(k=>val[k]=+fd.get(k));const {error}=await sb.from('settings').update({value:val}).eq('key','pricing');if(error)throw error;S.settings.pricing=val;toast('Pricing saved');render({soft:true})},
+};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t||t.disabled)return;const fn=H[t.dataset.a];if(fn){e.preventDefault();fn(t.dataset.v,t,e)}});
+document.addEventListener('submit',e=>{const f=e.target.closest('[data-f]');if(!f)return;e.preventDefault();const fn=F[f.dataset.f];if(!fn)return;const btn=f.querySelector('button:not([type=button])');withBusy(btn,()=>fn(new FormData(f),f))});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.in==='cq'){S.ui.q=t.value;clearTimeout(t._d);t._d=setTimeout(async()=>{const q=S.ui.q.toLowerCase();const list=(S.data.merchants||[]).filter(m=>(S.ui.cat==='All'||m.category===S.ui.cat)&&(!q||(m.name+' '+(m.cuisine||'')+' '+m.category).toLowerCase().includes(q)));const el=$('#slist');if(el)el.innerHTML=list.map(m=>`<a class="store${m.is_open?'':' closed'}" href="#/eat/store/${m.id}">${cover(m)}<div class="grow"><b>${esc(m.name)}</b><div class="muted" style="font-size:12px">${esc(m.cuisine||'')}</div></div></a>`).join('')||'<div class="empty">No matches.</div>'},150)}if(t.dataset.in==='note')S.ui.note=t.value});
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.btn,.chip,.add,.paym,.keypad button');if(b&&!b.disabled){const r=b.getBoundingClientRect();const s=Math.max(r.width,r.height);const sp=document.createElement('span');sp.className='ripple';sp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;if(getComputedStyle(b).position==='static')b.style.position='relative';b.appendChild(sp);setTimeout(()=>sp.remove(),700)}
+  const k=e.target.closest('.s-knob');if(k)startSlide(k.closest('.slide'),e)});
+function startSlide(sl,e){e.preventDefault();sl.classList.remove('snap');sl.classList.add('dragging');const max=sl.getBoundingClientRect().width-60;const x0=e.clientX;let x=0;
+  const mv=ev=>{x=clamp(ev.clientX-x0,0,max);sl.style.setProperty('--x',x+'px')};
+  const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);sl.classList.remove('dragging');sl.classList.add('snap');if(x>=max*.86){sl.style.setProperty('--x',max+'px');placeOrder(sl)}else sl.style.setProperty('--x','0px')};
+  addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up)}
+async function placeOrder(sl){
+  const c=S.ui.cart,a=S.ui.addr;
+  if(S.ui.mode==='delivery'&&!a){sl.style.setProperty('--x','0px');toast('Add a delivery address first',true);return addrModal()}
+  sl.querySelector('.s-lbl').textContent='Placing order…';
+  try{const r=await rpc('place_order',{p_merchant:c.mid,p_items:c.items.map(i=>({id:i.id,qty:i.qty})),p_mode:S.ui.mode,p_pay:S.ui.pay,p_tip:S.ui.mode==='delivery'?S.ui.tip:0,p_promo:S.ui.promo||null,p_addr_line:a?.line||null,p_lat:a?.lat??null,p_lng:a?.lng??null,p_note:S.ui.note||null,p_name:S.profile?.full_name||'',p_phone:S.profile?.phone||''});
+    S.ui.cart={mid:null,items:[]};saveCart();S.ui.promo='';S.data.promo=null;S.ui.promoMsg='';S.ui.note='';
+    $('#main').innerHTML=`<div class="light cust"><div class="narrow" style="text-align:center;padding-top:80px"><svg class="check-anim" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34"/><path d="m22 37 9 9 19-20"/></svg><h1 class="serif" style="font-size:30px">Order placed</h1><p class="muted mt8">${r.code} is on its way to the kitchen.</p></div></div>`;
+    setTimeout(()=>{location.hash='#/eat/order/'+r.id},1200);
+  }catch(e){toast(errMsg(e),true);sl.style.setProperty('--x','0px');sl.querySelector('.s-lbl').textContent='Slide to try again'}
+}
+
+/* ============ After render: maps ============ */
+function afterRender(){
+  const r=S.route[0];
+  if(r==='eat'&&S.route[1]==='order'&&S.data.order&&$('[data-map-id="track"]')){const o=S.data.order,m=S.data.orderMerchant;const mp=getMap('track',{light:true,lat:o.lat,lng:o.lng,zoom:14});
+    setMarkers(mp,[{key:'m',lat:m?.lat,lng:m?.lng,cls:'mk-m',label:m?.name},{key:'h',lat:o.lat,lng:o.lng,cls:'mk-c',label:'You'},...(o.courier_lat?[{key:'d',lat:o.courier_lat,lng:o.courier_lng,cls:'mk-d',label:o.courier_name||'Courier'}]:[])]);fit(mp,[[m?.lat,m?.lng],[o.lat,o.lng],[o.courier_lat,o.courier_lng]])}
+  if(r==='drive'){const c=S.data.courier,a=S.data.dActive;
+    if(a&&$('[data-map-id="dmap"]')){const m=S.data.dMerchants[a.merchant_id]||{};const mp=getMap('dmap',{lat:c.lat,lng:c.lng,zoom:14});setMarkers(mp,[{key:'me',lat:c.lat,lng:c.lng,cls:'mk-d',label:'You'},{key:'m',lat:m.lat,lng:m.lng,cls:'mk-m',label:m.name},{key:'h',lat:a.lat,lng:a.lng,cls:'mk-c',label:a.cust_name}]);fit(mp,[[c.lat,c.lng],[m.lat,m.lng],[a.lat,a.lng]])}
+    if(!a&&$('[data-map-id="omap"]')){const mp=getMap('omap',{lat:c.lat,lng:c.lng,zoom:13});const l=[{key:'me',lat:c.lat,lng:c.lng,cls:'mk-d',label:'You'}];(S.data.offers||[]).forEach(o=>{const m=S.data.dMerchants[o.merchant_id];if(m)l.push({key:'m'+m.id,lat:m.lat,lng:m.lng,cls:'mk-m',label:m.name})});setMarkers(mp,l);fit(mp,l.map(x=>[x.lat,x.lng]))}
+    if(c&&c.online)startWatch()}
+}
+
+/* ============ Boot ============ */
+async function boot(){
+  try{await loadSettings()}catch(e){}
+  const {data:{session}}=await sb.auth.getSession();S.session=session;S.user=session?.user||null;
+  if(S.user)await loadProfile();
+  if(location.search.includes('code=')||location.search.includes('error')){const qs=new URLSearchParams(location.search);if(qs.get('error_description'))toast(qs.get('error_description'),true);history.replaceState(null,'',location.pathname+(S.user?(lsGet('dc13-next','#/')||'#/'):'#/login'));if(!S.user&&!qs.get('error_description'))toast('Email verified. Please sign in.')}
+  sb.auth.onAuthStateChange(async(ev,session)=>{
+    const prev=S.user?.id;S.session=session;S.user=session?.user||null;
+    if(ev==='PASSWORD_RECOVERY'){S.ui.recovery=true;location.hash='#/reset';return}
+    if(S.user&&S.user.id!==prev){await loadProfile();subscribe();const next=lsGet('dc13-next',null);lsSet('dc13-next',null);if(S.route[0]==='login'||S.route[0]==='verify'){location.hash=next&&next!=='#/login'?next:'#/eat'}else render({soft:true})}
+    if(!S.user&&prev){if(channel){sb.removeChannel(channel);channel=null}S.profile=null;render()}
+  });
+  subscribe();
+  addEventListener('hashchange',()=>{S.ui.noLive=false;S.ui.pending=false;closeModal();render()});
+  render();
+  setInterval(()=>{if(['eat','partner'].includes(S.route[0])&&!document.hidden)softRender()},30000);
+}
+boot();
+</script>
+</body>
+</html>

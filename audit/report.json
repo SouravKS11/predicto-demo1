@@ -1,19 +1,19 @@
 {
-  "started": "2026-11-03T14:03:30.365Z",
+  "started": "2026-11-03T16:32:50.312Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "finished": "2026-11-03T14:18:18.497Z",
   "orderId": null,
+  "finished": "2026-11-03T16:44:59.184Z",
   "results": [
     {
       "step": "flow stopped",
       "ok": false,
-      "detail": "no web inspector for customer"
+      "detail": "no web inspector for customer (pid 3951; sockets: 0000000000000000: 00000003 00000000 00000000 0001 03 79241 @webview_devtools_remote_3951 0000000000000000: 00000002 00000000 00010000 0001 01 66409 @webview_devtools_remote_3951)"
     },
     {
       "step": "behaviour checks stopped",
       "ok": false,
-      "detail": "no web inspector for customer"
+      "detail": "no web inspector for customer (pid 3951; sockets: 0000000000000000: 00000003 00000000 00000000 0001 03 81321 @webview_devtools_remote_3951 0000000000000000: 00000002 00000000 00010000 0001 01 66409 @webview_devtools_remote_3951)"
     }
   ],
   "passed": 0,

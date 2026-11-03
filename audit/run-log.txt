@@ -1,4 +1,247 @@
-FAIL | flow stopped | no web inspector for customer
-FAIL | behaviour checks stopped | no web inspector for customer
+devtools sockets at start: 
+[4.3s] customer: listing inspector targets (try 1)
+[4.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
+[12.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[13.3s] customer: listing inspector targets (try 2)
+[14.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[22.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[23.3s] customer: listing inspector targets (try 3)
+[23.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[31.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[32.3s] customer: listing inspector targets (try 4)
+[32.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[40.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[41.3s] customer: listing inspector targets (try 5)
+[41.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[49.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[50.3s] customer: listing inspector targets (try 6)
+[50.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[58.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[59.3s] customer: listing inspector targets (try 7)
+[59.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[67.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[68.3s] customer: listing inspector targets (try 8)
+[68.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[76.3s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[77.3s] customer: listing inspector targets (try 9)
+[77.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[85.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[86.4s] customer: listing inspector targets (try 10)
+[86.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[94.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[95.4s] customer: listing inspector targets (try 11)
+[95.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[103.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[104.4s] customer: listing inspector targets (try 12)
+[104.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[112.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[113.4s] customer: listing inspector targets (try 13)
+[113.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[121.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[122.4s] customer: listing inspector targets (try 14)
+[122.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[130.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[131.4s] customer: listing inspector targets (try 15)
+[131.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[139.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[140.4s] customer: listing inspector targets (try 16)
+[140.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[148.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[149.4s] customer: listing inspector targets (try 17)
+[149.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[157.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[158.4s] customer: listing inspector targets (try 18)
+[158.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[166.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[167.4s] customer: listing inspector targets (try 19)
+[167.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[175.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[176.4s] customer: listing inspector targets (try 20)
+[176.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[184.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[185.4s] customer: listing inspector targets (try 21)
+[185.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[193.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[194.4s] customer: listing inspector targets (try 22)
+[194.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[202.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[203.4s] customer: listing inspector targets (try 23)
+[203.4s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[211.4s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[212.4s] customer: listing inspector targets (try 24)
+[212.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[220.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[221.5s] customer: listing inspector targets (try 25)
+[221.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[229.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[230.5s] customer: listing inspector targets (try 26)
+[230.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[238.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[239.5s] customer: listing inspector targets (try 27)
+[239.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[247.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[248.5s] customer: listing inspector targets (try 28)
+[248.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[256.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[257.5s] customer: listing inspector targets (try 29)
+[257.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[265.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[266.5s] customer: listing inspector targets (try 30)
+[266.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[274.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[275.5s] customer: listing inspector targets (try 31)
+[275.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[283.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[284.5s] customer: listing inspector targets (try 32)
+[284.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[292.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[293.5s] customer: listing inspector targets (try 33)
+[293.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[301.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[302.5s] customer: listing inspector targets (try 34)
+[302.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[310.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[311.5s] customer: listing inspector targets (try 35)
+[311.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[319.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[320.5s] customer: listing inspector targets (try 36)
+[320.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[328.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[329.5s] customer: listing inspector targets (try 37)
+[329.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[337.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[338.5s] customer: listing inspector targets (try 38)
+[338.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[346.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[347.5s] customer: listing inspector targets (try 39)
+[347.5s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[355.5s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[356.6s] customer: listing inspector targets (try 40)
+[356.6s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[364.6s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[365.6s] RESULT flow stopped
+FAIL | flow stopped | no web inspector for customer (pid 3951; sockets: 0000000000000000: 00000003 00000000 00000000 0001 03 79241 @webview_devtools_remote_3951 0000000000000000: 00000002 00000000 00010000 0001 01 66409 @webview_devtools_remote_3951)
+[368.7s] customer: listing inspector targets (try 1)
+[368.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[376.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[377.7s] customer: listing inspector targets (try 2)
+[377.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[385.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[386.7s] customer: listing inspector targets (try 3)
+[386.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[394.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[395.7s] customer: listing inspector targets (try 4)
+[395.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[403.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[404.7s] customer: listing inspector targets (try 5)
+[404.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[412.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[413.7s] customer: listing inspector targets (try 6)
+[413.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[421.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[422.7s] customer: listing inspector targets (try 7)
+[422.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[430.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[431.7s] customer: listing inspector targets (try 8)
+[431.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[439.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[440.7s] customer: listing inspector targets (try 9)
+[440.7s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[448.7s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[449.7s] customer: listing inspector targets (try 10)
+[449.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[457.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[458.8s] customer: listing inspector targets (try 11)
+[458.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[466.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[467.8s] customer: listing inspector targets (try 12)
+[467.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[475.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[476.8s] customer: listing inspector targets (try 13)
+[476.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[484.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[485.8s] customer: listing inspector targets (try 14)
+[485.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[493.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[494.8s] customer: listing inspector targets (try 15)
+[494.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[502.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[503.8s] customer: listing inspector targets (try 16)
+[503.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[511.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[512.8s] customer: listing inspector targets (try 17)
+[512.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[520.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[521.8s] customer: listing inspector targets (try 18)
+[521.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[529.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[530.8s] customer: listing inspector targets (try 19)
+[530.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[538.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[539.8s] customer: listing inspector targets (try 20)
+[539.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[547.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[548.8s] customer: listing inspector targets (try 21)
+[548.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[556.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[557.8s] customer: listing inspector targets (try 22)
+[557.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[565.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[566.8s] customer: listing inspector targets (try 23)
+[566.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[574.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[575.8s] customer: listing inspector targets (try 24)
+[575.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[583.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[584.8s] customer: listing inspector targets (try 25)
+[584.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[592.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[593.8s] customer: listing inspector targets (try 26)
+[593.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[601.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[602.8s] customer: listing inspector targets (try 27)
+[602.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[610.8s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[611.9s] customer: listing inspector targets (try 28)
+[611.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[619.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[620.9s] customer: listing inspector targets (try 29)
+[620.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[628.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[629.9s] customer: listing inspector targets (try 30)
+[629.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[637.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[638.9s] customer: listing inspector targets (try 31)
+[638.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[646.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[647.9s] customer: listing inspector targets (try 32)
+[647.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[655.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[656.9s] customer: listing inspector targets (try 33)
+[656.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[664.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[665.9s] customer: listing inspector targets (try 34)
+[665.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[673.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[674.9s] customer: listing inspector targets (try 35)
+[674.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[682.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[683.9s] customer: listing inspector targets (try 36)
+[683.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[691.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[692.9s] customer: listing inspector targets (try 37)
+[692.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[700.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[701.9s] customer: listing inspector targets (try 38)
+[701.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[709.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[710.9s] customer: listing inspector targets (try 39)
+[710.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[718.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[719.9s] customer: listing inspector targets (try 40)
+[719.9s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[727.9s] customer: inspector attempt failed: timeout after 8000ms: open websocket
+[728.9s] RESULT behaviour checks stopped
+FAIL | behaviour checks stopped | no web inspector for customer (pid 3951; sockets: 0000000000000000: 00000003 00000000 00000000 0001 03 81321 @webview_devtools_remote_3951 0000000000000000: 00000002 00000000 00010000 0001 01 66409 @webview_devtools_remote_3951)
 
 DONE: 0 passed, 2 failed

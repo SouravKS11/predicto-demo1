@@ -19,7 +19,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const results = [];
 let shotN = 0;
 function rec(step, ok, detail) { lg('RESULT', step); results.push({ step, ok, detail: detail || '' }); console.log(`${ok ? 'PASS' : 'FAIL'} | ${step} | ${detail || ''}`); }
-function snap(name) { const f = `${OUT}/${String(++shotN).padStart(2, '0')}-${name}.png`; execSync(`adb exec-out screencap -p > ${f}`); return f; }
+function snap(name) { const f = `${OUT}/${String(++shotN).padStart(2, '0')}-${name}.png`; try { execSync(`adb exec-out screencap -p > ${f}`, { timeout: 20000 }); } catch (e) { lg('screenshot failed', name); } return f; }
 
 const clients = {};
 console.log('devtools sockets at start:', sh(`adb shell cat /proc/net/unix | grep -a devtools`));
@@ -34,7 +34,7 @@ async function connect(role) {
       const list = await within(CDP.List({ host: '127.0.0.1', port: PORT[role] }), 5000, 'list targets');
       lg(`${role}: targets`, JSON.stringify(list.map(x => ({ type: x.type, url: (x.url || '').slice(0, 60) }))));
       const t = list.find(x => x.type === 'page');
-      if (t) { const c = await within(CDP({ host: '127.0.0.1', port: PORT[role], target: t }), 8000, 'open websocket'); await within(c.Runtime.enable(), 5000, 'Runtime.enable'); lg(`${role}: connected`); clients[role] = { pid, c }; return c; }
+      if (t) { const ws = `ws://127.0.0.1:${PORT[role]}/devtools/page/${t.id}`; lg(`${role}: reported ws`, t.webSocketDebuggerUrl, '-> using', ws); const c = await within(CDP({ target: ws, local: true }), 8000, 'open websocket'); await within(c.Runtime.enable(), 5000, 'Runtime.enable'); lg(`${role}: connected`); clients[role] = { pid, c }; return c; }
     } catch (e) { lg(`${role}: inspector attempt failed:`, e.message); }
     await sleep(1000);
   }

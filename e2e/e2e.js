@@ -19,6 +19,7 @@ function rec(step, ok, detail) { results.push({ step, ok, detail: detail || '' }
 function snap(name) { const f = `${OUT}/${String(++shotN).padStart(2, '0')}-${name}.png`; execSync(`adb exec-out screencap -p > ${f}`); return f; }
 
 const clients = {};
+console.log('devtools sockets at start:', sh(`adb shell cat /proc/net/unix | grep -a devtools`));
 async function connect(role) {
   const pid = sh(`adb shell pidof ${PKG[role]}`);
   if (!pid) throw new Error(`${role} app is not running`);
@@ -26,13 +27,14 @@ async function connect(role) {
   sh(`adb forward tcp:${PORT[role]} localabstract:webview_devtools_remote_${pid}`);
   for (let i = 0; i < 40; i++) {
     try {
-      const list = await CDP.List({ port: PORT[role] });
+      const list = await CDP.List({ host: '127.0.0.1', port: PORT[role] });
       const t = list.find(x => x.type === 'page');
-      if (t) { const c = await CDP({ port: PORT[role], target: t }); await c.Runtime.enable(); clients[role] = { pid, c }; return c; }
+      if (t) { const c = await CDP({ host: '127.0.0.1', port: PORT[role], target: t }); await c.Runtime.enable(); clients[role] = { pid, c }; return c; }
     } catch (e) { }
     await sleep(1000);
   }
-  throw new Error(`no web inspector for ${role}`);
+  const socks = sh(`adb shell cat /proc/net/unix | grep -a devtools`);
+  throw new Error(`no web inspector for ${role} (pid ${pid}; sockets: ${socks.replace(/\s+/g,' ').slice(0,300)})`);
 }
 async function front(role) {
   sh(`adb shell monkey -p ${PKG[role]} -c android.intent.category.LAUNCHER 1`);

@@ -5,8 +5,11 @@ const CDP = require('chrome-remote-interface');
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-const sh = (c, opt = {}) => { try { return execSync(c, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opt }).trim(); } catch (e) { return (e.stdout || '').toString().trim(); } };
+const sh = (c, opt = {}) => { try { return execSync(c, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000, ...opt }).trim(); } catch (e) { return (e.stdout || '').toString().trim(); } };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const T0 = Date.now();
+const lg = (...a) => console.log(`[${((Date.now() - T0) / 1000).toFixed(1)}s]`, ...a);
+const within = (p, ms, what) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(`timeout after ${ms}ms: ${what}`)), ms))]);
 const PKG = { customer: 'com.digitalcode13.delivery.customer', driver: 'com.digitalcode13.delivery.driver', merchant: 'com.digitalcode13.delivery.merchant' };
 const PORT = { customer: 9301, driver: 9302, merchant: 9303 };
 const LOGIN = { customer: 0, merchant: 1, driver: 2 };
@@ -15,7 +18,7 @@ fs.mkdirSync(OUT, { recursive: true });
 
 const results = [];
 let shotN = 0;
-function rec(step, ok, detail) { results.push({ step, ok, detail: detail || '' }); console.log(`${ok ? 'PASS' : 'FAIL'} | ${step} | ${detail || ''}`); }
+function rec(step, ok, detail) { lg('RESULT', step); results.push({ step, ok, detail: detail || '' }); console.log(`${ok ? 'PASS' : 'FAIL'} | ${step} | ${detail || ''}`); }
 function snap(name) { const f = `${OUT}/${String(++shotN).padStart(2, '0')}-${name}.png`; execSync(`adb exec-out screencap -p > ${f}`); return f; }
 
 const clients = {};
@@ -27,10 +30,12 @@ async function connect(role) {
   sh(`adb forward tcp:${PORT[role]} localabstract:webview_devtools_remote_${pid}`);
   for (let i = 0; i < 40; i++) {
     try {
-      const list = await CDP.List({ host: '127.0.0.1', port: PORT[role] });
+      lg(`${role}: listing inspector targets (try ${i + 1})`);
+      const list = await within(CDP.List({ host: '127.0.0.1', port: PORT[role] }), 5000, 'list targets');
+      lg(`${role}: targets`, JSON.stringify(list.map(x => ({ type: x.type, url: (x.url || '').slice(0, 60) }))));
       const t = list.find(x => x.type === 'page');
-      if (t) { const c = await CDP({ host: '127.0.0.1', port: PORT[role], target: t }); await c.Runtime.enable(); clients[role] = { pid, c }; return c; }
-    } catch (e) { }
+      if (t) { const c = await within(CDP({ host: '127.0.0.1', port: PORT[role], target: t }), 8000, 'open websocket'); await within(c.Runtime.enable(), 5000, 'Runtime.enable'); lg(`${role}: connected`); clients[role] = { pid, c }; return c; }
+    } catch (e) { lg(`${role}: inspector attempt failed:`, e.message); }
     await sleep(1000);
   }
   const socks = sh(`adb shell cat /proc/net/unix | grep -a devtools`);
@@ -42,7 +47,7 @@ async function front(role) {
   return connect(role);
 }
 async function ev(c, expr) {
-  const r = await c.Runtime.evaluate({ expression: expr, awaitPromise: true, returnByValue: true });
+  const r = await within(c.Runtime.evaluate({ expression: expr, awaitPromise: true, returnByValue: true }), 15000, 'evaluate');
   if (r.exceptionDetails) throw new Error((r.exceptionDetails.exception && r.exceptionDetails.exception.description || r.exceptionDetails.text || '').slice(0, 300));
   return r.result.value;
 }
@@ -82,8 +87,18 @@ async function ensureLogin(role, routePrefix) {
   return c;
 }
 
+let report;
+function writeReport() {
+  report.finished = new Date().toISOString();
+  report.results = results;
+  report.passed = results.filter(r => r.ok).length;
+  report.failed = results.filter(r => !r.ok).length;
+  fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(report, null, 2));
+  console.log(`\nDONE: ${report.passed} passed, ${report.failed} failed`);
+}
+setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', false); writeReport(); process.exit(0); }, 22 * 60000);
 (async () => {
-  const report = { started: new Date().toISOString(), device: sh('adb shell getprop ro.product.model') + ' · Android ' + sh('adb shell getprop ro.build.version.release'), webview: sh(`adb shell dumpsys package com.google.android.webview | grep versionName | head -1`) };
+  report = { started: new Date().toISOString(), device: sh('adb shell getprop ro.product.model') + ' · Android ' + sh('adb shell getprop ro.build.version.release'), webview: sh(`adb shell dumpsys package com.google.android.webview | grep versionName | head -1`) };
   let orderId = null, pin = null;
   try {
     // ---------- 1. Launch each app on its own role ----------
@@ -240,12 +255,7 @@ async function ensureLogin(role, routePrefix) {
     snap('merchant-back-online');
   } catch (e) { rec('behaviour checks stopped', false, e.message); }
 
-  report.finished = new Date().toISOString();
   report.orderId = orderId;
-  report.results = results;
-  report.passed = results.filter(r => r.ok).length;
-  report.failed = results.filter(r => !r.ok).length;
-  fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(report, null, 2));
-  console.log(`\nDONE: ${report.passed} passed, ${report.failed} failed`);
+  writeReport();
   process.exit(0);
 })();

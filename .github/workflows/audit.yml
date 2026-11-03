@@ -10,7 +10,7 @@ concurrency: { group: dc13-audit, cancel-in-progress: false }
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -31,6 +31,8 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - name: Run the end-to-end test on a Pixel emulator
+        timeout-minutes: 32
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34

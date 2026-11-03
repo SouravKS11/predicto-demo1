@@ -21,6 +21,7 @@ let shotN = 0;
 function rec(step, ok, detail) { lg('RESULT', step); results.push({ step, ok, detail: detail || '' }); console.log(`${ok ? 'PASS' : 'FAIL'} | ${step} | ${detail || ''}`); }
 function snap(name) { const f = `${OUT}/${String(++shotN).padStart(2, '0')}-${name}.png`; try { execSync(`adb exec-out screencap -p > ${f}`, { timeout: 20000 }); } catch (e) { lg('screenshot failed', name); } return f; }
 
+async function shot(name) { await sleep(1800); return snap(name); }
 const clients = {};
 console.log('devtools sockets at start:', sh(`adb shell cat /proc/net/unix | grep -a devtools`));
 async function connect(role) {
@@ -70,6 +71,8 @@ async function click(c, sel) {
 }
 async function pageText(c) { try { return (await ev(c, 'document.body.innerText')).replace(/\s+/g, ' ').slice(0, 600); } catch (e) { return '(no text)'; } }
 const hash = c => ev(c, 'location.hash');
+const orderStatus = (c, id) => ev(c, `(async()=>{const r=await sb.from('orders').select('status,courier_name').eq('id',${'${id}'}).single();return r.data?r.data.status+(r.data.courier_name?' · '+r.data.courier_name:''):'unknown'})()`).catch(e => 'error: ' + e.message);
+const orderPin = (c, id) => ev(c, `(async()=>{location.hash='#/eat/order/${'${id}'}';for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,300));const p=document.querySelector('.pin');if(p&&location.hash.endsWith('/${'${id}'}'))return p.textContent.replace(/\\D/g,'')}return null})()`).catch(() => null);
 async function errorsShown(c) { return ev(c, `[...document.querySelectorAll('.toast')].map(t=>t.innerText).join(' | ')`).catch(() => ''); }
 
 async function ensureLogin(role, routePrefix) {
@@ -107,13 +110,13 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
       const c = await front(role);
       const loaded = await waitFor(c, `document.readyState==='complete' && document.querySelector('#main') && document.querySelector('#main').innerText.length>20`, 30000);
       rec(`${role}: app launches and loads the test environment`, !!loaded, `${Math.round((Date.now() - t0) / 100) / 10}s · ${await hash(c)}`);
-      snap(`${role}-launch`);
+      await shot(`${role}-launch`);
     }
 
     // ---------- 2. Customer places an order ----------
     let c = await ensureLogin('customer', '#/eat');
     await waitFor(c, `document.querySelectorAll('a.store').length>0`, 25000);
-    snap('customer-home');
+    await shot('customer-home');
     const storeSel = await ev(c, `(()=>{const a=[...document.querySelectorAll('a.store')].find(x=>/Client Test Kitchen/i.test(x.innerText));return a?a.getAttribute('href'):null})()`);
     rec('customer: Client Test Kitchen listed', !!storeSel, storeSel || await pageText(c));
     await click(c, `a.store[href=${q(storeSel)}]`);
@@ -124,19 +127,19 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     if (await ev(c, `!!document.querySelector('[data-a=newCart]')`)) { await click(c, '[data-a=newCart]'); await click(c, '[data-a=cartAdd]'); }
     const inCart = await waitFor(c, `!!document.querySelector('.cartbar')`, 8000);
     rec('customer: item added to cart', !!inCart, await ev(c, `(document.querySelector('.cartbar')||{}).innerText||''`));
-    snap('customer-cart-bar');
+    await shot('customer-cart-bar');
     await click(c, '.cartbar');
     await waitFor(c, `!!document.querySelector('.slide')`, 15000);
     if (await ev(c, `!!document.querySelector('[data-a=mode][data-v=delivery]') && !document.querySelector('[data-a=mode][data-v=delivery]').classList.contains('on')`)) await click(c, '[data-a=mode][data-v=delivery]');
     if (await ev(c, `/Add address/.test((document.querySelector('[data-a=addrOpen]')||{}).innerText||'')`)) {
       await click(c, '[data-a=addrOpen]');
       await waitFor(c, `!!document.querySelector('[data-a=addrSave]')`, 10000); await sleep(2500);
-      snap('customer-address');
+      await shot('customer-address');
       await click(c, '[data-a=addrSave]');
       await sleep(2000);
     }
     await click(c, '[data-a=pay][data-v=card]');
-    snap('customer-checkout');
+    await shot('customer-checkout');
     const total = await ev(c, `(()=>{const b=document.querySelector('.bill');return b?b.innerText.replace(/\\s+/g,' ').slice(-60):''})()`);
     rec('customer: checkout shows bill', !!total, total);
     // slide to pay: a real press-drag-release gesture
@@ -151,7 +154,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     if (!orderId) throw new Error('order not placed');
     pin = await waitFor(c, `(()=>{const p=document.querySelector('.pin');return p?p.innerText.replace(/\\D/g,''):null})()`, 15000);
     rec('customer: tracking screen shows delivery PIN', !!pin && pin.length === 4, pin ? 'PIN shown' : await pageText(c));
-    snap('customer-tracking-placed');
+    await shot('customer-tracking-placed');
 
     // ---------- 3. Merchant accepts ----------
     c = await ensureLogin('merchant', '#/partner');
@@ -159,12 +162,12 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     let reloaded = false;
     if (!acc) { reloaded = true; await ev(c, 'location.reload()'); await sleep(4000); c = await connect('merchant'); acc = await waitFor(c, `!!document.querySelector('[data-a=mAccept][data-v="${orderId}"]')`, 20000); }
     rec('merchant: new order appears on the board', !!acc, reloaded ? 'appeared only after a page reload (realtime update missed)' : 'arrived live, no reload');
-    snap('merchant-new-order');
+    await shot('merchant-new-order');
     if (acc) {
       await click(c, `[data-a=mAccept][data-v="${orderId}"]`);
       const prep = await waitFor(c, `!!document.querySelector('[data-a=mReady][data-v="${orderId}"]')`, 15000);
       rec('merchant: accept moves order to Preparing', !!prep, prep ? '' : (await errorsShown(c)) + ' ' + await pageText(c));
-      snap('merchant-preparing');
+      await shot('merchant-preparing');
     }
 
     // ---------- 4. Driver goes online and claims ----------
@@ -175,17 +178,32 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
       const on = await waitFor(c, `!document.querySelector('[data-a=goOnline]')`, 20000);
       rec('driver: goes online (location shared)', !!on, on ? '' : (await errorsShown(c)) + ' ' + await pageText(c));
     } else rec('driver: already online', true);
-    snap('driver-online');
-    const existing = await ev(c, `(()=>{const e=[...document.querySelectorAll('.eyebrow')].find(x=>/Active delivery/.test(x.innerText));return e?e.innerText:null})()`);
-    if (existing && !existing.includes(orderId)) rec('driver: had an unfinished delivery from an earlier test', false, existing);
+    await shot('driver-online');
+    const existing = await ev(c, `(()=>{const e=[...document.querySelectorAll('.eyebrow')].find(x=>/Active delivery/i.test(x.textContent));return e?e.textContent:null})()`);
+    if (existing && !existing.includes(orderId)) {
+      const oldId = (existing.match(/FD-(\d+)/) || [])[1];
+      rec('driver: test courier was blocked by an unfinished delivery', false, `${existing.trim()} (left over from earlier testing; no new offers can appear until it is completed)`);
+      if (oldId && await ev(c, `!!document.querySelector('.keypad')`)) {
+        const cc = await front('customer');
+        const oldPin = await orderPin(cc, oldId);
+        const dc = await front('driver');
+        if (oldPin) {
+          for (const d of oldPin.split('')) { await click(dc, `[data-a=key][data-v="${d}"]`); await sleep(250); }
+          const cleared = await waitFor(dc, `!document.querySelector('.keypad')`, 20000);
+          rec(`cleanup: completed stuck delivery FD-${oldId} with its PIN`, !!cleared, await orderStatus(dc, oldId));
+        } else rec(`cleanup: could not read PIN for FD-${oldId}`, false);
+        c = await connect('driver');
+        await sleep(3000);
+      }
+    }
     let claim = await waitFor(c, `!!document.querySelector('[data-a=claim][data-v="${orderId}"]')`, 30000);
     if (!claim) { await ev(c, 'location.reload()'); await sleep(4000); c = await connect('driver'); claim = await waitFor(c, `!!document.querySelector('[data-a=claim][data-v="${orderId}"]')`, 15000); }
     if (claim) {
-      snap('driver-offer');
+      await shot('driver-offer');
       await click(c, `[data-a=claim][data-v="${orderId}"]`);
       const active = await waitFor(c, `[...document.querySelectorAll('.eyebrow')].some(x=>x.innerText.includes('FD-${orderId}'))`, 15000);
       rec('driver: accepts the delivery', !!active, active ? '' : (await errorsShown(c)) + ' ' + await pageText(c));
-      snap('driver-active');
+      await shot('driver-active');
     } else rec('driver: delivery offer appears', false, 'offer never appeared: ' + await pageText(c));
 
     // ---------- 5. Merchant marks ready ----------
@@ -194,7 +212,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
       await click(c, `[data-a=mReady][data-v="${orderId}"]`);
       const ready = await waitFor(c, `!document.querySelector('[data-a=mReady][data-v="${orderId}"]')`, 15000);
       rec('merchant: marks order ready for handover', !!ready);
-      snap('merchant-ready');
+      await shot('merchant-ready');
     } else rec('merchant: Mark ready button available', false, await pageText(c));
 
     // ---------- 6. Driver picks up and delivers with the PIN ----------
@@ -206,27 +224,28 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
       await click(c, `[data-a=dPickup][data-v="${orderId}"]`);
       const pad = await waitFor(c, `!!document.querySelector('.keypad')`, 15000);
       rec('driver: pickup confirmed, PIN keypad shown', !!pad);
-      snap('driver-pin-pad');
+      await shot('driver-pin-pad');
       if (pad && pin) {
         for (const d of pin.split('')) { await click(c, `[data-a=key][data-v="${d}"]`); await sleep(250); }
         const done = await waitFor(c, `!document.querySelector('.keypad')`, 20000);
         rec('driver: correct PIN completes the delivery', !!done, done ? '' : (await errorsShown(c)) + ' ' + await pageText(c));
-        await sleep(1500); snap('driver-delivered');
+        await sleep(1500); await shot('driver-delivered');
       }
     }
 
     // ---------- 7. Customer sees delivery and rates ----------
     c = await front('customer');
-    let del = await waitFor(c, `/Delivered/i.test(document.querySelector('#main').innerText)`, 15000);
-    if (!del) { await ev(c, 'location.reload()'); await sleep(4000); c = await connect('customer'); del = await waitFor(c, `/Delivered/i.test(document.querySelector('#main').innerText)`, 15000); }
-    rec('customer: order shows Delivered', !!del, del ? '' : await pageText(c));
-    snap('customer-delivered');
+    if (!(await hash(c)).endsWith('/' + orderId)) { await ev(c, `location.hash='#/eat/order/${orderId}'`); await sleep(3000); }
+    const st = await orderStatus(c, orderId);
+    const title = await waitFor(c, `(()=>{const h=[...document.querySelectorAll('#main h1,#main h2')].map(x=>x.textContent.trim()).filter(Boolean);return h.length?h.join(' / '):null})()`, 8000);
+    rec('customer: order status is delivered', /^delivered/.test(st), `backend status: ${st} · screen title: ${title}`);
+    await shot('customer-delivered');
     if (await ev(c, `!!document.querySelector('[data-a=star]')`)) {
       await click(c, '[data-a=star][data-v="5"]');
       if (await ev(c, `!!document.querySelector('[data-a=rate]')`)) await click(c, '[data-a=rate]');
       await sleep(2000);
       rec('customer: rates the order 5 stars', true, (await errorsShown(c)) || 'submitted');
-      snap('customer-rated');
+      await shot('customer-rated');
     } else rec('customer: rating available', false, await pageText(c));
   } catch (e) {
     rec('flow stopped', false, e.message);
@@ -243,7 +262,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     // offline screen
     sh('adb shell svc wifi disable'); sh('adb shell svc data disable'); await sleep(2000);
     sh(`adb shell am force-stop ${PKG.merchant}`); sh(`adb shell monkey -p ${PKG.merchant} -c android.intent.category.LAUNCHER 1`); await sleep(4000);
-    snap('merchant-offline-screen');
+    await shot('merchant-offline-screen');
     rec('offline: app shows the "You\'re offline" screen', true, 'see screenshot');
     sh('adb shell svc wifi enable'); sh('adb shell svc data enable'); await sleep(5000);
     // retry button recovers once back online
@@ -252,7 +271,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     await sleep(6000);
     const back = await connect('merchant').then(cc => waitFor(cc, `document.querySelector('#main') && document.querySelector('#main').innerText.length>20`, 15000)).catch(() => null);
     rec('offline: "Try again" reloads once the connection returns', !!back);
-    snap('merchant-back-online');
+    await shot('merchant-back-online');
   } catch (e) { rec('behaviour checks stopped', false, e.message); }
 
   report.orderId = orderId;

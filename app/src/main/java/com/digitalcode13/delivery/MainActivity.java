@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,10 +14,12 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -37,6 +40,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
     private static final int REQ_LOCATION = 41;
+    private static final int REQ_FILE = 42;
     private static final String HOST = Uri.parse(BuildConfig.BASE_URL).getHost();
 
     private WebView web;
@@ -44,6 +48,8 @@ public class MainActivity extends Activity {
     private View offline;
     private String pendingGeoOrigin;
     private GeolocationPermissions.Callback pendingGeoCallback;
+    private ValueCallback<Uri[]> fileCallback;
+    private Uri cameraUri;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -114,6 +120,11 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> cb, FileChooserParams params) {
+                return openFileChooser(cb, params);
+            }
+
+            @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback cb) {
                 if (hasLocation()) {
                     cb.invoke(origin, true, false);
@@ -156,6 +167,68 @@ public class MainActivity extends Activity {
         } catch (ActivityNotFoundException ignored) {
         }
         return true;
+    }
+
+    /** Photo proof, licence and document uploads: offer the gallery/files and, for images, the camera. */
+    private boolean openFileChooser(ValueCallback<Uri[]> cb, WebChromeClient.FileChooserParams params) {
+        if (fileCallback != null) fileCallback.onReceiveValue(null);
+        fileCallback = cb;
+        cameraUri = null;
+        boolean images = false;
+        String[] types = params.getAcceptTypes();
+        if (types == null || types.length == 0) images = true;
+        else for (String t : types) if (t == null || t.isEmpty() || t.startsWith("image")) images = true;
+
+        Intent pick;
+        try { pick = params.createIntent(); } catch (Exception e) { pick = new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE); }
+        Intent chooser = Intent.createChooser(pick, images ? "Add a photo" : "Choose a file");
+
+        if (images) {
+            Intent cam = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (Build.VERSION.SDK_INT >= 29) {
+                ContentValues v = new ContentValues();
+                v.put(MediaStore.Images.Media.DISPLAY_NAME, "dc13_" + System.currentTimeMillis() + ".jpg");
+                v.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                v.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/DC13");
+                try { cameraUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v); } catch (Exception ignored) { }
+                if (cameraUri != null) cam.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
+            }
+            if (cam.resolveActivity(getPackageManager()) != null) chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{cam});
+        }
+        try {
+            startActivityForResult(chooser, REQ_FILE);
+            return true;
+        } catch (Exception e) {
+            fileCallback = null;
+            return false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req != REQ_FILE || fileCallback == null) return;
+        Uri[] result = null;
+        if (res == RESULT_OK) {
+            if (data != null && (data.getData() != null || data.getClipData() != null)) {
+                result = WebChromeClient.FileChooserParams.parseResult(res, data);
+            } else if (cameraUri != null) {
+                result = new Uri[]{cameraUri};
+            } else if (data != null && data.getExtras() != null && data.getExtras().get("data") instanceof Bitmap) {
+                try {
+                    java.io.File f = new java.io.File(getCacheDir(), "dc13_photo_" + System.currentTimeMillis() + ".jpg");
+                    java.io.FileOutputStream out = new java.io.FileOutputStream(f);
+                    ((Bitmap) data.getExtras().get("data")).compress(Bitmap.CompressFormat.JPEG, 90, out);
+                    out.close();
+                    result = new Uri[]{Uri.fromFile(f)};
+                } catch (Exception ignored) { }
+            }
+        } else if (cameraUri != null) {
+            try { getContentResolver().delete(cameraUri, null, null); } catch (Exception ignored) { }
+        }
+        fileCallback.onReceiveValue(result);
+        fileCallback = null;
+        cameraUri = null;
     }
 
     private boolean hasLocation() {

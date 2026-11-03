@@ -13,6 +13,8 @@ android {
         versionCode 1
         versionName "1.0-test"
         buildConfigField "String", "BASE_URL", "\"${BASE}\""
+        // Web inspection is only switched on for automated audit builds (-Pdc13Audit=true), never for client builds
+        buildConfigField "boolean", "WEB_DEBUG", (project.findProperty("dc13Audit") ?: "false").toString()
     }
 
     buildFeatures { buildConfig true }

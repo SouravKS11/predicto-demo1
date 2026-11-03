@@ -1,0 +1,1 @@
+{ "name": "dc13-e2e", "private": true, "dependencies": { "chrome-remote-interface": "0.33.2" } }

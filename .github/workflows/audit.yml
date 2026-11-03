@@ -1,0 +1,54 @@
+name: Audit DC13 APKs on an Android emulator
+on:
+  push:
+    branches: [dc13-android-apps]
+    paths: ['e2e/**', '.github/workflows/audit.yml', 'app/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: dc13-audit, cancel-in-progress: false }
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - name: Build audit APKs (same code, web inspection on)
+        run: |
+          gradle --no-daemon -Pdc13Audit=true assembleCustomerRelease assembleDriverRelease assembleMerchantRelease
+          mkdir -p audit-apks
+          cp app/build/outputs/apk/*/release/*.apk audit-apks/
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: cd e2e && npm install --no-audit --no-fund
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run the end-to-end test on a Pixel emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash e2e/run.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: dc13-audit, path: audit/ }
+      - name: Save audit results to the branch
+        if: always()
+        run: |
+          rm -f audit/live-index.html
+          git config user.name "dc13-audit"
+          git config user.email "audit@users.noreply.github.com"
+          git add audit
+          git commit -m "Audit results ${GITHUB_SHA::7} [skip ci]" || echo "no change"
+          for i in 1 2 3; do git pull --rebase -q origin dc13-android-apps && git push && break; sleep 5; done

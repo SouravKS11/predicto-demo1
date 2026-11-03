@@ -1,24 +1,24 @@
 {
-  "started": "2026-11-03T17:24:27.974Z",
+  "started": "2026-11-03T17:34:40.485Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": "14677",
-  "finished": "2026-11-03T17:28:09.758Z",
+  "orderId": "14697",
+  "finished": "2026-11-03T17:39:52.725Z",
   "results": [
     {
       "step": "customer: app launches and loads the test environment",
       "ok": true,
-      "detail": "10s · #/login"
+      "detail": "9.6s · #/login"
     },
     {
       "step": "merchant: app launches and loads the test environment",
       "ok": true,
-      "detail": "8.6s · #/login"
+      "detail": "9.5s · #/login"
     },
     {
       "step": "driver: app launches and loads the test environment",
       "ok": true,
-      "detail": "6.9s · #/login"
+      "detail": "7.7s · #/login"
     },
     {
       "step": "customer: sign in with test account",
@@ -48,7 +48,7 @@
     {
       "step": "customer: slide-to-pay places the order",
       "ok": true,
-      "detail": "order FD-14677"
+      "detail": "order FD-14697"
     },
     {
       "step": "customer: tracking screen shows delivery PIN",
@@ -81,6 +81,16 @@
       "detail": ""
     },
     {
+      "step": "driver: test courier was blocked by an unfinished delivery",
+      "ok": false,
+      "detail": "Active delivery · FD-13995 (left over from earlier testing; no new offers can appear until it is completed)"
+    },
+    {
+      "step": "cleanup: could not read PIN for FD-13995",
+      "ok": false,
+      "detail": ""
+    },
+    {
       "step": "driver: delivery offer appears",
       "ok": false,
       "detail": "offer never appeared: TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$0.00 TRIPS TODAY 0 ALL TIME 2 RATING 5 ACTIVE DELIVERY · FD-13995 Deliver to customer@dc13-demo.testourier TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors ilirska 58 1× Jerk Pork Bowl 1× Callaloo & Crab Bowl 1× Fresh Coconut Water Enter the customer's PIN 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-3467 Oct 30, 6:25 PM · pin "
@@ -96,19 +106,19 @@
       "detail": ""
     },
     {
-      "step": "customer: order shows Delivered",
-      "ok": true,
-      "detail": ""
+      "step": "customer: order status is delivered",
+      "ok": false,
+      "detail": "backend status: error: SyntaxError: missing ) after argument list · screen title: Ready · finding a courier"
     },
     {
       "step": "customer: rating available",
       "ok": false,
-      "detail": "TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14677 · CLIENT TEST KITCHEN Ready · finding a courier 20 min arriving around 5:47 PM Order placed 5:25 PM Accepted by kitchen 5:25 PM Courier assigned Picked up Delivered DELIVERY PIN Share only at handover 6 1 7 2 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE"
+      "detail": "TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14697 · CLIENT TEST KITCHEN Ready · finding a courier 19 min arriving around 5:57 PM Order placed 5:35 PM Accepted by kitchen 5:36 PM Courier assigned Picked up Delivered DELIVERY PIN Share only at handover 6 0 1 3 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE"
     },
     {
       "step": "android back button goes back inside the app",
-      "ok": true,
-      "detail": "#/eat/order/14677 -> #/eat/cart"
+      "ok": false,
+      "detail": "#/eat/order/14697 -> #/eat/order/14697"
     },
     {
       "step": "offline: app shows the \"You're offline\" screen",
@@ -117,10 +127,10 @@
     },
     {
       "step": "offline: \"Try again\" reloads once the connection returns",
-      "ok": true,
+      "ok": false,
       "detail": ""
     }
   ],
-  "passed": 20,
-  "failed": 3
+  "passed": 17,
+  "failed": 8
 }

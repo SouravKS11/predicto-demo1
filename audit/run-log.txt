@@ -1,0 +1,85 @@
+devtools sockets at start: 
+[4.2s] customer: listing inspector targets (try 1)
+[4.2s] customer: inspector attempt failed: socket hang up
+[5.2s] customer: listing inspector targets (try 2)
+[5.2s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
+[5.2s] customer: reported ws ws://127.0.0.1:9301/devtools/page/70CB67D9DCA8D6BA63C0786918E53FCE -> using ws://127.0.0.1:9301/devtools/page/70CB67D9DCA8D6BA63C0786918E53FCE
+[5.7s] customer: connected
+[11.4s] RESULT customer: app launches and loads the test environment
+PASS | customer: app launches and loads the test environment | 10.8s · #/login
+[18.6s] merchant: listing inspector targets (try 1)
+[18.6s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
+[18.6s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/C03D000AD098C3EE27F0B99FC8518FD5 -> using ws://127.0.0.1:9303/devtools/page/C03D000AD098C3EE27F0B99FC8518FD5
+[18.7s] merchant: connected
+[24.0s] RESULT merchant: app launches and loads the test environment
+PASS | merchant: app launches and loads the test environment | 8.7s · #/login
+[30.9s] driver: listing inspector targets (try 1)
+[30.9s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
+[30.9s] driver: reported ws ws://127.0.0.1:9302/devtools/page/168ECFDDEFCEFEF314B50942A495B84D -> using ws://127.0.0.1:9302/devtools/page/168ECFDDEFCEFEF314B50942A495B84D
+[31.0s] driver: connected
+[35.5s] RESULT driver: app launches and loads the test environment
+PASS | driver: app launches and loads the test environment | 8.4s · #/login
+[43.4s] customer: listing inspector targets (try 1)
+[44.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
+[44.3s] customer: reported ws ws://127.0.0.1:9301/devtools/page/C3F0A4BE7726304C5BDA85D0A1819D87 -> using ws://127.0.0.1:9301/devtools/page/C3F0A4BE7726304C5BDA85D0A1819D87
+[44.4s] customer: connected
+[49.2s] RESULT customer: sign in with test account
+PASS | customer: sign in with test account | 
+[54.5s] RESULT customer: Client Test Kitchen listed
+PASS | customer: Client Test Kitchen listed | #/eat/store/2e66eb4f-e471-4cee-9d37-4a098aea315d
+[60.4s] RESULT customer: restaurant menu opens
+PASS | customer: restaurant menu opens | 
+[62.9s] RESULT customer: item added to cart
+PASS | customer: item added to cart | 1
+View cart · Client Test Kitchen
+TT$48.00
+[72.8s] RESULT customer: checkout shows bill
+PASS | customer: checkout shows bill | by the server when you place the order. Zone fees may apply.
+[79.0s] RESULT customer: slide-to-pay places the order
+PASS | customer: slide-to-pay places the order | order FD-14779
+[81.2s] RESULT customer: tracking screen shows delivery PIN
+PASS | customer: tracking screen shows delivery PIN | PIN shown
+[88.8s] merchant: listing inspector targets (try 1)
+[90.4s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
+[90.4s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/730C8599EFB3BCBDD45BDF0CC21D503D -> using ws://127.0.0.1:9303/devtools/page/730C8599EFB3BCBDD45BDF0CC21D503D
+[90.7s] merchant: connected
+[97.8s] RESULT merchant: sign in with test account
+PASS | merchant: sign in with test account | 
+[99.2s] RESULT merchant: new order appears on the board
+PASS | merchant: new order appears on the board | arrived live, no reload
+[104.0s] RESULT merchant: accept moves order to Preparing
+PASS | merchant: accept moves order to Preparing | 
+[114.6s] RESULT driver: sign in with test account
+PASS | driver: sign in with test account | 
+[117.4s] RESULT driver: already online
+PASS | driver: already online | 
+[126.2s] RESULT driver: accepts the delivery
+PASS | driver: accepts the delivery | 
+[133.4s] RESULT merchant: marks order ready for handover
+PASS | merchant: marks order ready for handover | 
+[138.5s] RESULT driver: sees order is ready and can confirm pickup
+PASS | driver: sees order is ready and can confirm pickup | 
+[142.6s] RESULT driver: pickup confirmed, PIN keypad shown
+PASS | driver: pickup confirmed, PIN keypad shown | 
+[152.2s] RESULT driver: correct PIN completes the delivery
+PASS | driver: correct PIN completes the delivery | 
+[160.4s] RESULT customer: order status is delivered
+PASS | customer: order status is delivered | backend status: delivered · Client Courier · screen title: Your order is being prepared
+[166.9s] RESULT customer: rates the order 5 stars
+PASS | customer: rates the order 5 stars | submitted
+[182.2s] RESULT android back button goes back inside the app
+PASS | android back button goes back inside the app | #/eat/orders -> #/eat
+[191.6s] RESULT uploads: tapping a photo/file field opens the phone picker
+PASS | uploads: tapping a photo/file field opens the phone picker | topResumedActivity=ActivityRecord{a7a9a7e u0 com.android.intentresolver/.ChooserActivity t10}
+[196.2s] RESULT uploads: cancelling the picker returns to the app
+PASS | uploads: cancelling the picker returns to the app | 
+[204.9s] RESULT offline: app shows the "You're offline" screen
+PASS | offline: app shows the "You're offline" screen | see screenshot
+[284.6s] merchant: listing inspector targets (try 1)
+[284.6s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
+[284.6s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/78D23BF86637E69E2746AF387A7D3449 -> using ws://127.0.0.1:9303/devtools/page/78D23BF86637E69E2746AF387A7D3449
+[284.6s] merchant: connected
+[284.6s] RESULT offline: "Try again" reloads once the connection returns
+PASS | offline: "Try again" reloads once the connection returns | 
+
+DONE: 27 passed, 0 failed

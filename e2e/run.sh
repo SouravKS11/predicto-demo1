@@ -10,7 +10,7 @@ adb shell pm list packages | grep digitalcode13
 # put the emulator inside the test market (Port of Spain, Trinidad)
 timeout 20 adb emu geo fix -61.5089 10.6596
 sleep 2
-mkdir -p audit
+rm -rf audit; mkdir -p audit
 # fetch the live site so the report records which version was tested
 curl -s -m 20 https://dc13-delivery-demo.netlify.app/ -o audit/live-index.html || true
 timeout 1500 node e2e/e2e.js 2>&1 | tee audit/run-log.txt

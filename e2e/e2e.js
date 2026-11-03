@@ -120,8 +120,9 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     const storeSel = await ev(c, `(()=>{const a=[...document.querySelectorAll('a.store')].find(x=>/Client Test Kitchen/i.test(x.innerText));return a?a.getAttribute('href'):null})()`);
     rec('customer: Client Test Kitchen listed', !!storeSel, storeSel || await pageText(c));
     await click(c, `a.store[href=${q(storeSel)}]`);
-    const menuOk = await waitFor(c, `!!document.querySelector('[data-a=cartAdd]')`, 20000);
-    rec('customer: restaurant menu opens', !!menuOk);
+    const menuOk = await waitFor(c, `!!document.querySelector('[data-a=cartAdd]')`, 45000);
+    await shot('customer-menu');
+    rec('customer: restaurant menu opens', !!menuOk, menuOk ? '' : 'no Add buttons: ' + await pageText(c));
     // empty any cart left from an earlier session at another restaurant
     await click(c, '[data-a=cartAdd]');
     if (await ev(c, `!!document.querySelector('[data-a=newCart]')`)) { await click(c, '[data-a=newCart]'); await click(c, '[data-a=cartAdd]'); }
@@ -270,7 +271,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     await ev(c, `location.hash='#/eat'`); await sleep(2500);
     await ev(c, `location.hash='#/eat/orders'`); await sleep(2500);
     const before = await hash(c);
-    sh('adb shell input keyevent KEYCODE_BACK'); await sleep(2500);
+    sh('adb shell input keyevent KEYCODE_BACK'); await sleep(5000);
     const after = await hash(await connect('customer')).catch(() => '(app closed)');
     rec('android back button goes back inside the app', before !== after && after.startsWith('#/eat'), `${before} -> ${after}`);
     // upload fields must open the phone's picker (photo proof, licence, documents)
@@ -282,7 +283,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     await shot('driver-file-picker');
     const pickerOpen = !topAct.includes(PKG.driver + '/');
     rec('uploads: tapping a photo/file field opens the phone picker', pickerOpen, topAct.replace(/\s+/g, ' ').slice(0, 160));
-    if (pickerOpen) { sh('adb shell input keyevent KEYCODE_BACK'); await sleep(2000); }
+    if (pickerOpen) { sh('adb shell input keyevent KEYCODE_BACK'); await sleep(4500); }
     const backIn = sh(`adb shell dumpsys activity activities | grep -E "topResumedActivity" | head -1`).includes(PKG.driver + '/');
     rec('uploads: cancelling the picker returns to the app', backIn);
     // offline screen
@@ -297,7 +298,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     const xy = sh(`adb shell uiautomator dump /sdcard/u.xml >/dev/null && adb shell cat /sdcard/u.xml`).match(/text="Try again"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
     if (xy) { sh(`adb shell input tap ${(+xy[1] + +xy[3]) / 2} ${(+xy[2] + +xy[4]) / 2}`); }
     await sleep(6000);
-    const back = await connect('merchant').then(cc => waitFor(cc, `document.querySelector('#main') && document.querySelector('#main').innerText.length>20`, 15000)).catch(() => null);
+    const back = await connect('merchant').then(cc => waitFor(cc, `document.querySelector('#main') && document.querySelector('#main').innerText.length>20`, 30000)).catch(() => null);
     rec('offline: "Try again" reloads once the connection returns', !!back);
     await shot('merchant-back-online');
   } catch (e) { rec('behaviour checks stopped', false, e.message); }

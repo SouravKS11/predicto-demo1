@@ -1,24 +1,24 @@
 {
-  "started": "2026-11-03T17:57:36.813Z",
+  "started": "2026-11-03T18:07:30.076Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": "14739",
-  "finished": "2026-11-03T18:02:35.092Z",
+  "orderId": null,
+  "finished": "2026-11-03T18:11:19.609Z",
   "results": [
     {
       "step": "customer: app launches and loads the test environment",
       "ok": true,
-      "detail": "12.6s · #/login"
+      "detail": "11.6s · #/login"
     },
     {
       "step": "merchant: app launches and loads the test environment",
       "ok": true,
-      "detail": "11.1s · #/login"
+      "detail": "8.8s · #/login"
     },
     {
       "step": "driver: app launches and loads the test environment",
       "ok": true,
-      "detail": "6.7s · #/login"
+      "detail": "7.9s · #/login"
     },
     {
       "step": "customer: sign in with test account",
@@ -32,117 +32,27 @@
     },
     {
       "step": "customer: restaurant menu opens",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "customer: item added to cart",
-      "ok": true,
-      "detail": "1\nView cart · Client Test Kitchen\nTT$48.00"
-    },
-    {
-      "step": "customer: checkout shows bill",
-      "ok": true,
-      "detail": "by the server when you place the order. Zone fees may apply."
-    },
-    {
-      "step": "customer: slide-to-pay places the order",
-      "ok": true,
-      "detail": "order FD-14739"
-    },
-    {
-      "step": "customer: tracking screen shows delivery PIN",
-      "ok": true,
-      "detail": "PIN shown"
-    },
-    {
-      "step": "merchant: sign in with test account",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "merchant: new order appears on the board",
-      "ok": true,
-      "detail": "arrived live, no reload"
-    },
-    {
-      "step": "merchant: accept moves order to Preparing",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: sign in with test account",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: already online",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: test courier was blocked by an unfinished delivery",
       "ok": false,
-      "detail": "Active delivery · FD-13995 (left over from earlier testing; no new offers can appear until it is completed)"
+      "detail": ""
     },
     {
-      "step": "cleanup: customer test account cannot see the PIN for FD-13995",
+      "step": "flow stopped",
       "ok": false,
-      "detail": "{\"me\":\"6b2523c1-fa22-43ad-8d21-3801b6fd5d32\",\"order\":null,\"orderErr\":null,\"pinVisible\":false,\"pinErr\":null}"
-    },
-    {
-      "step": "cleanup: completed stuck delivery FD-13995 with photo proof",
-      "ok": true,
-      "detail": "delivered · Client Courier"
-    },
-    {
-      "step": "driver: accepts the delivery",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "merchant: marks order ready for handover",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: sees order is ready and can confirm pickup",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: pickup confirmed, PIN keypad shown",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: correct PIN completes the delivery",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "customer: order status is delivered",
-      "ok": true,
-      "detail": "backend status: delivered · Client Courier · screen title: Delivered. Enjoy!"
-    },
-    {
-      "step": "customer: rates the order 5 stars",
-      "ok": true,
-      "detail": "submitted"
+      "detail": "not found: [data-a=cartAdd]"
     },
     {
       "step": "android back button goes back inside the app",
-      "ok": true,
-      "detail": "#/eat/orders -> #/eat"
+      "ok": false,
+      "detail": "#/eat/orders -> #/eat/orders"
     },
     {
       "step": "uploads: tapping a photo/file field opens the phone picker",
       "ok": true,
-      "detail": "topResumedActivity=ActivityRecord{86c2172 u0 com.android.intentresolver/.ChooserActivity t10}"
+      "detail": "topResumedActivity=ActivityRecord{8539472 u0 com.android.intentresolver/.ChooserActivity t10}"
     },
     {
       "step": "uploads: cancelling the picker returns to the app",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -152,10 +62,10 @@
     },
     {
       "step": "offline: \"Try again\" reloads once the connection returns",
-      "ok": true,
+      "ok": false,
       "detail": ""
     }
   ],
-  "passed": 28,
-  "failed": 2
+  "passed": 7,
+  "failed": 5
 }

@@ -116,6 +116,29 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
 (async () => {
   report = { started: new Date().toISOString(), device: sh('adb shell getprop ro.product.model') + ' · Android ' + sh('adb shell getprop ro.build.version.release'), webview: sh(`adb shell dumpsys package com.google.android.webview | grep versionName | head -1`) };
   let orderId = null, pin = null;
+  if (fs.existsSync('e2e/cleanup-ids.txt')) {
+    // Cleanup mode: finish leftover audit orders so they do not clutter the client's test environment
+    const ids = fs.readFileSync('e2e/cleanup-ids.txt', 'utf8').split(/\s+/).filter(Boolean);
+    try {
+      let cc = await ensureLogin('customer', '#/eat');
+      let dc = await ensureLogin('driver', '#/drive');
+      if (await ev(dc, `!!document.querySelector('[data-a=goOnline]')`)) { await click(dc, '[data-a=goOnline]'); await sleep(3000); }
+      for (const id of ids) {
+        cc = await front('customer');
+        const st0 = await orderStatus(cc, id);
+        if (/^(delivered|cancelled|rejected)/.test(st0)) { rec(`cleanup FD-${id}: already finished`, true, st0); continue; }
+        const p = await orderPin(cc, id);
+        dc = await front('driver');
+        await ev(dc, `location.hash='#/drive'`); await sleep(2500);
+        if (await waitFor(dc, `!!document.querySelector('[data-a=claim][data-v="${id}"]')`, 15000)) { await click(dc, `[data-a=claim][data-v="${id}"]`); await sleep(2500); }
+        if (await waitFor(dc, `!!document.querySelector('[data-a=dPickup][data-v="${id}"]')`, 15000)) { await click(dc, `[data-a=dPickup][data-v="${id}"]`); }
+        const pad = await waitFor(dc, `!!document.querySelector('.keypad')`, 15000);
+        const done = pad && p ? await enterPin(dc, p) : null;
+        rec(`cleanup FD-${id}: claimed, picked up and delivered with PIN`, !!done, await orderStatus(dc, id));
+      }
+    } catch (e) { rec('cleanup stopped', false, e.message); }
+    writeReport(); process.exit(0);
+  }
   try {
     // ---------- 1. Launch each app on its own role ----------
     for (const role of ['customer', 'merchant', 'driver']) {

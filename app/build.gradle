@@ -1,0 +1,62 @@
+plugins { id 'com.android.application' }
+
+def BASE = "https://dc13-delivery-demo.netlify.app/"
+
+android {
+    namespace 'com.digitalcode13.delivery'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.digitalcode13.delivery"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0-test"
+        buildConfigField "String", "BASE_URL", "\"${BASE}\""
+    }
+
+    buildFeatures { buildConfig true }
+
+    signingConfigs {
+        test {
+            storeFile file("dc13-test.keystore")
+            storePassword "dc13test"
+            keyAlias "dc13"
+            keyPassword "dc13test"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.test
+        }
+    }
+
+    flavorDimensions = ["role"]
+    productFlavors {
+        customer {
+            dimension "role"
+            applicationIdSuffix ".customer"
+            resValue "string", "app_name", "DC13 Customer"
+            buildConfigField "String", "START_ROUTE", "\"#/eat\""
+        }
+        driver {
+            dimension "role"
+            applicationIdSuffix ".driver"
+            resValue "string", "app_name", "DC13 Driver"
+            buildConfigField "String", "START_ROUTE", "\"#/drive\""
+        }
+        merchant {
+            dimension "role"
+            applicationIdSuffix ".merchant"
+            resValue "string", "app_name", "DC13 Merchant"
+            buildConfigField "String", "START_ROUTE", "\"#/partner\""
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

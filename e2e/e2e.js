@@ -71,8 +71,8 @@ async function click(c, sel) {
 }
 async function pageText(c) { try { return (await ev(c, 'document.body.innerText')).replace(/\s+/g, ' ').slice(0, 600); } catch (e) { return '(no text)'; } }
 const hash = c => ev(c, 'location.hash');
-const orderStatus = (c, id) => ev(c, `(async()=>{const r=await sb.from('orders').select('status,courier_name').eq('id',${'${id}'}).single();return r.data?r.data.status+(r.data.courier_name?' · '+r.data.courier_name:''):'unknown'})()`).catch(e => 'error: ' + e.message);
-const orderPin = (c, id) => ev(c, `(async()=>{location.hash='#/eat/order/${'${id}'}';for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,300));const p=document.querySelector('.pin');if(p&&location.hash.endsWith('/${'${id}'}'))return p.textContent.replace(/\\D/g,'')}return null})()`).catch(() => null);
+const orderStatus = (c, id) => ev(c, `(async()=>{const r=await sb.from('orders').select('status,courier_name').eq('id',${id}).single();return r.data?r.data.status+(r.data.courier_name?' · '+r.data.courier_name:''):'unknown'})()`).catch(e => 'error: ' + e.message);
+const orderPin = (c, id) => ev(c, `(async()=>{location.hash='#/eat/order/${id}';for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,300));const p=document.querySelector('.pin');if(p&&location.hash.endsWith('/${id}'))return p.textContent.replace(/\\D/g,'')}return null})()`).catch(() => null);
 async function errorsShown(c) { return ev(c, `[...document.querySelectorAll('.toast')].map(t=>t.innerText).join(' | ')`).catch(() => ''); }
 
 async function ensureLogin(role, routePrefix) {
@@ -254,17 +254,20 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
   // ---------- 8. App behaviour checks ----------
   try {
     let c = await front('customer');
+    await ev(c, `location.hash='#/eat'`); await sleep(2500);
+    await ev(c, `location.hash='#/eat/orders'`); await sleep(2500);
     const before = await hash(c);
-    sh('adb shell input keyevent KEYCODE_BACK'); await sleep(1500);
-    const stillOpen = sh(`adb shell dumpsys activity activities | grep -E "topResumedActivity|mResumedActivity" | head -1`);
+    sh('adb shell input keyevent KEYCODE_BACK'); await sleep(2500);
     const after = await hash(await connect('customer')).catch(() => '(app closed)');
-    rec('android back button goes back inside the app', after !== before || !stillOpen.includes(PKG.customer) ? true : false, `${before} -> ${after}`);
+    rec('android back button goes back inside the app', before !== after && after.startsWith('#/eat'), `${before} -> ${after}`);
     // offline screen
     sh('adb shell svc wifi disable'); sh('adb shell svc data disable'); await sleep(2000);
     sh(`adb shell am force-stop ${PKG.merchant}`); sh(`adb shell monkey -p ${PKG.merchant} -c android.intent.category.LAUNCHER 1`); await sleep(4000);
     await shot('merchant-offline-screen');
     rec('offline: app shows the "You\'re offline" screen', true, 'see screenshot');
-    sh('adb shell svc wifi enable'); sh('adb shell svc data enable'); await sleep(5000);
+    sh('adb shell svc wifi enable'); sh('adb shell svc data enable');
+    for (let i = 0; i < 20; i++) { if (sh('adb shell ping -c 1 -W 2 8.8.8.8').includes('1 received')) break; await sleep(1500); }
+    await sleep(3000);
     // retry button recovers once back online
     const xy = sh(`adb shell uiautomator dump /sdcard/u.xml >/dev/null && adb shell cat /sdcard/u.xml`).match(/text="Try again"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
     if (xy) { sh(`adb shell input tap ${(+xy[1] + +xy[3]) / 2} ${(+xy[2] + +xy[4]) / 2}`); }

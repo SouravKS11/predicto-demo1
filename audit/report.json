@@ -1,21 +1,126 @@
 {
-  "started": "2026-11-03T16:32:50.312Z",
+  "started": "2026-11-03T17:24:27.974Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": null,
-  "finished": "2026-11-03T16:44:59.184Z",
+  "orderId": "14677",
+  "finished": "2026-11-03T17:28:09.758Z",
   "results": [
     {
-      "step": "flow stopped",
-      "ok": false,
-      "detail": "no web inspector for customer (pid 3951; sockets: 0000000000000000: 00000003 00000000 00000000 0001 03 79241 @webview_devtools_remote_3951 0000000000000000: 00000002 00000000 00010000 0001 01 66409 @webview_devtools_remote_3951)"
+      "step": "customer: app launches and loads the test environment",
+      "ok": true,
+      "detail": "10s · #/login"
     },
     {
-      "step": "behaviour checks stopped",
+      "step": "merchant: app launches and loads the test environment",
+      "ok": true,
+      "detail": "8.6s · #/login"
+    },
+    {
+      "step": "driver: app launches and loads the test environment",
+      "ok": true,
+      "detail": "6.9s · #/login"
+    },
+    {
+      "step": "customer: sign in with test account",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "customer: Client Test Kitchen listed",
+      "ok": true,
+      "detail": "#/eat/store/2e66eb4f-e471-4cee-9d37-4a098aea315d"
+    },
+    {
+      "step": "customer: restaurant menu opens",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "customer: item added to cart",
+      "ok": true,
+      "detail": "1\nView cart · Client Test Kitchen\nTT$48.00"
+    },
+    {
+      "step": "customer: checkout shows bill",
+      "ok": true,
+      "detail": "by the server when you place the order. Zone fees may apply."
+    },
+    {
+      "step": "customer: slide-to-pay places the order",
+      "ok": true,
+      "detail": "order FD-14677"
+    },
+    {
+      "step": "customer: tracking screen shows delivery PIN",
+      "ok": true,
+      "detail": "PIN shown"
+    },
+    {
+      "step": "merchant: sign in with test account",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "merchant: new order appears on the board",
+      "ok": true,
+      "detail": "arrived live, no reload"
+    },
+    {
+      "step": "merchant: accept moves order to Preparing",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "driver: sign in with test account",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "driver: already online",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "driver: delivery offer appears",
       "ok": false,
-      "detail": "no web inspector for customer (pid 3951; sockets: 0000000000000000: 00000003 00000000 00000000 0001 03 81321 @webview_devtools_remote_3951 0000000000000000: 00000002 00000000 00010000 0001 01 66409 @webview_devtools_remote_3951)"
+      "detail": "offer never appeared: TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$0.00 TRIPS TODAY 0 ALL TIME 2 RATING 5 ACTIVE DELIVERY · FD-13995 Deliver to customer@dc13-demo.testourier TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors ilirska 58 1× Jerk Pork Bowl 1× Callaloo & Crab Bowl 1× Fresh Coconut Water Enter the customer's PIN 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-3467 Oct 30, 6:25 PM · pin "
+    },
+    {
+      "step": "merchant: marks order ready for handover",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "driver: sees order is ready and can confirm pickup",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "step": "customer: order shows Delivered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "customer: rating available",
+      "ok": false,
+      "detail": "TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14677 · CLIENT TEST KITCHEN Ready · finding a courier 20 min arriving around 5:47 PM Order placed 5:25 PM Accepted by kitchen 5:25 PM Courier assigned Picked up Delivered DELIVERY PIN Share only at handover 6 1 7 2 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE"
+    },
+    {
+      "step": "android back button goes back inside the app",
+      "ok": true,
+      "detail": "#/eat/order/14677 -> #/eat/cart"
+    },
+    {
+      "step": "offline: app shows the \"You're offline\" screen",
+      "ok": true,
+      "detail": "see screenshot"
+    },
+    {
+      "step": "offline: \"Try again\" reloads once the connection returns",
+      "ok": true,
+      "detail": ""
     }
   ],
-  "passed": 0,
-  "failed": 2
+  "passed": 20,
+  "failed": 3
 }

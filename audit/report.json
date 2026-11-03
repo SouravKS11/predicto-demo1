@@ -1,24 +1,24 @@
 {
-  "started": "2026-11-03T17:43:56.873Z",
+  "started": "2026-11-03T17:57:36.813Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": "14712",
-  "finished": "2026-11-03T17:49:21.075Z",
+  "orderId": "14739",
+  "finished": "2026-11-03T18:02:35.092Z",
   "results": [
     {
       "step": "customer: app launches and loads the test environment",
       "ok": true,
-      "detail": "10.8s · #/login"
+      "detail": "12.6s · #/login"
     },
     {
       "step": "merchant: app launches and loads the test environment",
       "ok": true,
-      "detail": "7s · #/login"
+      "detail": "11.1s · #/login"
     },
     {
       "step": "driver: app launches and loads the test environment",
       "ok": true,
-      "detail": "7s · #/login"
+      "detail": "6.7s · #/login"
     },
     {
       "step": "customer: sign in with test account",
@@ -48,7 +48,7 @@
     {
       "step": "customer: slide-to-pay places the order",
       "ok": true,
-      "detail": "order FD-14712"
+      "detail": "order FD-14739"
     },
     {
       "step": "customer: tracking screen shows delivery PIN",
@@ -86,14 +86,19 @@
       "detail": "Active delivery · FD-13995 (left over from earlier testing; no new offers can appear until it is completed)"
     },
     {
-      "step": "cleanup: could not read PIN for FD-13995",
+      "step": "cleanup: customer test account cannot see the PIN for FD-13995",
       "ok": false,
-      "detail": ""
+      "detail": "{\"me\":\"6b2523c1-fa22-43ad-8d21-3801b6fd5d32\",\"order\":null,\"orderErr\":null,\"pinVisible\":false,\"pinErr\":null}"
     },
     {
-      "step": "driver: delivery offer appears",
-      "ok": false,
-      "detail": "offer never appeared: TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$0.00 TRIPS TODAY 0 ALL TIME 2 RATING 5 ACTIVE DELIVERY · FD-13995 Deliver to customer@dc13-demo.testourier TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors ilirska 58 1× Jerk Pork Bowl 1× Callaloo & Crab Bowl 1× Fresh Coconut Water Enter the customer's PIN 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-3467 Oct 30, 6:25 PM · pin "
+      "step": "cleanup: completed stuck delivery FD-13995 with photo proof",
+      "ok": true,
+      "detail": "delivered · Client Courier"
+    },
+    {
+      "step": "driver: accepts the delivery",
+      "ok": true,
+      "detail": ""
     },
     {
       "step": "merchant: marks order ready for handover",
@@ -102,23 +107,43 @@
     },
     {
       "step": "driver: sees order is ready and can confirm pickup",
-      "ok": false,
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "driver: pickup confirmed, PIN keypad shown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": "driver: correct PIN completes the delivery",
+      "ok": true,
       "detail": ""
     },
     {
       "step": "customer: order status is delivered",
-      "ok": false,
-      "detail": "backend status: ready · screen title: Ready · finding a courier"
+      "ok": true,
+      "detail": "backend status: delivered · Client Courier · screen title: Delivered. Enjoy!"
     },
     {
-      "step": "customer: rating available",
-      "ok": false,
-      "detail": "TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14712 · CLIENT TEST KITCHEN Ready · finding a courier 19 min arriving around 6:06 PM Order placed 5:44 PM Accepted by kitchen 5:45 PM Courier assigned Picked up Delivered DELIVERY PIN Share only at handover 7 8 3 6 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE"
+      "step": "customer: rates the order 5 stars",
+      "ok": true,
+      "detail": "submitted"
     },
     {
       "step": "android back button goes back inside the app",
       "ok": true,
       "detail": "#/eat/orders -> #/eat"
+    },
+    {
+      "step": "uploads: tapping a photo/file field opens the phone picker",
+      "ok": true,
+      "detail": "topResumedActivity=ActivityRecord{86c2172 u0 com.android.intentresolver/.ChooserActivity t10}"
+    },
+    {
+      "step": "uploads: cancelling the picker returns to the app",
+      "ok": true,
+      "detail": ""
     },
     {
       "step": "offline: app shows the \"You're offline\" screen",
@@ -131,6 +156,6 @@
       "detail": ""
     }
   ],
-  "passed": 19,
-  "failed": 6
+  "passed": 28,
+  "failed": 2
 }

@@ -1,71 +1,84 @@
 devtools sockets at start: 
-[4.9s] customer: listing inspector targets (try 1)
-[5.1s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
-[5.1s] customer: reported ws ws://127.0.0.1:9301/devtools/page/6971D44C3E180C72AC9C2B3605DE875B -> using ws://127.0.0.1:9301/devtools/page/6971D44C3E180C72AC9C2B3605DE875B
-[5.3s] customer: connected
-[11.5s] RESULT customer: app launches and loads the test environment
-PASS | customer: app launches and loads the test environment | 10.8s · #/login
-[17.1s] merchant: listing inspector targets (try 1)
-[17.1s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[17.1s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/814B8F238CF43D2E6C8F48F3004A8F40 -> using ws://127.0.0.1:9303/devtools/page/814B8F238CF43D2E6C8F48F3004A8F40
-[18.8s] merchant: connected
-[21.2s] RESULT merchant: app launches and loads the test environment
-PASS | merchant: app launches and loads the test environment | 7s · #/login
-[28.5s] driver: listing inspector targets (try 1)
-[29.5s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
-[29.5s] driver: reported ws ws://127.0.0.1:9302/devtools/page/9C4FF2D5F806786CAAF9BF9819DDAFEF -> using ws://127.0.0.1:9302/devtools/page/9C4FF2D5F806786CAAF9BF9819DDAFEF
-[29.8s] driver: connected
-[31.6s] RESULT driver: app launches and loads the test environment
-PASS | driver: app launches and loads the test environment | 7s · #/login
-[41.7s] RESULT customer: sign in with test account
+[5.1s] customer: listing inspector targets (try 1)
+[5.1s] customer: inspector attempt failed: socket hang up
+[6.1s] customer: listing inspector targets (try 2)
+[6.1s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
+[6.1s] customer: reported ws ws://127.0.0.1:9301/devtools/page/4FDDD5ECFEC92EB81770D5BAC85CC24C -> using ws://127.0.0.1:9301/devtools/page/4FDDD5ECFEC92EB81770D5BAC85CC24C
+[6.5s] customer: connected
+[13.9s] RESULT customer: app launches and loads the test environment
+PASS | customer: app launches and loads the test environment | 12.6s · #/login
+[21.0s] merchant: listing inspector targets (try 1)
+[22.9s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
+[22.9s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/8F256B9D3AB83ADE67078E1B8BE11613 -> using ws://127.0.0.1:9303/devtools/page/8F256B9D3AB83ADE67078E1B8BE11613
+[23.1s] merchant: connected
+[28.4s] RESULT merchant: app launches and loads the test environment
+PASS | merchant: app launches and loads the test environment | 11.1s · #/login
+[34.4s] driver: listing inspector targets (try 1)
+[35.5s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
+[35.5s] driver: reported ws ws://127.0.0.1:9302/devtools/page/A63D05D9B8F517EB3D891E9FF22021C3 -> using ws://127.0.0.1:9302/devtools/page/A63D05D9B8F517EB3D891E9FF22021C3
+[35.9s] driver: connected
+[37.7s] RESULT driver: app launches and loads the test environment
+PASS | driver: app launches and loads the test environment | 6.7s · #/login
+[49.2s] RESULT customer: sign in with test account
 PASS | customer: sign in with test account | 
-[45.4s] RESULT customer: Client Test Kitchen listed
+[53.3s] RESULT customer: Client Test Kitchen listed
 PASS | customer: Client Test Kitchen listed | #/eat/store/2e66eb4f-e471-4cee-9d37-4a098aea315d
-[47.2s] RESULT customer: restaurant menu opens
+[55.6s] RESULT customer: restaurant menu opens
 PASS | customer: restaurant menu opens | 
-[49.4s] RESULT customer: item added to cart
+[58.9s] RESULT customer: item added to cart
 PASS | customer: item added to cart | 1
 View cart · Client Test Kitchen
 TT$48.00
-[58.8s] RESULT customer: checkout shows bill
+[69.8s] RESULT customer: checkout shows bill
 PASS | customer: checkout shows bill | by the server when you place the order. Zone fees may apply.
-[65.1s] RESULT customer: slide-to-pay places the order
-PASS | customer: slide-to-pay places the order | order FD-14712
-[66.4s] RESULT customer: tracking screen shows delivery PIN
+[76.1s] RESULT customer: slide-to-pay places the order
+PASS | customer: slide-to-pay places the order | order FD-14739
+[78.4s] RESULT customer: tracking screen shows delivery PIN
 PASS | customer: tracking screen shows delivery PIN | PIN shown
-[77.1s] RESULT merchant: sign in with test account
+[90.3s] RESULT merchant: sign in with test account
 PASS | merchant: sign in with test account | 
-[78.1s] RESULT merchant: new order appears on the board
+[92.2s] RESULT merchant: new order appears on the board
 PASS | merchant: new order appears on the board | arrived live, no reload
-[83.7s] RESULT merchant: accept moves order to Preparing
+[96.5s] RESULT merchant: accept moves order to Preparing
 PASS | merchant: accept moves order to Preparing | 
-[92.1s] RESULT driver: sign in with test account
+[105.7s] RESULT driver: sign in with test account
 PASS | driver: sign in with test account | 
-[94.3s] RESULT driver: already online
+[108.5s] RESULT driver: already online
 PASS | driver: already online | 
-[96.6s] RESULT driver: test courier was blocked by an unfinished delivery
+[111.3s] RESULT driver: test courier was blocked by an unfinished delivery
 FAIL | driver: test courier was blocked by an unfinished delivery | Active delivery · FD-13995 (left over from earlier testing; no new offers can appear until it is completed)
-[114.3s] RESULT cleanup: could not read PIN for FD-13995
-FAIL | cleanup: could not read PIN for FD-13995 | 
-[166.6s] RESULT driver: delivery offer appears
-FAIL | driver: delivery offer appears | offer never appeared: TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$0.00 TRIPS TODAY 0 ALL TIME 2 RATING 5 ACTIVE DELIVERY · FD-13995 Deliver to customer@dc13-demo.testourier TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors ilirska 58 1× Jerk Pork Bowl 1× Callaloo & Crab Bowl 1× Fresh Coconut Water Enter the customer's PIN 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-3467 Oct 30, 6:25 PM · pin 
-[171.7s] RESULT merchant: marks order ready for handover
+[115.1s] stuck order diagnostics {"me":"6b2523c1-fa22-43ad-8d21-3801b6fd5d32","order":null,"orderErr":null,"pinVisible":false,"pinErr":null}
+[130.1s] RESULT cleanup: customer test account cannot see the PIN for FD-13995
+FAIL | cleanup: customer test account cannot see the PIN for FD-13995 | {"me":"6b2523c1-fa22-43ad-8d21-3801b6fd5d32","order":null,"orderErr":null,"pinVisible":false,"pinErr":null}
+[136.4s] RESULT cleanup: completed stuck delivery FD-13995 with photo proof
+PASS | cleanup: completed stuck delivery FD-13995 with photo proof | delivered · Client Courier
+[143.9s] RESULT driver: accepts the delivery
+PASS | driver: accepts the delivery | 
+[151.8s] RESULT merchant: marks order ready for handover
 PASS | merchant: marks order ready for handover | 
-[215.7s] RESULT driver: sees order is ready and can confirm pickup
-FAIL | driver: sees order is ready and can confirm pickup | 
-[221.8s] RESULT customer: order status is delivered
-FAIL | customer: order status is delivered | backend status: ready · screen title: Ready · finding a courier
-[224.1s] RESULT customer: rating available
-FAIL | customer: rating available | TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14712 · CLIENT TEST KITCHEN Ready · finding a courier 19 min arriving around 6:06 PM Order placed 5:44 PM Accepted by kitchen 5:45 PM Courier assigned Picked up Delivered DELIVERY PIN Share only at handover 7 8 3 6 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE
-[234.3s] RESULT android back button goes back inside the app
+[156.6s] RESULT driver: sees order is ready and can confirm pickup
+PASS | driver: sees order is ready and can confirm pickup | 
+[158.9s] RESULT driver: pickup confirmed, PIN keypad shown
+PASS | driver: pickup confirmed, PIN keypad shown | 
+[169.0s] RESULT driver: correct PIN completes the delivery
+PASS | driver: correct PIN completes the delivery | 
+[178.7s] RESULT customer: order status is delivered
+PASS | customer: order status is delivered | backend status: delivered · Client Courier · screen title: Delivered. Enjoy!
+[185.0s] RESULT customer: rates the order 5 stars
+PASS | customer: rates the order 5 stars | submitted
+[197.3s] RESULT android back button goes back inside the app
 PASS | android back button goes back inside the app | #/eat/orders -> #/eat
-[242.8s] RESULT offline: app shows the "You're offline" screen
+[206.3s] RESULT uploads: tapping a photo/file field opens the phone picker
+PASS | uploads: tapping a photo/file field opens the phone picker | topResumedActivity=ActivityRecord{86c2172 u0 com.android.intentresolver/.ChooserActivity t10}
+[208.3s] RESULT uploads: cancelling the picker returns to the app
+PASS | uploads: cancelling the picker returns to the app | 
+[216.8s] RESULT offline: app shows the "You're offline" screen
 PASS | offline: app shows the "You're offline" screen | see screenshot
-[322.2s] merchant: listing inspector targets (try 1)
-[322.2s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[322.2s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/5FB3AF12BE0BA9ACB3BF7A98AC2E5390 -> using ws://127.0.0.1:9303/devtools/page/5FB3AF12BE0BA9ACB3BF7A98AC2E5390
-[322.2s] merchant: connected
-[322.2s] RESULT offline: "Try again" reloads once the connection returns
+[296.3s] merchant: listing inspector targets (try 1)
+[296.4s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
+[296.4s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/9447CEEC8C2E0E2C841936138193466D -> using ws://127.0.0.1:9303/devtools/page/9447CEEC8C2E0E2C841936138193466D
+[296.4s] merchant: connected
+[296.4s] RESULT offline: "Try again" reloads once the connection returns
 PASS | offline: "Try again" reloads once the connection returns | 
 
-DONE: 19 passed, 6 failed
+DONE: 28 passed, 2 failed

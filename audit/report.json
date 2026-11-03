@@ -1,0 +1,21 @@
+{
+  "started": "2026-11-03T14:03:30.365Z",
+  "device": "sdk_gphone64_x86_64 · Android 14",
+  "webview": "versionName=113.0.5672.136",
+  "finished": "2026-11-03T14:18:18.497Z",
+  "orderId": null,
+  "results": [
+    {
+      "step": "flow stopped",
+      "ok": false,
+      "detail": "no web inspector for customer"
+    },
+    {
+      "step": "behaviour checks stopped",
+      "ok": false,
+      "detail": "no web inspector for customer"
+    }
+  ],
+  "passed": 0,
+  "failed": 2
+}

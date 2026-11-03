@@ -1,0 +1,4 @@
+FAIL | flow stopped | no web inspector for customer
+FAIL | behaviour checks stopped | no web inspector for customer
+
+DONE: 0 passed, 2 failed

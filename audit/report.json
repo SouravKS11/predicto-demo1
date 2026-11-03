@@ -1,24 +1,24 @@
 {
-  "started": "2026-11-03T18:33:15.121Z",
+  "started": "2026-11-03T18:44:18.593Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": "14809",
-  "finished": "2026-11-03T18:38:35.703Z",
+  "orderId": "14831",
+  "finished": "2026-11-03T18:49:17.988Z",
   "results": [
     {
       "step": "customer: app launches and loads the test environment",
       "ok": true,
-      "detail": "9.8s · #/login"
+      "detail": "12.4s · #/login"
     },
     {
       "step": "merchant: app launches and loads the test environment",
       "ok": true,
-      "detail": "6.3s · #/login"
+      "detail": "9.8s · #/login"
     },
     {
       "step": "driver: app launches and loads the test environment",
       "ok": true,
-      "detail": "4.5s · #/login"
+      "detail": "7.7s · #/login"
     },
     {
       "step": "customer: sign in with test account",
@@ -48,7 +48,7 @@
     {
       "step": "customer: slide-to-pay places the order",
       "ok": true,
-      "detail": "order FD-14809"
+      "detail": "order FD-14831"
     },
     {
       "step": "customer: tracking screen shows delivery PIN",
@@ -81,6 +81,16 @@
       "detail": ""
     },
     {
+      "step": "driver: test courier was blocked by an unfinished delivery",
+      "ok": false,
+      "detail": "Active delivery · FD-14809 (left over from earlier testing; no new offers can appear until it is completed)"
+    },
+    {
+      "step": "cleanup: completed stuck delivery FD-14809 with its PIN",
+      "ok": true,
+      "detail": "delivered · Client Courier"
+    },
+    {
       "step": "driver: accepts the delivery",
       "ok": true,
       "detail": ""
@@ -102,32 +112,32 @@
     },
     {
       "step": "driver: correct PIN completes the delivery",
-      "ok": false,
-      "detail": " TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$38.25 TRIPS TODAY 3 ALL TIME 5 RATING 5 ACTIVE DELIVERY · FD-14809 Deliver to Client Customer TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors Frederick Street, Chinatown, Sea Lots 1× Curry Chicken Roti Enter the customer's PIN 8 9 2 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-14779 Nov 3, 6:19 PM · pin TT$12.75 FD-14739 Nov 3"
+      "ok": true,
+      "detail": ""
     },
     {
       "step": "customer: order status is delivered",
-      "ok": false,
-      "detail": "backend status: picked_up · Client Courier · screen title: On the way to you"
+      "ok": true,
+      "detail": "backend status: delivered · Client Courier · screen title: Delivered. Enjoy!"
     },
     {
-      "step": "customer: rating available",
-      "ok": false,
-      "detail": "TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14809 · CLIENT TEST KITCHEN On the way to you 20 min arriving around 6:56 PM Order placed 6:34 PM Accepted by kitchen 6:34 PM Courier assigned 6:34 PM Picked up 6:35 PM Delivered CC Client Courier Scooter · your courier DELIVERY PIN Share only at handover 8 9 2 0 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE"
+      "step": "customer: rates the order 5 stars",
+      "ok": true,
+      "detail": "saved rating: 5 · confirmation shown: true"
     },
     {
       "step": "android back button goes back inside the app",
-      "ok": false,
-      "detail": "#/eat/orders -> #/eat/orders"
+      "ok": true,
+      "detail": "#/eat/orders -> #/eat"
     },
     {
       "step": "uploads: tapping a photo/file field opens the phone picker",
       "ok": true,
-      "detail": "topResumedActivity=ActivityRecord{69c84b2 u0 com.android.intentresolver/.ChooserActivity t10}"
+      "detail": "topResumedActivity=ActivityRecord{4773398 u0 com.android.intentresolver/.ChooserActivity t10}"
     },
     {
       "step": "uploads: cancelling the picker returns to the app",
-      "ok": false,
+      "ok": true,
       "detail": ""
     },
     {
@@ -137,10 +147,10 @@
     },
     {
       "step": "offline: \"Try again\" reloads once the connection returns",
-      "ok": false,
+      "ok": true,
       "detail": ""
     }
   ],
-  "passed": 21,
-  "failed": 6
+  "passed": 28,
+  "failed": 1
 }

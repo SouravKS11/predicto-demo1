@@ -1,82 +1,21 @@
 devtools sockets at start: 
-[4.9s] customer: listing inspector targets (try 1)
-[4.9s] customer: inspector attempt failed: socket hang up
-[5.9s] customer: listing inspector targets (try 2)
-[6.2s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
-[6.2s] customer: reported ws ws://127.0.0.1:9301/devtools/page/86A9754CFCEBE470FBDA60CBB6DC89AE -> using ws://127.0.0.1:9301/devtools/page/86A9754CFCEBE470FBDA60CBB6DC89AE
-[6.8s] customer: connected
-[12.9s] RESULT customer: app launches and loads the test environment
-PASS | customer: app launches and loads the test environment | 12.4s · #/login
-[19.9s] merchant: listing inspector targets (try 1)
-[20.5s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[20.5s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/13E16045A97B4DB053B7BFE203D47901 -> using ws://127.0.0.1:9303/devtools/page/13E16045A97B4DB053B7BFE203D47901
-[20.7s] merchant: connected
-[29.3s] RESULT merchant: app launches and loads the test environment
-PASS | merchant: app launches and loads the test environment | 9.8s · #/login
-[35.9s] driver: listing inspector targets (try 1)
-[35.9s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
-[35.9s] driver: reported ws ws://127.0.0.1:9302/devtools/page/D8DBBE6E8ACE6279F6F48D60B2E299D0 -> using ws://127.0.0.1:9302/devtools/page/D8DBBE6E8ACE6279F6F48D60B2E299D0
-[38.0s] driver: connected
-[40.0s] RESULT driver: app launches and loads the test environment
-PASS | driver: app launches and loads the test environment | 7.7s · #/login
-[52.9s] RESULT customer: sign in with test account
+[3.8s] customer: listing inspector targets (try 1)
+[3.8s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
+[3.8s] customer: reported ws ws://127.0.0.1:9301/devtools/page/FBB5FD864146414B9805527916AF2744 -> using ws://127.0.0.1:9301/devtools/page/FBB5FD864146414B9805527916AF2744
+[4.0s] customer: connected
+[14.4s] RESULT customer: sign in with test account
 PASS | customer: sign in with test account | 
-[56.1s] RESULT customer: Client Test Kitchen listed
-PASS | customer: Client Test Kitchen listed | #/eat/store/2e66eb4f-e471-4cee-9d37-4a098aea315d
-[61.1s] RESULT customer: restaurant menu opens
-PASS | customer: restaurant menu opens | 
-[63.1s] RESULT customer: item added to cart
-PASS | customer: item added to cart | 1
-View cart · Client Test Kitchen
-TT$48.00
-[72.8s] RESULT customer: checkout shows bill
-PASS | customer: checkout shows bill | by the server when you place the order. Zone fees may apply.
-[78.6s] RESULT customer: slide-to-pay places the order
-PASS | customer: slide-to-pay places the order | order FD-14831
-[81.1s] RESULT customer: tracking screen shows delivery PIN
-PASS | customer: tracking screen shows delivery PIN | PIN shown
-[92.7s] RESULT merchant: sign in with test account
-PASS | merchant: sign in with test account | 
-[93.7s] RESULT merchant: new order appears on the board
-PASS | merchant: new order appears on the board | arrived live, no reload
-[100.6s] RESULT merchant: accept moves order to Preparing
-PASS | merchant: accept moves order to Preparing | 
-[109.7s] RESULT driver: sign in with test account
+[19.2s] driver: listing inspector targets (try 1)
+[19.4s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
+[19.4s] driver: reported ws ws://127.0.0.1:9302/devtools/page/CE3E50B07188F28FFB59C876CE684211 -> using ws://127.0.0.1:9302/devtools/page/CE3E50B07188F28FFB59C876CE684211
+[19.8s] driver: connected
+[27.9s] RESULT driver: sign in with test account
 PASS | driver: sign in with test account | 
-[112.1s] RESULT driver: already online
-PASS | driver: already online | 
-[114.6s] RESULT driver: test courier was blocked by an unfinished delivery
-FAIL | driver: test courier was blocked by an unfinished delivery | Active delivery · FD-14809 (left over from earlier testing; no new offers can appear until it is completed)
-[118.1s] stuck order diagnostics {"me":"6b2523c1-fa22-43ad-8d21-3801b6fd5d32","order":{"id":14809,"customer_id":"6b2523c1-fa22-43ad-8d21-3801b6fd5d32","status":"picked_up"},"orderErr":null,"pinVisible":true,"pinErr":null}
-[134.9s] RESULT cleanup: completed stuck delivery FD-14809 with its PIN
-PASS | cleanup: completed stuck delivery FD-14809 with its PIN | delivered · Client Courier
-[143.5s] RESULT driver: accepts the delivery
-PASS | driver: accepts the delivery | 
-[152.4s] RESULT merchant: marks order ready for handover
-PASS | merchant: marks order ready for handover | 
-[157.8s] RESULT driver: sees order is ready and can confirm pickup
-PASS | driver: sees order is ready and can confirm pickup | 
-[160.6s] RESULT driver: pickup confirmed, PIN keypad shown
-PASS | driver: pickup confirmed, PIN keypad shown | 
-[171.8s] RESULT driver: correct PIN completes the delivery
-PASS | driver: correct PIN completes the delivery | 
-[182.1s] RESULT customer: order status is delivered
-PASS | customer: order status is delivered | backend status: delivered · Client Courier · screen title: Delivered. Enjoy!
-[187.2s] RESULT customer: rates the order 5 stars
-PASS | customer: rates the order 5 stars | saved rating: 5 · confirmation shown: true
-[197.7s] RESULT android back button goes back inside the app
-PASS | android back button goes back inside the app | #/eat/orders -> #/eat
-[206.9s] RESULT uploads: tapping a photo/file field opens the phone picker
-PASS | uploads: tapping a photo/file field opens the phone picker | topResumedActivity=ActivityRecord{4773398 u0 com.android.intentresolver/.ChooserActivity t10}
-[207.7s] RESULT uploads: cancelling the picker returns to the app
-PASS | uploads: cancelling the picker returns to the app | 
-[216.2s] RESULT offline: app shows the "You're offline" screen
-PASS | offline: app shows the "You're offline" screen | see screenshot
-[295.9s] merchant: listing inspector targets (try 1)
-[296.0s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[296.0s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/8B395DF3C9DB472DB1167B2201DF7233 -> using ws://127.0.0.1:9303/devtools/page/8B395DF3C9DB472DB1167B2201DF7233
-[296.2s] merchant: connected
-[297.4s] RESULT offline: "Try again" reloads once the connection returns
-PASS | offline: "Try again" reloads once the connection returns | 
+[58.3s] RESULT cleanup FD-14677: claimed, picked up and delivered with PIN
+PASS | cleanup FD-14677: claimed, picked up and delivered with PIN | delivered · Client Courier
+[84.1s] RESULT cleanup FD-14697: claimed, picked up and delivered with PIN
+PASS | cleanup FD-14697: claimed, picked up and delivered with PIN | delivered · Client Courier
+[110.6s] RESULT cleanup FD-14712: claimed, picked up and delivered with PIN
+PASS | cleanup FD-14712: claimed, picked up and delivered with PIN | delivered · Client Courier
 
-DONE: 28 passed, 1 failed
+DONE: 5 passed, 0 failed

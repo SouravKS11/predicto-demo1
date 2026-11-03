@@ -1,72 +1,11 @@
 {
-  "started": "2026-11-03T18:44:18.593Z",
+  "started": "2026-11-03T19:22:40.409Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": "14831",
-  "finished": "2026-11-03T18:49:17.988Z",
+  "finished": "2026-11-03T19:24:30.898Z",
   "results": [
     {
-      "step": "customer: app launches and loads the test environment",
-      "ok": true,
-      "detail": "12.4s · #/login"
-    },
-    {
-      "step": "merchant: app launches and loads the test environment",
-      "ok": true,
-      "detail": "9.8s · #/login"
-    },
-    {
-      "step": "driver: app launches and loads the test environment",
-      "ok": true,
-      "detail": "7.7s · #/login"
-    },
-    {
       "step": "customer: sign in with test account",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "customer: Client Test Kitchen listed",
-      "ok": true,
-      "detail": "#/eat/store/2e66eb4f-e471-4cee-9d37-4a098aea315d"
-    },
-    {
-      "step": "customer: restaurant menu opens",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "customer: item added to cart",
-      "ok": true,
-      "detail": "1\nView cart · Client Test Kitchen\nTT$48.00"
-    },
-    {
-      "step": "customer: checkout shows bill",
-      "ok": true,
-      "detail": "by the server when you place the order. Zone fees may apply."
-    },
-    {
-      "step": "customer: slide-to-pay places the order",
-      "ok": true,
-      "detail": "order FD-14831"
-    },
-    {
-      "step": "customer: tracking screen shows delivery PIN",
-      "ok": true,
-      "detail": "PIN shown"
-    },
-    {
-      "step": "merchant: sign in with test account",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "merchant: new order appears on the board",
-      "ok": true,
-      "detail": "arrived live, no reload"
-    },
-    {
-      "step": "merchant: accept moves order to Preparing",
       "ok": true,
       "detail": ""
     },
@@ -76,81 +15,21 @@
       "detail": ""
     },
     {
-      "step": "driver: already online",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: test courier was blocked by an unfinished delivery",
-      "ok": false,
-      "detail": "Active delivery · FD-14809 (left over from earlier testing; no new offers can appear until it is completed)"
-    },
-    {
-      "step": "cleanup: completed stuck delivery FD-14809 with its PIN",
+      "step": "cleanup FD-14677: claimed, picked up and delivered with PIN",
       "ok": true,
       "detail": "delivered · Client Courier"
     },
     {
-      "step": "driver: accepts the delivery",
+      "step": "cleanup FD-14697: claimed, picked up and delivered with PIN",
       "ok": true,
-      "detail": ""
+      "detail": "delivered · Client Courier"
     },
     {
-      "step": "merchant: marks order ready for handover",
+      "step": "cleanup FD-14712: claimed, picked up and delivered with PIN",
       "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: sees order is ready and can confirm pickup",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: pickup confirmed, PIN keypad shown",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "driver: correct PIN completes the delivery",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "customer: order status is delivered",
-      "ok": true,
-      "detail": "backend status: delivered · Client Courier · screen title: Delivered. Enjoy!"
-    },
-    {
-      "step": "customer: rates the order 5 stars",
-      "ok": true,
-      "detail": "saved rating: 5 · confirmation shown: true"
-    },
-    {
-      "step": "android back button goes back inside the app",
-      "ok": true,
-      "detail": "#/eat/orders -> #/eat"
-    },
-    {
-      "step": "uploads: tapping a photo/file field opens the phone picker",
-      "ok": true,
-      "detail": "topResumedActivity=ActivityRecord{4773398 u0 com.android.intentresolver/.ChooserActivity t10}"
-    },
-    {
-      "step": "uploads: cancelling the picker returns to the app",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "step": "offline: app shows the \"You're offline\" screen",
-      "ok": true,
-      "detail": "see screenshot"
-    },
-    {
-      "step": "offline: \"Try again\" reloads once the connection returns",
-      "ok": true,
-      "detail": ""
+      "detail": "delivered · Client Courier"
     }
   ],
-  "passed": 28,
-  "failed": 1
+  "passed": 5,
+  "failed": 0
 }

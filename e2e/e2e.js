@@ -69,6 +69,19 @@ async function click(c, sel) {
   await c.Input.dispatchMouseEvent({ type: 'mouseReleased', x: pt2.x, y: pt2.y, button: 'left', clickCount: 1 });
   await sleep(700);
 }
+async function enterPin(c, pin) {
+  for (const d of pin.split('')) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const before = await ev(c, `document.querySelectorAll('.pinbox span.f').length`).catch(() => 0);
+      if (before === 0 && attempt === 0 && d !== pin[0]) break;
+      await click(c, `[data-a=key][data-v="${d}"]`);
+      const ok = await waitFor(c, `!document.querySelector('.keypad') || document.querySelectorAll('.pinbox span.f').length > ${before}`, 6000);
+      if (ok) break;
+      lg('PIN digit did not register, retrying', d);
+    }
+  }
+  return waitFor(c, `!document.querySelector('.keypad')`, 30000);
+}
 async function pageText(c) { try { return (await ev(c, 'document.body.innerText')).replace(/\s+/g, ' ').slice(0, 600); } catch (e) { return '(no text)'; } }
 const hash = c => ev(c, 'location.hash');
 const orderStatus = (c, id) => ev(c, `(async()=>{const r=await sb.from('orders').select('status,courier_name').eq('id',${id}).single();return r.data?r.data.status+(r.data.courier_name?' · '+r.data.courier_name:''):'unknown'})()`).catch(e => 'error: ' + e.message);
@@ -191,8 +204,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
         const oldPin = await orderPin(cc, oldId);
         let dc = await front('driver');
         if (oldPin) {
-          for (const d of oldPin.split('')) { await click(dc, `[data-a=key][data-v="${d}"]`); await sleep(250); }
-          const cleared = await waitFor(dc, `!document.querySelector('.keypad')`, 20000);
+          const cleared = await enterPin(dc, oldPin);
           rec(`cleanup: completed stuck delivery FD-${oldId} with its PIN`, !!cleared, await orderStatus(dc, oldId));
         } else {
           rec(`cleanup: customer test account cannot see the PIN for FD-${oldId}`, false, diag);
@@ -240,8 +252,7 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
       rec('driver: pickup confirmed, PIN keypad shown', !!pad);
       await shot('driver-pin-pad');
       if (pad && pin) {
-        for (const d of pin.split('')) { await click(c, `[data-a=key][data-v="${d}"]`); await sleep(250); }
-        const done = await waitFor(c, `!document.querySelector('.keypad')`, 20000);
+        const done = await enterPin(c, pin);
         rec('driver: correct PIN completes the delivery', !!done, done ? '' : (await errorsShown(c)) + ' ' + await pageText(c));
         await sleep(1500); await shot('driver-delivered');
       }
@@ -273,8 +284,9 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     await ev(c, `location.hash='#/eat'`); await sleep(2500);
     await ev(c, `location.hash='#/eat/orders'`); await sleep(2500);
     const before = await hash(c);
-    sh('adb shell input keyevent KEYCODE_BACK'); await sleep(5000);
-    const after = await hash(await connect('customer')).catch(() => '(app closed)');
+    sh('adb shell input keyevent KEYCODE_BACK');
+    let after = before;
+    for (let i = 0; i < 20 && after === before; i++) { await sleep(500); after = await hash(await connect('customer')).catch(() => '(app closed)'); }
     rec('android back button goes back inside the app', before !== after && after.startsWith('#/eat'), `${before} -> ${after}`);
     // upload fields must open the phone's picker (photo proof, licence, documents)
     let dc = await front('driver');
@@ -285,8 +297,9 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     await shot('driver-file-picker');
     const pickerOpen = !topAct.includes(PKG.driver + '/');
     rec('uploads: tapping a photo/file field opens the phone picker', pickerOpen, topAct.replace(/\s+/g, ' ').slice(0, 160));
-    if (pickerOpen) { sh('adb shell input keyevent KEYCODE_BACK'); await sleep(4500); }
-    const backIn = sh(`adb shell dumpsys activity activities | grep -E "topResumedActivity" | head -1`).includes(PKG.driver + '/');
+    if (pickerOpen) sh('adb shell input keyevent KEYCODE_BACK');
+    let backIn = false;
+    for (let i = 0; i < 20 && !backIn; i++) { await sleep(750); backIn = sh(`adb shell dumpsys activity activities | grep -E "topResumedActivity" | head -1`).includes(PKG.driver + '/'); }
     rec('uploads: cancelling the picker returns to the app', backIn);
     // offline screen
     sh('adb shell svc wifi disable'); sh('adb shell svc data disable'); await sleep(2000);

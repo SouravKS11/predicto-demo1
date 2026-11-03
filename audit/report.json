@@ -1,24 +1,24 @@
 {
-  "started": "2026-11-03T18:16:35.434Z",
+  "started": "2026-11-03T18:33:15.121Z",
   "device": "sdk_gphone64_x86_64 · Android 14",
   "webview": "versionName=113.0.5672.136",
-  "orderId": "14779",
-  "finished": "2026-11-03T18:21:22.022Z",
+  "orderId": "14809",
+  "finished": "2026-11-03T18:38:35.703Z",
   "results": [
     {
       "step": "customer: app launches and loads the test environment",
       "ok": true,
-      "detail": "10.8s · #/login"
+      "detail": "9.8s · #/login"
     },
     {
       "step": "merchant: app launches and loads the test environment",
       "ok": true,
-      "detail": "8.7s · #/login"
+      "detail": "6.3s · #/login"
     },
     {
       "step": "driver: app launches and loads the test environment",
       "ok": true,
-      "detail": "8.4s · #/login"
+      "detail": "4.5s · #/login"
     },
     {
       "step": "customer: sign in with test account",
@@ -48,7 +48,7 @@
     {
       "step": "customer: slide-to-pay places the order",
       "ok": true,
-      "detail": "order FD-14779"
+      "detail": "order FD-14809"
     },
     {
       "step": "customer: tracking screen shows delivery PIN",
@@ -102,32 +102,32 @@
     },
     {
       "step": "driver: correct PIN completes the delivery",
-      "ok": true,
-      "detail": ""
+      "ok": false,
+      "detail": " TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$38.25 TRIPS TODAY 3 ALL TIME 5 RATING 5 ACTIVE DELIVERY · FD-14809 Deliver to Client Customer TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors Frederick Street, Chinatown, Sea Lots 1× Curry Chicken Roti Enter the customer's PIN 8 9 2 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-14779 Nov 3, 6:19 PM · pin TT$12.75 FD-14739 Nov 3"
     },
     {
       "step": "customer: order status is delivered",
-      "ok": true,
-      "detail": "backend status: delivered · Client Courier · screen title: Your order is being prepared"
+      "ok": false,
+      "detail": "backend status: picked_up · Client Courier · screen title: On the way to you"
     },
     {
-      "step": "customer: rates the order 5 stars",
-      "ok": true,
-      "detail": "submitted"
+      "step": "customer: rating available",
+      "ok": false,
+      "detail": "TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14809 · CLIENT TEST KITCHEN On the way to you 20 min arriving around 6:56 PM Order placed 6:34 PM Accepted by kitchen 6:34 PM Courier assigned 6:34 PM Picked up 6:35 PM Delivered CC Client Courier Scooter · your courier DELIVERY PIN Share only at handover 8 9 2 0 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE"
     },
     {
       "step": "android back button goes back inside the app",
-      "ok": true,
-      "detail": "#/eat/orders -> #/eat"
+      "ok": false,
+      "detail": "#/eat/orders -> #/eat/orders"
     },
     {
       "step": "uploads: tapping a photo/file field opens the phone picker",
       "ok": true,
-      "detail": "topResumedActivity=ActivityRecord{a7a9a7e u0 com.android.intentresolver/.ChooserActivity t10}"
+      "detail": "topResumedActivity=ActivityRecord{69c84b2 u0 com.android.intentresolver/.ChooserActivity t10}"
     },
     {
       "step": "uploads: cancelling the picker returns to the app",
-      "ok": true,
+      "ok": false,
       "detail": ""
     },
     {
@@ -137,10 +137,10 @@
     },
     {
       "step": "offline: \"Try again\" reloads once the connection returns",
-      "ok": true,
+      "ok": false,
       "detail": ""
     }
   ],
-  "passed": 27,
-  "failed": 0
+  "passed": 21,
+  "failed": 6
 }

@@ -1,85 +1,151 @@
 devtools sockets at start: 
-[4.2s] customer: listing inspector targets (try 1)
-[4.2s] customer: inspector attempt failed: socket hang up
-[5.2s] customer: listing inspector targets (try 2)
-[5.2s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
-[5.2s] customer: reported ws ws://127.0.0.1:9301/devtools/page/70CB67D9DCA8D6BA63C0786918E53FCE -> using ws://127.0.0.1:9301/devtools/page/70CB67D9DCA8D6BA63C0786918E53FCE
-[5.7s] customer: connected
-[11.4s] RESULT customer: app launches and loads the test environment
-PASS | customer: app launches and loads the test environment | 10.8s · #/login
-[18.6s] merchant: listing inspector targets (try 1)
-[18.6s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[18.6s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/C03D000AD098C3EE27F0B99FC8518FD5 -> using ws://127.0.0.1:9303/devtools/page/C03D000AD098C3EE27F0B99FC8518FD5
-[18.7s] merchant: connected
-[24.0s] RESULT merchant: app launches and loads the test environment
-PASS | merchant: app launches and loads the test environment | 8.7s · #/login
-[30.9s] driver: listing inspector targets (try 1)
-[30.9s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
-[30.9s] driver: reported ws ws://127.0.0.1:9302/devtools/page/168ECFDDEFCEFEF314B50942A495B84D -> using ws://127.0.0.1:9302/devtools/page/168ECFDDEFCEFEF314B50942A495B84D
-[31.0s] driver: connected
-[35.5s] RESULT driver: app launches and loads the test environment
-PASS | driver: app launches and loads the test environment | 8.4s · #/login
-[43.4s] customer: listing inspector targets (try 1)
-[44.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/login"}]
-[44.3s] customer: reported ws ws://127.0.0.1:9301/devtools/page/C3F0A4BE7726304C5BDA85D0A1819D87 -> using ws://127.0.0.1:9301/devtools/page/C3F0A4BE7726304C5BDA85D0A1819D87
-[44.4s] customer: connected
-[49.2s] RESULT customer: sign in with test account
+[5.2s] customer: listing inspector targets (try 1)
+[5.3s] customer: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/eat"}]
+[5.3s] customer: reported ws ws://127.0.0.1:9301/devtools/page/174252436F437CEEC3398F0815AC93E7 -> using ws://127.0.0.1:9301/devtools/page/174252436F437CEEC3398F0815AC93E7
+[5.4s] customer: connected
+[13.0s] RESULT customer: app launches and loads the test environment
+PASS | customer: app launches and loads the test environment | 9.8s · #/login
+[18.7s] merchant: listing inspector targets (try 1)
+[20.0s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
+[20.0s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/B806FA2733B0B6A2CF61586C73371CDB -> using ws://127.0.0.1:9303/devtools/page/B806FA2733B0B6A2CF61586C73371CDB
+[20.3s] merchant: connected
+[21.8s] RESULT merchant: app launches and loads the test environment
+PASS | merchant: app launches and loads the test environment | 6.3s · #/login
+[27.7s] driver: listing inspector targets (try 1)
+[27.8s] driver: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/drive"}]
+[27.8s] driver: reported ws ws://127.0.0.1:9302/devtools/page/F3183CF9AC2F56C9FF0495F455B0E903 -> using ws://127.0.0.1:9302/devtools/page/F3183CF9AC2F56C9FF0495F455B0E903
+[27.9s] driver: connected
+[29.3s] RESULT driver: app launches and loads the test environment
+PASS | driver: app launches and loads the test environment | 4.5s · #/login
+[40.0s] RESULT customer: sign in with test account
 PASS | customer: sign in with test account | 
-[54.5s] RESULT customer: Client Test Kitchen listed
+[45.1s] RESULT customer: Client Test Kitchen listed
 PASS | customer: Client Test Kitchen listed | #/eat/store/2e66eb4f-e471-4cee-9d37-4a098aea315d
-[60.4s] RESULT customer: restaurant menu opens
+[49.6s] RESULT customer: restaurant menu opens
 PASS | customer: restaurant menu opens | 
-[62.9s] RESULT customer: item added to cart
+[51.5s] RESULT customer: item added to cart
 PASS | customer: item added to cart | 1
 View cart · Client Test Kitchen
 TT$48.00
-[72.8s] RESULT customer: checkout shows bill
+[59.6s] RESULT customer: checkout shows bill
 PASS | customer: checkout shows bill | by the server when you place the order. Zone fees may apply.
-[79.0s] RESULT customer: slide-to-pay places the order
-PASS | customer: slide-to-pay places the order | order FD-14779
-[81.2s] RESULT customer: tracking screen shows delivery PIN
+[65.7s] RESULT customer: slide-to-pay places the order
+PASS | customer: slide-to-pay places the order | order FD-14809
+[67.0s] RESULT customer: tracking screen shows delivery PIN
 PASS | customer: tracking screen shows delivery PIN | PIN shown
-[88.8s] merchant: listing inspector targets (try 1)
-[90.4s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[90.4s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/730C8599EFB3BCBDD45BDF0CC21D503D -> using ws://127.0.0.1:9303/devtools/page/730C8599EFB3BCBDD45BDF0CC21D503D
-[90.7s] merchant: connected
-[97.8s] RESULT merchant: sign in with test account
+[77.8s] RESULT merchant: sign in with test account
 PASS | merchant: sign in with test account | 
-[99.2s] RESULT merchant: new order appears on the board
+[78.7s] RESULT merchant: new order appears on the board
 PASS | merchant: new order appears on the board | arrived live, no reload
-[104.0s] RESULT merchant: accept moves order to Preparing
+[83.8s] RESULT merchant: accept moves order to Preparing
 PASS | merchant: accept moves order to Preparing | 
-[114.6s] RESULT driver: sign in with test account
+[92.8s] RESULT driver: sign in with test account
 PASS | driver: sign in with test account | 
-[117.4s] RESULT driver: already online
+[94.9s] RESULT driver: already online
 PASS | driver: already online | 
-[126.2s] RESULT driver: accepts the delivery
+[102.8s] RESULT driver: accepts the delivery
 PASS | driver: accepts the delivery | 
-[133.4s] RESULT merchant: marks order ready for handover
+[109.6s] RESULT merchant: marks order ready for handover
 PASS | merchant: marks order ready for handover | 
-[138.5s] RESULT driver: sees order is ready and can confirm pickup
+[114.5s] RESULT driver: sees order is ready and can confirm pickup
 PASS | driver: sees order is ready and can confirm pickup | 
-[142.6s] RESULT driver: pickup confirmed, PIN keypad shown
+[117.2s] RESULT driver: pickup confirmed, PIN keypad shown
 PASS | driver: pickup confirmed, PIN keypad shown | 
-[152.2s] RESULT driver: correct PIN completes the delivery
-PASS | driver: correct PIN completes the delivery | 
-[160.4s] RESULT customer: order status is delivered
-PASS | customer: order status is delivered | backend status: delivered · Client Courier · screen title: Your order is being prepared
-[166.9s] RESULT customer: rates the order 5 stars
-PASS | customer: rates the order 5 stars | submitted
-[182.2s] RESULT android back button goes back inside the app
-PASS | android back button goes back inside the app | #/eat/orders -> #/eat
-[191.6s] RESULT uploads: tapping a photo/file field opens the phone picker
-PASS | uploads: tapping a photo/file field opens the phone picker | topResumedActivity=ActivityRecord{a7a9a7e u0 com.android.intentresolver/.ChooserActivity t10}
-[196.2s] RESULT uploads: cancelling the picker returns to the app
-PASS | uploads: cancelling the picker returns to the app | 
-[204.9s] RESULT offline: app shows the "You're offline" screen
+[145.1s] RESULT driver: correct PIN completes the delivery
+FAIL | driver: correct PIN completes the delivery |  TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier RD COURIER · SCOOTER · PCX 4417 Client Courier Online EARNED TODAY TT$38.25 TRIPS TODAY 3 ALL TIME 5 RATING 5 ACTIVE DELIVERY · FD-14809 Deliver to Client Customer TT$12.75 + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors Frederick Street, Chinatown, Sea Lots 1× Curry Chicken Roti Enter the customer's PIN 8 9 2 1 2 3 4 5 6 7 8 9 Photo proof 0 ⌫ Simulate driving (desk testing) Recent trips FD-14779 Nov 3, 6:19 PM · pin TT$12.75 FD-14739 Nov 3
+[152.0s] RESULT customer: order status is delivered
+FAIL | customer: order status is delivered | backend status: picked_up · Client Courier · screen title: On the way to you
+[164.2s] RESULT customer: rating available
+FAIL | customer: rating available | TEST ENVIRONMENT · PAYMENTS ARE SIMULATED · DO NOT USE REAL CARD DETAILS digital code 13 Overview Order food Restaurant Courier CC Orders + − Leaflet | Tiles © Esri · Esri, HERE, Garmin, OpenStreetMap contributors FD-14809 · CLIENT TEST KITCHEN On the way to you 20 min arriving around 6:56 PM Order placed 6:34 PM Accepted by kitchen 6:34 PM Courier assigned 6:34 PM Picked up 6:35 PM Delivered CC Client Courier Scooter · your courier DELIVERY PIN Share only at handover 8 9 2 0 1× Curry Chicken Roti TT$48.00 Delivery fee TT$15.00 Tax TT$6.00 Total · card TT$69.00 ORDER TIMELINE
+[176.9s] RESULT android back button goes back inside the app
+FAIL | android back button goes back inside the app | #/eat/orders -> #/eat/orders
+[186.0s] RESULT uploads: tapping a photo/file field opens the phone picker
+PASS | uploads: tapping a photo/file field opens the phone picker | topResumedActivity=ActivityRecord{69c84b2 u0 com.android.intentresolver/.ChooserActivity t10}
+[190.5s] RESULT uploads: cancelling the picker returns to the app
+FAIL | uploads: cancelling the picker returns to the app | 
+[199.3s] RESULT offline: app shows the "You're offline" screen
 PASS | offline: app shows the "You're offline" screen | see screenshot
-[284.6s] merchant: listing inspector targets (try 1)
-[284.6s] merchant: targets [{"type":"page","url":"https://dc13-delivery-demo.netlify.app/#/partner"}]
-[284.6s] merchant: reported ws ws://127.0.0.1:9303/devtools/page/78D23BF86637E69E2746AF387A7D3449 -> using ws://127.0.0.1:9303/devtools/page/78D23BF86637E69E2746AF387A7D3449
-[284.6s] merchant: connected
-[284.6s] RESULT offline: "Try again" reloads once the connection returns
-PASS | offline: "Try again" reloads once the connection returns | 
+[278.8s] merchant: listing inspector targets (try 1)
+[278.8s] merchant: targets []
+[279.8s] merchant: listing inspector targets (try 2)
+[279.8s] merchant: targets []
+[280.8s] merchant: listing inspector targets (try 3)
+[280.8s] merchant: targets []
+[281.8s] merchant: listing inspector targets (try 4)
+[281.8s] merchant: targets []
+[282.8s] merchant: listing inspector targets (try 5)
+[282.8s] merchant: targets []
+[283.8s] merchant: listing inspector targets (try 6)
+[283.8s] merchant: targets []
+[284.8s] merchant: listing inspector targets (try 7)
+[284.8s] merchant: targets []
+[285.8s] merchant: listing inspector targets (try 8)
+[285.8s] merchant: targets []
+[286.8s] merchant: listing inspector targets (try 9)
+[286.8s] merchant: targets []
+[287.8s] merchant: listing inspector targets (try 10)
+[287.8s] merchant: targets []
+[288.8s] merchant: listing inspector targets (try 11)
+[288.8s] merchant: targets []
+[289.8s] merchant: listing inspector targets (try 12)
+[289.8s] merchant: targets []
+[290.8s] merchant: listing inspector targets (try 13)
+[290.8s] merchant: targets []
+[291.8s] merchant: listing inspector targets (try 14)
+[291.8s] merchant: targets []
+[292.8s] merchant: listing inspector targets (try 15)
+[292.9s] merchant: targets []
+[293.9s] merchant: listing inspector targets (try 16)
+[293.9s] merchant: targets []
+[294.9s] merchant: listing inspector targets (try 17)
+[294.9s] merchant: targets []
+[295.9s] merchant: listing inspector targets (try 18)
+[295.9s] merchant: targets []
+[296.9s] merchant: listing inspector targets (try 19)
+[296.9s] merchant: targets []
+[297.9s] merchant: listing inspector targets (try 20)
+[297.9s] merchant: targets []
+[298.9s] merchant: listing inspector targets (try 21)
+[298.9s] merchant: targets []
+[299.9s] merchant: listing inspector targets (try 22)
+[299.9s] merchant: targets []
+[300.9s] merchant: listing inspector targets (try 23)
+[300.9s] merchant: targets []
+[301.9s] merchant: listing inspector targets (try 24)
+[301.9s] merchant: targets []
+[302.9s] merchant: listing inspector targets (try 25)
+[302.9s] merchant: targets []
+[303.9s] merchant: listing inspector targets (try 26)
+[303.9s] merchant: targets []
+[304.9s] merchant: listing inspector targets (try 27)
+[304.9s] merchant: targets []
+[305.9s] merchant: listing inspector targets (try 28)
+[305.9s] merchant: targets []
+[306.9s] merchant: listing inspector targets (try 29)
+[306.9s] merchant: targets []
+[307.9s] merchant: listing inspector targets (try 30)
+[307.9s] merchant: targets []
+[308.9s] merchant: listing inspector targets (try 31)
+[308.9s] merchant: targets []
+[309.9s] merchant: listing inspector targets (try 32)
+[309.9s] merchant: targets []
+[310.9s] merchant: listing inspector targets (try 33)
+[310.9s] merchant: targets []
+[311.9s] merchant: listing inspector targets (try 34)
+[311.9s] merchant: targets []
+[312.9s] merchant: listing inspector targets (try 35)
+[312.9s] merchant: targets []
+[313.9s] merchant: listing inspector targets (try 36)
+[313.9s] merchant: targets []
+[314.9s] merchant: listing inspector targets (try 37)
+[314.9s] merchant: targets []
+[315.9s] merchant: listing inspector targets (try 38)
+[315.9s] merchant: targets []
+[316.9s] merchant: listing inspector targets (try 39)
+[316.9s] merchant: targets []
+[317.9s] merchant: listing inspector targets (try 40)
+[317.9s] merchant: targets []
+[318.9s] RESULT offline: "Try again" reloads once the connection returns
+FAIL | offline: "Try again" reloads once the connection returns | 
 
-DONE: 27 passed, 0 failed
+DONE: 21 passed, 6 failed

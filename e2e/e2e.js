@@ -254,11 +254,13 @@ setTimeout(() => { rec('watchdog: test exceeded 22 minutes and was stopped', fal
     const title = await waitFor(c, `(()=>{const h=[...document.querySelectorAll('#main h1,#main h2')].map(x=>x.textContent.trim()).filter(Boolean);return h.length?h.join(' / '):null})()`, 8000);
     rec('customer: order status is delivered', /^delivered/.test(st), `backend status: ${st} · screen title: ${title}`);
     await shot('customer-delivered');
-    if (await ev(c, `!!document.querySelector('[data-a=star]')`)) {
+    if (await waitFor(c, `!!document.querySelector('[data-a=star]')`, 10000)) {
       await click(c, '[data-a=star][data-v="5"]');
-      if (await ev(c, `!!document.querySelector('[data-a=rate]')`)) await click(c, '[data-a=rate]');
-      await sleep(2000);
-      rec('customer: rates the order 5 stars', true, (await errorsShown(c)) || 'submitted');
+      const enabled = await waitFor(c, `(()=>{const b=document.querySelector('[data-a=rate]');return b&&!b.disabled})()`, 10000);
+      if (enabled) await click(c, '[data-a=rate]');
+      const saved = await waitFor(c, `(async()=>{const r=await sb.from('orders').select('rating').eq('id',${orderId}).single();return r.data&&r.data.rating})()`, 15000);
+      const thanks = await waitFor(c, `/You rated this/.test(document.querySelector('#main').textContent)`, 10000);
+      rec('customer: rates the order 5 stars', saved === 5, `saved rating: ${saved} · confirmation shown: ${!!thanks}`);
       await shot('customer-rated');
     } else rec('customer: rating available', false, await pageText(c));
   } catch (e) {

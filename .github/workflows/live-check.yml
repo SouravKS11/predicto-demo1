@@ -1,14 +1,16 @@
 name: live-check
-on: push
+on:
+  push:
+    paths: ['.github/workflows/live-check.yml']
+permissions: { contents: write }
 jobs:
   c:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - run: |
-          mkdir out
-          curl -sS https://dc13-delivery-demo.netlify.app/ -o out/index.html
-          curl -sS https://dc13-delivery-demo.netlify.app/netlify.toml -o out/netlify.toml || true
-          curl -sS -o /dev/null -w "%{http_code}\n" https://dc13-delivery-demo.netlify.app/_redirects
-          sha256sum out/*
-      - uses: actions/upload-artifact@v4
-        with: { name: live, path: out }
+          mkdir -p live
+          curl -sS https://dc13-delivery-demo.netlify.app/ -o live/index.html
+          sha256sum live/index.html
+          git config user.email ci@dc13; git config user.name ci
+          git add live && git commit -m "Live snapshot" && git push

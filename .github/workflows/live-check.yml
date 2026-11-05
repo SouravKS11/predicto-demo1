@@ -1,0 +1,10 @@
+name: live-check
+on: push
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sS -D h.txt https://dc13-delivery-demo.netlify.app/ -o live.html
+          grep -i -E '^(server|x-nf-request-id|etag|last-modified|age):' h.txt || true
+          wc -c live.html; sha256sum live.html

@@ -1,16 +1,18 @@
 name: live-check
 on:
   push:
-    paths: ['.github/workflows/live-check.yml']
+    paths: ['.github/workflows/live-check.yml', 'aitest/index.html', 'aitest/ai.js']
 permissions: { contents: write }
 jobs:
   c:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
       - run: |
-          mkdir -p live
-          curl -sS https://dc13-delivery-demo.netlify.app/ -o live/index.html
-          sha256sum live/index.html
+          npm i playwright@1.47.2 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+          (cd aitest && python3 -m http.server 8080 >/dev/null 2>&1 &) ; sleep 2
+          timeout 600 node aitest/ai.js || true
           git config user.email ci@dc13; git config user.name ci
-          git add live && git commit -m "Live snapshot" && git push
+          git add aitest/out && git commit -m "AI test results" && git push

@@ -1,0 +1,18 @@
+demo buttons 3
+admin console ok
+agent cards 6
+kpis AGENT ACTIONS 20 last 24 hours | AUTO-DISPATCHED 19 deliveries assigned by AI | ALERTS RAISED 2 late orders, shortages, risk | AWAITING APPROVAL 0 pricing and refunds | OPEN RISK FLAGS 0 from the fraud guard
+feed items 26
+forecast cols 6
+approvals Waiting for your approval 0 Nothing needs a decision. Agents are handling routine work.
+copilot answer 1 Today so far: 1410 orders (0 real, 1410 demo), 1398 delivered, TT$179,528.67 gross order value and TT$27,724.00 commission. Average order TT$128.42, 8.1 minutes average delivery, 100% on time. Right now 12 orders are active and 11 couriers are online. LIVE DATA ANSWER
+copilot answer 2 Next hour I expect about 52 orders, which needs roughly 21 couriers. 11 couriers are online now and 10 are on a delivery. That is 10 short, so a peak-hour bonus or extra shifts would help. LIVE DATA ANSWER
+copilot switch after off true
+copilot switch after on true
+toasts Agents ran a full cycle
+feed before/after 20s 31 34
+latest event Dispatch agent · acted 4:19:18 PM Assigned FD-20147 to Ana Ramdial, the nearest free courier (2.8 km from Green Basket).
+tab overview ok Live operations
+tab insights ok Business briefing
+tab refunds ok Refunds
+mobile scrollWidth 390

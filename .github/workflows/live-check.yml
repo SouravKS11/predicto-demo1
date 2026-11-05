@@ -5,6 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          curl -sS -D h.txt https://dc13-delivery-demo.netlify.app/ -o live.html
-          grep -i -E '^(server|x-nf-request-id|etag|last-modified|age):' h.txt || true
-          wc -c live.html; sha256sum live.html
+          mkdir out
+          curl -sS https://dc13-delivery-demo.netlify.app/ -o out/index.html
+          curl -sS https://dc13-delivery-demo.netlify.app/netlify.toml -o out/netlify.toml || true
+          curl -sS -o /dev/null -w "%{http_code}\n" https://dc13-delivery-demo.netlify.app/_redirects
+          sha256sum out/*
+      - uses: actions/upload-artifact@v4
+        with: { name: live, path: out }

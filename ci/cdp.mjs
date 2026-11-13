@@ -35,7 +35,14 @@ ws.onmessage = (m) => {
 };
 const send = (method, params = {}) => new Promise((r) => { if (ws.readyState !== 1) return r({}); const id = ++seq; waiting.set(id, r); ws.send(JSON.stringify({ id, method, params })); });
 const ev = async (expr) => { const r = await send("Runtime.evaluate", { expression: `(async () => { ${expr} })()`, awaitPromise: true, returnByValue: true }); return r.result?.result?.value ?? r.result?.exceptionDetails?.exception?.description ?? null; };
-const back = async () => { sh("adb shell input keyevent 4"); await sleep(2500); };
+const trySh = (c) => { try { return sh(c); } catch (e) { return "ERR " + String(e.message).slice(0, 120); } };
+const back = async () => {
+  trySh("adb logcat -c");
+  trySh("adb shell input keyevent 4"); await sleep(2500);
+  ok("after_back_top", trySh("adb shell dumpsys activity activities | grep -m1 topResumedActivity"));
+  ok("after_back_pid", trySh(`adb shell pidof ${pkg} || echo gone`));
+  ok("after_back_log", trySh("adb logcat -d -s Capacitor:* Capacitor/AppPlugin:* AndroidRuntime:E ActivityTaskManager:I | tail -15"));
+};
 await send("Runtime.enable");
 
 const base = await ev(`return { origin: location.origin, path: location.pathname, native: !!(window.Capacitor && Capacitor.isNativePlatform()), platform: window.Capacitor?.getPlatform?.(), cls: document.documentElement.className,

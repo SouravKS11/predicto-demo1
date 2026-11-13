@@ -1,0 +1,4 @@
+--------- beginning of main
+11-13 21:20:56.236  6299  6337 E chromium: [ERROR:simple_version_upgrade.cc(152)] Failed to write a new fake index.
+11-13 21:20:56.237  6299  6349 E chromium: [ERROR:simple_version_upgrade.cc(152)] Failed to write a new fake index.
+11-13 21:20:56.266  6299  6299 D Capacitor: Starting BridgeActivity

@@ -6,7 +6,27 @@ stores_listed null
 open_store null
 add_item null
 checkout null
-back_1 null
-back_2 null
-account_social_hidden null
-dir_lang null
+adb: device offline
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: adb shell input keyevent 4
+adb: device offline
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execSync (node:child_process:988:15)
+    at sh (file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:5:19)
+    at back (file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:38:28)
+    at file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:57:9 {
+  status: 1,
+  signal: null,
+  output: [ null, '', 'adb: device offline\n' ],
+  pid: 4447,
+  stdout: '',
+  stderr: 'adb: device offline\n'
+}
+
+Node.js v22.23.4

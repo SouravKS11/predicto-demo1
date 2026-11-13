@@ -1,0 +1,29 @@
+{
+  "appId": "com.digitalcode13.delivery.store",
+  "appName": "DC13 Store",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "https",
+    "hostname": "localhost"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 2500,
+      "backgroundColor": "#16120f",
+      "showSpinner": false
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}

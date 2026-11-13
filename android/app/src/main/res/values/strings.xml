@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DC13</string>
+    <string name="title_activity_main">DC13</string>
+    <string name="package_name">com.digitalcode13.delivery</string>
+    <string name="custom_url_scheme">com.digitalcode13.delivery</string>
+    <string name="capacitor_background_geolocation_notification_channel_name">Location while online</string>
+</resources>

@@ -1,0 +1,1 @@
+const t={dispatch:"Dispatch",forecast:"Forecaster",pricing:"Pricing",fraud:"Fraud guard",support:"Support",restaurant:"Merchant success",growth:"Growth",quality:"Quality",executive:"Executive AI"};export{t as A};

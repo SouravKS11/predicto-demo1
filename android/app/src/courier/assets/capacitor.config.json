@@ -1,0 +1,29 @@
+{
+  "appId": "com.digitalcode13.delivery.courier",
+  "appName": "DC13 Courier",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "https",
+    "hostname": "localhost"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 2500,
+      "backgroundColor": "#157347",
+      "showSpinner": false
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}

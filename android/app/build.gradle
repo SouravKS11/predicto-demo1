@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace "com.digitalcode13.delivery"
+    compileSdk rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.digitalcode13.delivery"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 2
+        versionName "2.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        // Test key for internal APKs only. Play Store releases are signed with the client's own upload key.
+        test {
+            storeFile file("dc13-test.keystore")
+            storePassword "dc13test"
+            keyAlias "dc13"
+            keyPassword "dc13test"
+        }
+    }
+    flavorDimensions = ["app"]
+    productFlavors {
+        customer { dimension "app"; applicationId "com.digitalcode13.delivery.customer" }
+        courier { dimension "app"; applicationId "com.digitalcode13.delivery.courier" }
+        store { dimension "app"; applicationId "com.digitalcode13.delivery.store" }
+        admin { dimension "app"; applicationId "com.digitalcode13.delivery.admin" }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.test
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+// Firebase (push when the app is closed): add google-services.json to app/ or app/src/<flavor>/
+def servicesFiles = [file('google-services.json')] + ["customer", "courier", "store", "admin"].collect { file("src/${it}/google-services.json") }
+if (servicesFiles.any { it.exists() }) {
+    apply plugin: 'com.google.gms.google-services'
+} else {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

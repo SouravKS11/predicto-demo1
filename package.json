@@ -1,0 +1,22 @@
+{
+  "name": "dc13-mobile",
+  "private": true,
+  "version": "1.0.0",
+  "description": "DC13 Delivery OS Android apps (Customer, Courier, Store, Super admin) built with Capacitor from the web portals",
+  "scripts": {
+    "prepare-apps": "node scripts/prepare.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "6.2.3",
+    "@capacitor/app": "6.0.3",
+    "@capacitor/core": "6.2.3",
+    "@capacitor/push-notifications": "6.0.5",
+    "@capacitor/splash-screen": "6.0.4",
+    "@capacitor/status-bar": "6.0.3",
+    "@capacitor-community/background-geolocation": "1.2.26",
+    "@capacitor-community/keep-awake": "5.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "6.2.3"
+  }
+}

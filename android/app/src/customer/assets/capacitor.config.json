@@ -1,0 +1,44 @@
+{
+  "appId": "com.digitalcode13.delivery.customer",
+  "appName": "DC13",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "https",
+    "hostname": "localhost",
+    "allowNavigation": [
+      "checkout.stripe.com",
+      "*.stripe.com",
+      "*.paypal.com",
+      "*.mercadopago.com",
+      "*.mercadopago.com.mx",
+      "*.mercadolibre.com",
+      "pay.conekta.com",
+      "*.conekta.com",
+      "*.openpay.mx",
+      "ipg.monri.com",
+      "ipgtest.monri.com",
+      "secure.cardcom.solutions",
+      "*.cardcom.solutions"
+    ]
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 2500,
+      "backgroundColor": "#ff5101",
+      "showSpinner": false
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}

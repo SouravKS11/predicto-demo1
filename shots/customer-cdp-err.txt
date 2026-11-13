@@ -1,0 +1,6 @@
+Warning: Detected unsettled top-level await at file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:54
+  await back(); ok("back_1", await ev(`return location.pathname`));
+                             ^
+
+
+

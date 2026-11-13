@@ -5,7 +5,7 @@ const [app, pkg] = process.argv.slice(2);
 const sh = (c) => execSync(c, { encoding: "utf8" }).trim();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const out = { app, checks: {}, errors: [] };
-const ok = (k, v) => { out.checks[k] = v; };
+const ok = (k, v) => { out.checks[k] = v; process.stderr.write(k + " " + JSON.stringify(v) + "\n"); };
 
 async function connect() {
   for (let i = 0; i < 30; i++) {
@@ -26,13 +26,14 @@ const wsUrl = await connect();
 const ws = new WebSocket(wsUrl);
 await new Promise((r, j) => { ws.onopen = r; ws.onerror = j; });
 let seq = 0; const waiting = new Map();
+ws.onclose = () => { process.stderr.write("websocket closed (app left or page reloaded)\n"); for (const f of waiting.values()) f({}); waiting.clear(); out.closed = true; };
 ws.onmessage = (m) => {
   const d = JSON.parse(m.data);
   if (d.id && waiting.has(d.id)) { waiting.get(d.id)(d); waiting.delete(d.id); }
   if (d.method === "Runtime.exceptionThrown") out.errors.push((d.params.exceptionDetails.exception?.description || d.params.exceptionDetails.text || "").slice(0, 300));
   if (d.method === "Runtime.consoleAPICalled" && d.params.type === "error") out.errors.push("console: " + d.params.args.map((a) => a.value ?? a.description ?? "").join(" ").slice(0, 300));
 };
-const send = (method, params = {}) => new Promise((r) => { const id = ++seq; waiting.set(id, r); ws.send(JSON.stringify({ id, method, params })); });
+const send = (method, params = {}) => new Promise((r) => { if (ws.readyState !== 1) return r({}); const id = ++seq; waiting.set(id, r); ws.send(JSON.stringify({ id, method, params })); });
 const ev = async (expr) => { const r = await send("Runtime.evaluate", { expression: `(async () => { ${expr} })()`, awaitPromise: true, returnByValue: true }); return r.result?.result?.value ?? r.result?.exceptionDetails?.exception?.description ?? null; };
 const back = async () => { sh("adb shell input keyevent 4"); await sleep(2500); };
 await send("Runtime.enable");
@@ -44,6 +45,8 @@ ok("start", base);
 
 if (app === "customer") {
   await sleep(4000);
+  ok("nav_help", await ev(`history.pushState({}, '', '/help'); dispatchEvent(new PopStateEvent('popstate')); await new Promise(r => setTimeout(r, 2000)); return { path: location.pathname, len: history.length, h1: document.querySelector('h1')?.innerText }`));
+  await back(); ok("back_from_help", await ev(`return location.pathname`));
   ok("stores_listed", await ev(`return document.querySelectorAll('a[href*="/store/"]').length`));
   ok("open_store", await ev(`const a = document.querySelector('a[href*="/store/"]'); if (!a) return null; a.click(); await new Promise(r => setTimeout(r, 4000)); return location.pathname`));
   ok("add_item", await ev(`const it = document.querySelector('.item'); if (!it) return 'no items'; it.click(); await new Promise(r => setTimeout(r, 1200));

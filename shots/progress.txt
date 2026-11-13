@@ -1,0 +1,8 @@
+== customer
+   done
+== courier
+   done
+== store
+   done
+== admin
+   done

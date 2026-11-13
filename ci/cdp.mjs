@@ -45,7 +45,7 @@ ok("start", base);
 
 if (app === "customer") {
   await sleep(4000);
-  ok("nav_help", await ev(`history.pushState({}, '', '/help'); dispatchEvent(new PopStateEvent('popstate')); await new Promise(r => setTimeout(r, 2000)); return { path: location.pathname, len: history.length, h1: document.querySelector('h1')?.innerText }`));
+  ok("nav_help", await ev(`const l = document.querySelector('a[href="/help"]'); if (!l) return 'no help link'; l.click(); await new Promise(r => setTimeout(r, 2000)); return { path: location.pathname, len: history.length, h1: document.querySelector('h1')?.innerText }`));
   await back(); ok("back_from_help", await ev(`return location.pathname`));
   ok("stores_listed", await ev(`return document.querySelectorAll('a[href*="/store/"]').length`));
   ok("open_store", await ev(`const a = document.querySelector('a[href*="/store/"]'); if (!a) return null; a.click(); await new Promise(r => setTimeout(r, 4000)); return location.pathname`));

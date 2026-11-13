@@ -1,6 +1,12 @@
-Warning: Detected unsettled top-level await at file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:54
-  await back(); ok("back_1", await ev(`return location.pathname`));
-                             ^
-
-
-
+start {"origin":"https://localhost","path":"/","native":true,"platform":"android","cls":"native-app","plugins":{"App":true,"StatusBar":true,"SplashScreen":true,"PushNotifications":true,"KeepAwake":true,"BackgroundGeolocation":true},"title":"DC13 · Food, groceries and pharmacy delivered","text":"DC13\nAdd your address\nNOW DELIVERING IN SARAJEVO\nSarajevo's favourites, at your door.\n\nRestaurants, groceries and pharmacy in about 30 minutes. Pay by card or c"}
+nav_help {"path":"/help","len":2,"h1":"How can we help?"}
+websocket closed (app left or page reloaded)
+back_from_help null
+stores_listed null
+open_store null
+add_item null
+checkout null
+back_1 null
+back_2 null
+account_social_hidden null
+dir_lang null

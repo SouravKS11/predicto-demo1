@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
-# Installs each APK on the emulator, opens it and saves a screenshot after it has loaded.
-set -u
+# Installs each APK on the emulator, opens it and saves screenshots and logs.
 mkdir -p shots
+T() { timeout 40 "$@"; }
 for app in customer courier store admin; do
-  apk="apks/DC13-$(echo ${app:0:1} | tr a-z A-Z)${app:1}.apk"
+  cap="$(echo ${app:0:1} | tr a-z A-Z)${app:1}"
+  apk="apks/DC13-$cap.apk"
   pkg="com.digitalcode13.delivery.$app"
-  adb install -r -g "$apk" > "shots/$app-install.txt" 2>&1
-  adb logcat -c
-  adb shell am start -W -n "$pkg/com.digitalcode13.delivery.MainActivity" > "shots/$app-start.txt" 2>&1
+  echo "== $app" >> shots/progress.txt
+  T adb install -r -g "$apk" > "shots/$app-install.txt" 2>&1
+  T adb logcat -c
+  T adb shell am start -W -n "$pkg/com.digitalcode13.delivery.MainActivity" > "shots/$app-start.txt" 2>&1
   sleep 8
-  adb exec-out screencap -p > "shots/$app-early.png"
+  T adb exec-out screencap -p > "shots/$app-early.png"
   sleep 17
-  adb exec-out screencap -p > "shots/$app.png"
-  adb logcat -d -s AndroidRuntime:E Capacitor:* chromium:* Console:* > "shots/$app-log.txt" 2>&1
-  adb logcat -d -b crash > "shots/$app-crash.txt" 2>&1
-  adb logcat -d | grep -iE "$pkg|ActivityManager|ActivityTaskManager|Capacitor|WindowManager" | tail -150 > "shots/$app-full.txt" 2>&1
-  adb shell pidof "$pkg" > "shots/$app-alive.txt" 2>&1 || echo "not running" > "shots/$app-alive.txt"
-  adb shell am force-stop "$pkg"
+  T adb exec-out screencap -p > "shots/$app.png"
+  T adb logcat -d > "shots/$app-logcat.txt" 2>&1
+  (T adb shell pidof "$pkg" || echo "not running") > "shots/$app-alive.txt" 2>&1
+  T adb shell am force-stop "$pkg"
+  echo "   done" >> shots/progress.txt
 done

@@ -1,32 +1,39 @@
-start {"origin":"https://localhost","path":"/","native":true,"platform":"android","cls":"native-app","plugins":{"App":true,"StatusBar":true,"SplashScreen":true,"PushNotifications":true,"KeepAwake":true,"BackgroundGeolocation":true},"title":"DC13 · Food, groceries and pharmacy delivered","text":"DC13\nAdd your address\nNOW DELIVERING IN SARAJEVO\nSarajevo's favourites, at your door.\n\nRestaurants, groceries and pharmacy in about 30 minutes. Pay by card or c"}
-nav_help {"path":"/help","len":2,"h1":"How can we help?"}
-websocket closed (app left or page reloaded)
-back_from_help null
-stores_listed null
-open_store null
-add_item null
-checkout null
-adb: device offline
-node:internal/errors:983
-  const err = new Error(message);
-              ^
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:22
+  throw new Error("no debuggable WebView found");
+        ^
 
-Error: Command failed: adb shell input keyevent 4
-adb: device offline
-
-    at genericNodeError (node:internal/errors:983:15)
-    at wrappedFn (node:internal/errors:537:14)
-    at checkExecSyncError (node:child_process:916:11)
-    at execSync (node:child_process:988:15)
-    at sh (file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:5:19)
-    at back (file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:38:28)
-    at file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:57:9 {
-  status: 1,
-  signal: null,
-  output: [ null, '', 'adb: device offline\n' ],
-  pid: 4447,
-  stdout: '',
-  stderr: 'adb: device offline\n'
-}
+Error: no debuggable WebView found
+    at connect (file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:22:9)
+    at async file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:25:15
 
 Node.js v22.23.4

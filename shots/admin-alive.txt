@@ -1,1 +1,2 @@
-6362
+adb: device 'emulator-5554' not found
+not running

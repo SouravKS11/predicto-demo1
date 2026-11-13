@@ -2,7 +2,8 @@
 # Installs each APK on the emulator, opens it and saves screenshots and logs.
 mkdir -p shots
 T() { timeout 40 "$@"; }
-for app in customer courier store admin; do
+adb wait-for-device
+for app in courier customer store admin; do
   cap="$(echo ${app:0:1} | tr a-z A-Z)${app:1}"
   apk="apks/DC13-$cap.apk"
   pkg="com.digitalcode13.delivery.$app"

@@ -1,17 +1,12 @@
-start {"origin":"https://localhost","path":"/","native":true,"platform":"android","cls":"native-app","plugins":{"App":true,"StatusBar":true,"SplashScreen":true,"PushNotifications":true,"KeepAwake":true,"BackgroundGeolocation":true},"title":"DC13 · Food, groceries and pharmacy delivered","text":"DC13\nAdd your address\nNOW DELIVERING IN SARAJEVO\nSarajevo's favourites, at your door.\n\nRestaurants, groceries and pharmacy in about 30 minutes. Pay by card or c"}
+start {"origin":"https://localhost","path":"/","native":true,"platform":"android","cls":"native-app","plugins":{"App":true,"StatusBar":true,"SplashScreen":true,"PushNotifications":true,"KeepAwake":true,"BackgroundGeolocation":true},"title":"DC13 · Food, groceries and pharmacy delivered","text":"DC13\nAdd your address\nNOW DELIVERING IN LOAD TEST (INTERNAL)\nSarajevo's favourites, at your door.\n\nRestaurants, groceries and pharmacy in about 30 minutes. Pay "}
 stores_listed 8
-open_store {"path":"/s/miljacka-grill-5ac3","items":8}
+open_store {"path":"/s/lt-miljacka-grill-5ac3","items":8}
 add_item "in basket"
 checkout {"path":"/checkout","payment":true,"card":true,"notice":"Test mode: card payments are approved automatically until the payment provider is connected. No card is charged."}
-after_back_top "topResumedActivity=ActivityRecord{7443744 u0 com.digitalcode13.delivery.customer/com.digitalcode13.delivery.MainActivity t8}"
-after_back_pid "1895"
-after_back_log "--------- beginning of main\n11-14 20:17:19.235  1895  1895 V Capacitor/AppPlugin: Notifying listeners for event backButton\n11-14 20:17:19.243  1895  2086 D Capacitor: Handling local request: https://localhost/icon.svg"
-back_from_checkout "/s/miljacka-grill-5ac3"
-after_back_top "topResumedActivity=ActivityRecord{7443744 u0 com.digitalcode13.delivery.customer/com.digitalcode13.delivery.MainActivity t8}"
-after_back_pid "1895"
-after_back_log "--------- beginning of main\n11-14 20:17:21.823  1895  1895 V Capacitor/AppPlugin: Notifying listeners for event backButton\n11-14 20:17:21.837  1895  2086 D Capacitor: Handling local request: https://localhost/img/hero.jpg\n11-14 20:17:21.838  1895  2089 D Capacitor: Handling local request: https://localhost/img/cat-pizza.jpg\n11-14 20:17:21.839  1895  2089 D Capacitor: Handling local request: https://localhost/img/cat-burgers.jpg\n11-14 20:17:21.839  1895  2089 D Capacitor: Handling local request: https://localhost/img/cat-sushi.jpg\n11-14 20:17:21.840  1895  2089 D Capacitor: Handling local request: https://localhost/img/cat-bakery.jpg\n11-14 20:17:21.841  1895  2089 D Capacitor: Handling local request: https://localhost/img/cat-healthy.jpg\n11-14 20:17:21.846  1895  2090 D Capacitor: Handling local request: https://localhost/img/cat-grocery.jpg\n11-14 20:17:21.847  1895  2091 D Capacitor: Handling local request: https://localhost/img/cat-pharmacy.jpg\n11-14 20:17:21.847  1895  2086 D Capacitor: Handling local request: https://localhost/img/cat-grill.jpg\n11-14 20:17:21.852  1895  2089 D Capacitor: Handling local request: https://localhost/icon.svg"
-back_from_store "/"
-account_social_hidden {"path":"/account","google":false,"apple":false}
+after_back_top "topResumedActivity=ActivityRecord{c6b79a9 u0 com.digitalcode13.delivery.customer/com.digitalcode13.delivery.MainActivity t8}"
+after_back_pid "1986"
+after_back_log "--------- beginning of main\n11-14 22:54:07.376  1986  1986 V Capacitor/AppPlugin: Notifying listeners for event backButton\n11-14 22:54:07.390  1986  2257 D Capacitor: Handling local request: https://localhost/icon.svg"
+back_from_checkout "/s/lt-miljacka-grill-5ac3"
 error: closed
 after_back_top "ERR Command failed: adb shell dumpsys activity activities | grep -m1 topResumedActivity\nerror: closed\n"
 adb: device offline

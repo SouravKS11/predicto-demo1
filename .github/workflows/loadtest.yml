@@ -16,9 +16,9 @@ jobs:
           SUPABASE_URL: https://xdlpuvbguipgeszyngek.supabase.co
           MODE: placeholder
         run: |
-          export MODE=$(tr -d '[:space:]' < loadtest/RUN)
+          export MODE=$(head -1 loadtest/RUN | tr -d '[:space:]')
           # the public (anon) key that ships inside the customer app
-          export SUPABASE_ANON=$(grep -ohE 'eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+' android/app/src/customer/assets/public/assets/*.js | head -1)
+          export SUPABASE_ANON=$(grep -ohE 'sb_publishable_[A-Za-z0-9_-]+|eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+' android/app/src/customer/assets/public/assets/*.js | head -1)
           test -n "$SUPABASE_ANON"
           k6 run --quiet loadtest/dc13.js 2>&1 | tail -150 | tee loadtest/console.txt || true
       - uses: actions/upload-artifact@v4

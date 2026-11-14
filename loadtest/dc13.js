@@ -42,7 +42,9 @@ const claimed = new Counter("orders_claimed"), delivered = new Counter("orders_d
 const rtJoinOk = new Counter("realtime_joined"), rtJoinFail = new Counter("realtime_join_failed"), rtEvents = new Counter("realtime_events"), rtErrors = new Counter("realtime_errors");
 const pageLoad = new Trend("page_load_ms", true), appErrors = new Rate("app_errors");
 
-const H = (token) => ({ apikey: ANON, Authorization: `Bearer ${token || ANON}`, "Content-Type": "application/json" });
+// a publishable key (sb_publishable_...) is not a JWT: it goes in apikey only, and Authorization carries a user session when there is one
+const LEGACY = ANON.startsWith("eyJ");
+const H = (token) => ({ apikey: ANON, ...(token || LEGACY ? { Authorization: `Bearer ${token || ANON}` } : {}), "Content-Type": "application/json" });
 function rpc(name, body, token) {
   const r = http.post(`${URL}/rest/v1/rpc/${name}`, JSON.stringify(body || {}), { headers: H(token), tags: { name, kind: "api" } });
   let j = null; try { j = r.json(); } catch { /* empty */ }
@@ -181,7 +183,7 @@ export function realtime(data) {
     let ref = 1;
     socket.on("open", () => {
       socket.send(JSON.stringify({ topic: `realtime:lt-${exec.vu.idInTest}`, event: "phx_join", ref: String(ref++), join_ref: "1",
-        payload: { config: { broadcast: { ack: false, self: false }, presence: { key: "" }, postgres_changes: [{ event: "*", schema: "public", table: "orders", filter: `merchant_id=eq.${s.id}` }], private: false }, access_token: ANON } }));
+        payload: { config: { broadcast: { ack: false, self: false }, presence: { key: "" }, postgres_changes: [{ event: "*", schema: "public", table: "orders", filter: `merchant_id=eq.${s.id}` }], private: false }, ...(LEGACY ? { access_token: ANON } : {}) } }));
       socket.setInterval(() => socket.send(JSON.stringify({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(ref++) })), 25000);
       socket.setTimeout(() => socket.close(), Math.max(30000, RUN_MS - 30000));
     });

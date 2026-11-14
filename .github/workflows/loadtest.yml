@@ -1,0 +1,29 @@
+name: DC13 load test
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: smoke (tiny check) or peak (launch-city peak)
+        required: true
+        default: smoke
+jobs:
+  k6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: grafana/setup-k6-action@v1
+      - name: Run k6
+        env:
+          SUPABASE_URL: https://xdlpuvbguipgeszyngek.supabase.co
+          MODE: ${{ github.event.inputs.mode }}
+        run: |
+          # the public (anon) key that ships inside the customer app
+          export SUPABASE_ANON=$(grep -ohE 'eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+' android/app/src/customer/assets/public/assets/*.js | head -1)
+          test -n "$SUPABASE_ANON"
+          k6 run --quiet loadtest/dc13.js 2>&1 | tail -150 | tee loadtest/console.txt || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: loadtest-${{ github.event.inputs.mode }}
+          path: loadtest/

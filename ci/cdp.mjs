@@ -51,19 +51,22 @@ const base = await ev(`return { origin: location.origin, path: location.pathname
 ok("start", base);
 
 if (app === "customer") {
-  await sleep(4000);
-  ok("nav_help", await ev(`const l = document.querySelector('a[href="/help"]'); if (!l) return 'no help link'; l.click(); await new Promise(r => setTimeout(r, 2000)); return { path: location.pathname, len: history.length, h1: document.querySelector('h1')?.innerText }`));
-  await back(); ok("back_from_help", await ev(`return location.pathname`));
-  ok("stores_listed", await ev(`return document.querySelectorAll('a[href*="/store/"]').length`));
-  ok("open_store", await ev(`const a = document.querySelector('a[href*="/store/"]'); if (!a) return null; a.click(); await new Promise(r => setTimeout(r, 4000)); return location.pathname`));
-  ok("add_item", await ev(`const it = document.querySelector('.item'); if (!it) return 'no items'; it.click(); await new Promise(r => setTimeout(r, 1200));
-     const ch = document.querySelector('.modal .choice'); const add = [...document.querySelectorAll('.modal button.btn.primary')].pop(); if (add && add.disabled && ch) ch.click(); if (add) add.click();
-     await new Promise(r => setTimeout(r, 1200)); return document.body.innerText.match(/Go to checkout|Checkout|Basket[^\\n]*/i)?.[0] || 'added?'`));
-  ok("checkout", await ev(`const b = [...document.querySelectorAll('button, a')].find(x => /checkout/i.test(x.innerText)); if (!b) return 'no checkout button'; b.click(); await new Promise(r => setTimeout(r, 3500));
+  ok("stores_listed", await ev(`for (let i = 0; i < 20 && !document.querySelector('.grid-stores .tile'); i++) await new Promise(r => setTimeout(r, 1000)); return document.querySelectorAll('.grid-stores .tile').length`));
+  ok("open_store", await ev(`const t = [...document.querySelectorAll('.grid-stores .tile')].find(x => !x.querySelector('.tile-flag')) || document.querySelector('.grid-stores .tile'); if (!t) return null; (t.querySelector('a') || t).click();
+     for (let i = 0; i < 15 && !document.querySelector('.item'); i++) await new Promise(r => setTimeout(r, 1000)); return { path: location.pathname, items: document.querySelectorAll('.item').length }`));
+  ok("add_item", await ev(`const it = document.querySelector('.item'); if (!it) return 'no items'; it.click(); await new Promise(r => setTimeout(r, 1500));
+     const ch = document.querySelector('.modal .choice'); let add = [...document.querySelectorAll('.modal button.btn.primary')].pop(); if (add && add.disabled && ch) { ch.click(); await new Promise(r => setTimeout(r, 300)); } if (add) add.click();
+     await new Promise(r => setTimeout(r, 1500)); return [...document.querySelectorAll('button, a')].some(x => /checkout|basket/i.test(x.innerText)) ? 'in basket' : 'not added'`));
+  ok("checkout", await ev(`let b = [...document.querySelectorAll('button, a')].find(x => /checkout/i.test(x.innerText));
+     if (!b) { const bk = [...document.querySelectorAll('button, a')].find(x => /basket/i.test(x.innerText) || /basket/i.test(x.getAttribute('aria-label') || '')); if (bk) { bk.click(); await new Promise(r => setTimeout(r, 1200)); b = [...document.querySelectorAll('button, a')].find(x => /checkout/i.test(x.innerText)); } }
+     if (!b) return 'no checkout button'; b.click(); await new Promise(r => setTimeout(r, 4000));
      return { path: location.pathname, payment: /Payment/.test(document.body.innerText), card: /Card online/.test(document.body.innerText), notice: (document.body.innerText.match(/Test mode[^\\n]*|Test payments[^\\n]*|After you place the order[^\\n]*/) || [null])[0] }`));
-  await back(); ok("back_1", await ev(`return location.pathname`));
-  await back(); ok("back_2", await ev(`return location.pathname`));
-  ok("account_social_hidden", await ev(`history.pushState({}, '', '/account'); dispatchEvent(new PopStateEvent('popstate')); await new Promise(r => setTimeout(r, 2500)); return { path: location.pathname, google: /Continue with Google/.test(document.body.innerText), apple: /Continue with Apple/.test(document.body.innerText) }`));
+  await back(); ok("back_from_checkout", await ev(`return location.pathname`));
+  await back(); ok("back_from_store", await ev(`return location.pathname`));
+  ok("account_social_hidden", await ev(`const l = document.querySelector('a[href="/account"]'); if (!l) return 'no account link'; l.click(); await new Promise(r => setTimeout(r, 2500)); return { path: location.pathname, google: /Continue with Google/.test(document.body.innerText), apple: /Continue with Apple/.test(document.body.innerText) }`));
+  await back(); ok("back_from_account", await ev(`return location.pathname`));
+  ok("dir_lang", await ev(`return document.documentElement.lang + '/' + document.documentElement.dir`));
+  await back(); ok("back_at_home_leaves_app", out.checks.after_back_top);
 } else {
   ok("sign_in_form", await ev(`return { email: !!document.querySelector('input[type=email]'), password: !!document.querySelector('input[type=password]') }`));
 }

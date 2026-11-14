@@ -118,8 +118,8 @@ export function order(data) {
     dropoff: { lat: jitter(s.lat, 0.02), lng: jitter(s.lng, 0.02), address: "Load test street " + exec.vu.idInTest } } }, myToken);
   if (!r.ok || !r.j?.id) { placeFail.add(1); return; }
   placed.add(1);
-  for (let i = 0; i < 3; i++) {          // the tracking page refreshes every 10 seconds
-    sleep(10);
+  for (let i = 0; i < 3; i++) {          // the tracking page refreshes every 15 seconds (plus live updates)
+    sleep(15);
     get(`orders?select=*&id=eq.${r.j.id}`, myToken, "track_order");
     rpc("order_view", { p_order: r.j.id }, myToken);
   }
@@ -141,7 +141,7 @@ export function store() {
       if (Date.now() - acceptedAt[o.id] > 30000 && rpc("store_action", { p_order: o.id, p_action: "ready", p_minutes: null, p_reason: null }, storeToken).ok) readied.add(1);
     }
   }
-  sleep(8);
+  sleep(15);                             // the store board refreshes every 15 seconds (plus live updates)
 }
 
 // ---------------- couriers ----------------
@@ -157,7 +157,7 @@ export function courier(data) {
   const now = Date.now();
   if (now - lastPing > 20000) { pos = { lat: jitter(pos.lat, 0.004), lng: jitter(pos.lng, 0.004) }; rpc("courier_ping", { p_lat: pos.lat, p_lng: pos.lng }, kToken); lastPing = now; }
   const pool = rpc("courier_pool", {}, kToken);
-  if (now - lastJobs > 7000 || !jobs.length) {
+  if (now - lastJobs > 15000 || !jobs.length) {
     const g = get(`orders?select=id,status&courier_id=eq.${kId}&status=in.(preparing,ready,picked_up)&order=assigned_at`, kToken, "courier_jobs");
     jobs = Array.isArray(g.j) ? g.j : []; lastJobs = now;
   }
@@ -172,7 +172,7 @@ export function courier(data) {
       if (now - pickedAt[j.id] > 20000 && rpc("courier_action", { p_order: j.id, p_action: "deliver", p_pin: null, p_note: null }, kToken).ok) { delivered.add(1); lastJobs = 0; }
     }
   }
-  sleep(5);
+  sleep(10);                             // the courier app checks for offers every 10 seconds
 }
 
 // ---------------- live-update connections ----------------

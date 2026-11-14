@@ -1,0 +1,38 @@
+name: DC13 security scan
+# Passive OWASP ZAP baseline scan of the live sites (spiders and reads responses; no attacks).
+# Started by committing security/RUN.
+on:
+  push:
+    branches: [dc13-mobile-apps]
+    paths: ['security/RUN']
+permissions:
+  contents: read
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        site: [shop, partner, courier, admin, demo]
+    steps:
+      - name: Response headers and TLS
+        run: |
+          mkdir -p out
+          curl -sSI https://${{ matrix.site }}.digitalcode13.online/ > out/headers.txt 2>&1 || true
+          curl -sS -o /dev/null -w "http_to_https=%{redirect_url}\n" http://${{ matrix.site }}.digitalcode13.online/ >> out/headers.txt 2>&1 || true
+          echo | openssl s_client -connect ${{ matrix.site }}.digitalcode13.online:443 -servername ${{ matrix.site }}.digitalcode13.online 2>/dev/null | openssl x509 -noout -dates -issuer >> out/headers.txt || true
+          for p in /.env /.git/config /DC13-VPS-Setup.sh /index.html.bak /server-status; do echo "$p $(curl -s -o /dev/null -w '%{http_code} %{content_type}' https://${{ matrix.site }}.digitalcode13.online$p)"; done >> out/headers.txt
+      - name: ZAP baseline
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: https://${{ matrix.site }}.digitalcode13.online
+          cmd_options: '-a -j'
+          allow_issue_writing: false
+          fail_action: false
+          artifact_name: zap-${{ matrix.site }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: headers-${{ matrix.site }}
+          path: out/

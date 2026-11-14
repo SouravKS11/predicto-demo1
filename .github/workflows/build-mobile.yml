@@ -2,7 +2,7 @@ name: Build DC13 mobile apps
 on:
   push:
     branches: [dc13-mobile-apps]
-    paths-ignore: ['apks/**', 'shots/**']
+    paths-ignore: ['apks/**', 'shots/**', 'loadtest/**', '.github/workflows/loadtest.yml', 'security/**', '.github/workflows/security.yml']
   workflow_dispatch:
 permissions:
   contents: write

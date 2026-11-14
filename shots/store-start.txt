@@ -2,6 +2,6 @@ Starting: Intent { cmp=com.digitalcode13.delivery.store/com.digitalcode13.delive
 Status: ok
 LaunchState: COLD
 Activity: com.digitalcode13.delivery.store/com.digitalcode13.delivery.MainActivity
-TotalTime: 2846
-WaitTime: 2934
+TotalTime: 1773
+WaitTime: 1782
 Complete

@@ -62,3 +62,11 @@
    done
 == admin
    done
+== courier
+   done
+== customer
+   done
+== store
+   done
+== admin
+   done

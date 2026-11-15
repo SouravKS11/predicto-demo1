@@ -21,8 +21,8 @@ ANDROID = os.path.join(MOBILE, "android", "app")
 
 BRAND = {
     "prefix": "com.digitalcode13.delivery",
-    "version_code": 2,
-    "version_name": "2.0",
+    "version_code": 3,
+    "version_name": "2.1",
 }
 # payment pages that open inside the customer app (the customer comes straight back into the app)
 PAYMENT_HOSTS = ["checkout.stripe.com", "*.stripe.com", "*.paypal.com", "*.mercadopago.com", "*.mercadopago.com.mx", "*.mercadolibre.com",
@@ -156,9 +156,10 @@ def main():
     # ---- gradle: one flavor per app, test signing ----
     gradle = os.path.join(ANDROID, "build.gradle")
     g = open(gradle).read()
+    # the version always follows BRAND, so a new run produces an update that installs over the old app
+    g = re.sub(r'        versionCode \d+\n        versionName "[^"]*"', f'        versionCode {BRAND["version_code"]}\n        versionName "{BRAND["version_name"]}"', g)
     if "productFlavors" not in g:
         flavors = "\n".join(f'        {k} {{ dimension "app"; applicationId "{BRAND["prefix"]}.{k}" }}' for k in FLAVORS)
-        g = g.replace('        versionCode 1\n        versionName "1.0"', f'        versionCode {BRAND["version_code"]}\n        versionName "{BRAND["version_name"]}"')
         g = g.replace("    buildTypes {", f'''    signingConfigs {{
         // Test key for internal APKs only. Play Store releases are signed with the client's own upload key.
         test {{
@@ -188,7 +189,7 @@ if (servicesFiles.any { it.exists() }) {
 } else {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }''')
-        write(gradle, g)
+    write(gradle, g)
     print("prepared:", ", ".join(f'{k} ({FLAVORS[k]["name"]})' for k in FLAVORS))
 
 

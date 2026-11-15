@@ -1,3 +1,39 @@
-start {"origin":"https://localhost","path":"/login","native":true,"platform":"android","cls":"native-app","plugins":{"App":true,"StatusBar":true,"SplashScreen":true,"PushNotifications":true,"KeepAwake":true,"BackgroundGeolocation":true},"title":"DC13 Super Admin","text":"digital code 13\nSUPER ADMIN\nSign in\nEmail\nPassword\nContinue\nForgot password?\nFirst-time owner setup\n\nTwo-factor authentication is required for every staff accou"}
-sign_in_form {"email":true,"password":true}
-dir_lang "en/"
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+adb: device 'emulator-5554' not found
+file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:22
+  throw new Error("no debuggable WebView found");
+        ^
+
+Error: no debuggable WebView found
+    at connect (file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:22:9)
+    at async file:///home/runner/work/predicto-demo1/predicto-demo1/ci/cdp.mjs:25:15
+
+Node.js v22.23.4

@@ -1,2 +1,1 @@
-Performing Streamed Install
-Success
+adb: device 'emulator-5554' not found

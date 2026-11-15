@@ -1,7 +1,1 @@
-Starting: Intent { cmp=com.digitalcode13.delivery.admin/com.digitalcode13.delivery.MainActivity }
-Status: ok
-LaunchState: COLD
-Activity: com.digitalcode13.delivery.admin/com.digitalcode13.delivery.MainActivity
-TotalTime: 1155
-WaitTime: 1172
-Complete
+adb: device 'emulator-5554' not found
